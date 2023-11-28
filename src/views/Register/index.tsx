@@ -91,14 +91,15 @@ const RegisterPage: React.FC = () => {
       <h2>Registro</h2>
       <Form onSubmit={handleSubmit}>
         <Row>
-          <Col sm={5}>        <Form.Group controlId="formBasicEmail">
-            <Form.Control
-              type="email"
-              placeholder="Correo"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </Form.Group>
+          <Col sm={5}>
+            <Form.Group controlId="formBasicEmail">
+              <Form.Control
+                type="email"
+                placeholder="Correo"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </Form.Group>
             <br />
             <Form.Group controlId="formBasicPassword">
               <Form.Control
