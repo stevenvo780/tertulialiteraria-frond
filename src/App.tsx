@@ -6,6 +6,7 @@ import AuthWrapper from './components/AuthWrapper';
 import InfoAlert from './components/InfoAlert';
 import RingLoader from "react-spinners/RingLoader";
 import './App.css';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
 const override: any = {
   position: "fixed",
   top: "50%",

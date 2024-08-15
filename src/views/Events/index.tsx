@@ -1,147 +1,147 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Form, Table, Pagination, Container } from 'react-bootstrap';
+import { Calendar, momentLocalizer, Event } from 'react-big-calendar';
+import moment from 'moment';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+import { Modal, Button, Form, Container } from 'react-bootstrap';
 import api from '../../utils/axios';
-import { Events, Operators } from '../../utils/types';
 import { addNotification } from '../../redux/ui';
 import { useDispatch } from 'react-redux';
 
-const EventsCRUD: React.FC = () => {
+const localizer = momentLocalizer(moment);
+
+interface MyEvent extends Event {
+  id: number;
+  title: string;
+  start: Date;
+  end: Date;
+  description: string;
+}
+
+const EventsCalendar: React.FC = () => {
   const dispatch = useDispatch();
-  const [events, setEvents] = useState<Events[]>([]);
-  const [selectedDiscount, setSelectedDiscount] = useState<Events | null>(null);
-  const [name, setName] = useState('');
-  const [value, setValue] = useState(0);
-  const [operator, setOperator] = useState(Operators.Percentage);
+  const [events, setEvents] = useState<MyEvent[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [EventsPerPage] = useState(5);
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [eventDate, setEventDate] = useState<Date | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<MyEvent | null>(null);
 
   useEffect(() => {
     fetchEvents();
   }, []);
 
   const fetchEvents = async () => {
-    const response = await api.get('/Events');
-    setEvents(response.data);
+    try {
+      const response = await api.get('/events');
+      setEvents(response.data);
+    } catch (error) {
+      dispatch(addNotification({ message: 'Error fetching events', color: 'danger' }));
+    }
   };
 
-  const handleShowModal = (discount: Events | null = null) => {
-    setSelectedDiscount(discount);
-    setName(discount ? discount.name : '');
-    setValue(discount ? discount.value : 0);
-    setOperator(discount ? discount.operator : Operators.Percentage);
+  const handleSelectSlot = (slotInfo: { start: Date; end: Date }) => {
+    setEventDate(slotInfo.start);
     setShowModal(true);
   };
 
-  const handleCloseModal = () => {
-    setShowModal(false);
-    setSelectedDiscount(null);
+  const handleEventClick = (event: MyEvent) => {
+    setSelectedEvent(event);
+    setTitle(event.title);
+    setDescription(event.description);
+    setEventDate(new Date(event.start));
+    setShowModal(true);
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     try {
-      if (selectedDiscount) {
-        await api.patch(`/Events/${selectedDiscount.id}`, { name, value, operator });
+      if (selectedEvent) {
+        await api.patch(`/events/${selectedEvent.id}`, { title, description, eventDate });
+        dispatch(addNotification({ message: 'Event updated successfully', color: 'success' }));
       } else {
-        await api.post('/Events', { name, value, operator });
+        await api.post('/events', { title, description, eventDate });
+        dispatch(addNotification({ message: 'Event created successfully', color: 'success' }));
       }
-      dispatch(addNotification({ message: 'Se guardo correctamente', color: 'success' }));
       fetchEvents();
-      handleCloseModal();
+      setShowModal(false);
     } catch (error) {
-      dispatch(addNotification({ message: 'Error al guardar', color: 'danger' }));
+      dispatch(addNotification({ message: 'Error saving event', color: 'danger' }));
     }
   };
 
-  const deleteDiscount = async (discount: Events) => {
-    try {
-      await api.delete(`/Events/${discount.id}`);
-      dispatch(addNotification({ message: 'Se borro correctamente', color: 'success' }));
-      fetchEvents();
-    } catch (error) {
-      dispatch(addNotification({ message: 'Error al borrar', color: 'danger' }));
+  const handleDelete = async () => {
+    if (selectedEvent) {
+      try {
+        await api.delete(`/events/${selectedEvent.id}`);
+        dispatch(addNotification({ message: 'Event deleted successfully', color: 'success' }));
+        fetchEvents();
+        setShowModal(false);
+      } catch (error) {
+        dispatch(addNotification({ message: 'Error deleting event', color: 'danger' }));
+      }
     }
   };
-
-  // Get current Events
-  const indexOfLastDiscount = currentPage * EventsPerPage;
-  const indexOfFirstDiscount = indexOfLastDiscount - EventsPerPage;
-  const currentEvents = events.slice(indexOfFirstDiscount, indexOfLastDiscount);
-
-  // Change page
-  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
-
-  let active = currentPage;
-  let items = [];
-  for (let number = 1; number <= Math.ceil(events.length / EventsPerPage); number++) {
-    items.push(
-      <Pagination.Item key={number} active={number === active} onClick={() => paginate(number)}>
-        {number}
-      </Pagination.Item>,
-    );
-  }
 
   return (
     <Container fluid>
-      <Button variant="outline-primary" onClick={() => handleShowModal()} style={{ margin: '10px' }}>Crear nuevo beneficio</Button>
-      <Table bordered>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Nombre del beneficio</th>
-            <th>Valor</th>
-            <th>Operador</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentEvents.map((discount: Events, index: number) => (
-            <tr key={discount.id}>
-              <td>{index + 1}</td>
-              <td>{discount.name}</td>
-              <td>{discount.value}</td>
-              <td>{discount.operator}</td>
-              <td width={"20%"}>
-                <Button variant="outline-info" onClick={() => handleShowModal(discount)} style={{ margin: '5px' }}>Editar</Button>
-                <Button variant="outline-danger" onClick={() => deleteDiscount(discount)} style={{ margin: '5px' }}>Eliminar</Button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
-      <Pagination style={{ margin: '10px' }}>{items}</Pagination>
-      <Modal show={showModal} onHide={handleCloseModal}>
+      <h2 className="my-4">Event Calendar</h2>
+      <Calendar
+        localizer={localizer}
+        events={events}
+        startAccessor="start"
+        endAccessor="end"
+        style={{ height: 500 }}
+        selectable
+        onSelectSlot={handleSelectSlot}
+        onSelectEvent={handleEventClick}
+      />
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>{selectedDiscount ? 'Actualizar' : 'Crear'} Beneficio</Modal.Title>
+          <Modal.Title>{selectedEvent ? 'Edit Event' : 'Create Event'}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={handleSubmit}>
-            <Form.Group>
-              <Form.Label>Nombre del beneficio</Form.Label>
-              <Form.Control type="text" value={name} onChange={(e) => setName(e.target.value)} />
+            <Form.Group controlId="formEventTitle">
+              <Form.Label>Title</Form.Label>
+              <Form.Control
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                required
+              />
             </Form.Group>
-            <Form.Group>
-              <Form.Label>Valor</Form.Label>
-              <Form.Control type="number" value={value} onChange={(e) => setValue(Number(e.target.value))} />
+            <Form.Group controlId="formEventDescription">
+              <Form.Label>Description</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                required
+              />
             </Form.Group>
-            <Form.Group>
-              <Form.Label>Operador</Form.Label>
-              <Form.Control as="select" value={operator} onChange={(e) => setOperator(e.target.value as Operators)}>
-                <option value={Operators.Percentage}>{Operators.Percentage}</option>
-                <option value={Operators.Subtraction}>{Operators.Subtraction}</option>
-              </Form.Control>
+            <Form.Group controlId="formEventDate">
+              <Form.Label>Date</Form.Label>
+              <Form.Control
+                type="date"
+                value={eventDate ? eventDate.toISOString().substr(0, 10) : ''}
+                onChange={(e) => setEventDate(new Date(e.target.value))}
+                required
+              />
             </Form.Group>
+            <Button variant="primary" type="submit">
+              {selectedEvent ? 'Update' : 'Create'}
+            </Button>
+            {selectedEvent && (
+              <Button variant="danger" onClick={handleDelete} className="ml-2">
+                Delete
+              </Button>
+            )}
           </Form>
         </Modal.Body>
-        <Modal.Footer>
-          <Button onClick={handleSubmit} variant="outline-success" type="submit">
-            {selectedDiscount ? 'Actualizar' : 'Crear'}
-          </Button>
-        </Modal.Footer>
       </Modal>
     </Container>
   );
 };
 
-export default EventsCRUD;
+export default EventsCalendar;

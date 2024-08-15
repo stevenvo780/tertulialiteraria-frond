@@ -1,18 +1,26 @@
 import axios from 'axios';
 import store from '../redux/store';
 import { loading } from '../redux/ui';
+import { auth } from '../utils/firebase'; // Import the Firebase auth instance
+
 const api = axios.create({
   baseURL: process.env.REACT_APP_API_URL,
 });
 
 let calls = 0;
 
-api.interceptors.request.use(function (config) {
-  const state = store.getState();
-  const token = state.auth.access_token;
+api.interceptors.request.use(async function (config) {
+  const currentUser = auth.currentUser;
+  let token = null;
+
+  if (currentUser) {
+    token = await currentUser.getIdToken();
+  }
+
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+
   calls++;
   store.dispatch(loading(true));
   return config;

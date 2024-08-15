@@ -1,28 +1,10 @@
 import React, { useState } from 'react';
-import { Form, Button, Container, Row, Col } from 'react-bootstrap';
+import { Form, Button, Container, Row, Col, Card, InputGroup, Spinner } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
-import { login } from '../../redux/auth';
-import axios from '../../utils/axios';
-import { addNotification } from '../../redux/ui';
 import { useNavigate } from 'react-router-dom';
-import { storage } from '../../utils/firebase';
-
-export interface User {
-  id: number;
-  email: string;
-  password: string;
-  name: string;
-  surname: string;
-  logo: string;
-  companyName: string;
-  typeDocument: TypeDocuments;
-  phone: string;
-}
-
-export enum TypeDocuments {
-  CC = 'CC',
-  NIT = 'NIT',
-}
+import { addNotification } from '../../redux/ui';
+import axios from '../../utils/axios';
+import { FaEnvelope, FaLock } from 'react-icons/fa';
 
 const RegisterPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -30,160 +12,128 @@ const RegisterPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [name, setName] = useState('');
-  const [surname, setSurname] = useState('');
-  const [logo, setLogo] = useState<string | null>(null);
-  const [logoFile, setLogoFile] = useState<File | null>(null);
-  const [companyName, setCompanyName] = useState('');
-  const [typeDocument, setTypeDocument] = useState(TypeDocuments.CC);
-  const [phone, setPhone] = useState('');
-  const [documentNumber, setDocumentNumber] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState({ email: '', password: '', confirmPassword: '' });
 
-  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setLogo(URL.createObjectURL(e.target.files[0]));
-      setLogoFile(e.target.files[0]);
-    }
+  const validateEmail = (email: string) => {
+    const re = /\S+@\S+\.\S+/;
+    return re.test(email);
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setIsLoading(true);
+    let formErrors = { email: '', password: '', confirmPassword: '' };
+
+    if (!validateEmail(email)) {
+      formErrors.email = 'Formato de correo electrónico inválido';
+    }
+
+    if (password.length < 8) {
+      formErrors.password = 'La contraseña debe tener al menos 8 caracteres';
+    }
 
     if (password !== confirmPassword) {
-      alert('Las contraseñas no coinciden');
+      formErrors.confirmPassword = 'Las contraseñas no coinciden';
+    }
+
+    if (formErrors.email || formErrors.password || formErrors.confirmPassword) {
+      setErrors(formErrors);
       setIsLoading(false);
       return;
     }
 
     try {
-      let logoUrl = '';
-      if (logoFile) {
-        const uploadTask = storage.ref(`images/${logoFile.name}`).put(logoFile);
-        await new Promise((resolve, reject) => {
-          uploadTask.on("state_changed", snapshot => { }, error => reject(error), () => {
-            storage.ref("images").child(logoFile.name).getDownloadURL().then(url => { logoUrl = url; resolve(url); });
-          });
-        });
-      }
-      setLogo(logoUrl);
-      const response = await axios.post('/auth/register', { email, password, name, surname, logo: logoUrl, companyName, typeDocument, phone, documentNumber });
+      const response = await axios.post('/register', { email, password });
       if (response.status === 201) {
-        console.log(response.data);
-        dispatch(login(response.data));
-        navigate('/pos');
         dispatch(addNotification({ message: 'Registro exitoso', color: 'success' }));
+        navigate('/login');
       } else {
-        console.error('Error en el registro:', response?.data?.message);
-        dispatch(addNotification({ message: response?.data?.message ? response?.data?.message : 'Error al registrar', color: 'danger' }));
+        dispatch(addNotification({ message: 'El registro ha fallado', color: 'danger' }));
       }
     } catch (error: any) {
-      console.error(error?.response?.data?.message)
-      dispatch(addNotification({ message: error?.response?.data?.message ? error?.response?.data?.message : 'Error al registrar', color: 'danger' }));
+      dispatch(addNotification({ message: error?.response?.data?.message || 'El registro ha fallado', color: 'danger' }));
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <Container>
-      <h2>Registro</h2>
-      <Form onSubmit={handleSubmit}>
-        <Row>
-          <Col sm={5}>
-            <Form.Group controlId="formBasicEmail">
-              <Form.Control
-                type="email"
-                placeholder="Correo"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </Form.Group>
-            <br />
-            <Form.Group controlId="formBasicPassword">
-              <Form.Control
-                type="password"
-                placeholder="Contraseña"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </Form.Group>
-            <br />
-            <Form.Group controlId="formBasicConfirmPassword">
-              <Form.Control
-                type="password"
-                placeholder="Confirmar contraseña"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-              />
-            </Form.Group>
-            <br />
-            <Form.Group controlId="formBasicName">
-              <Form.Control
-                type="text"
-                placeholder="Nombre"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-            </Form.Group>
-            <br />
-            <Form.Group controlId="formBasicSurname">
-              <Form.Control
-                type="text"
-                placeholder="Apellido"
-                value={surname}
-                onChange={(e) => setSurname(e.target.value)}
-              />
-            </Form.Group></Col>
-          <Col sm={5}>   <Form.Group controlId="formBasicPhone">
-            <Form.Control
-              type="text"
-              placeholder="Teléfono"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-            />
-          </Form.Group>
-            <br />
-            <Form.Group controlId="formBasicLogo">
-              <Form.Label>Logo</Form.Label>
-              <Form.Control
-                type="file"
-                onChange={handleLogoChange}
-              />
-              {logo && <img src={logo} alt="Preview" style={{ width: '100px' }} />}
-            </Form.Group>
-            <br />
-            <Form.Group controlId="formBasicCompanyName">
-              <Form.Control
-                type="text"
-                placeholder="Nombre de la compañía"
-                value={companyName}
-                onChange={(e) => setCompanyName(e.target.value)}
-              />
-            </Form.Group>
-            <br />
-            <Form.Group controlId="formBasicTypeDocument">
-              <Form.Control as="select" value={typeDocument} onChange={(e) => setTypeDocument(e.target.value as TypeDocuments)}>
-                <option value={TypeDocuments.CC}>CC</option>
-                <option value={TypeDocuments.NIT}>NIT</option>
-              </Form.Control>
-            </Form.Group>
-            <br />
-            <Form.Group controlId="formBasicDocumentNumber">
-              <Form.Control
-                type="text"
-                placeholder="Número de Documento"
-                value={documentNumber}
-                onChange={(e) => setDocumentNumber(e.target.value)}
-              />
-            </Form.Group>
-          </Col>
-        </Row>
-        <Button variant="primary" type="submit" disabled={isLoading}>
-          {isLoading ? 'Cargando...' : 'Registrar'}
-        </Button>
-      </Form>
+    <Container className="d-flex align-items-center justify-content-center min-vh-100">
+      <Row className="w-100">
+        <Col md={{ span: 6, offset: 3 }}>
+          <Card>
+            <Card.Body>
+              <h2 className="text-center mb-4">Registro</h2>
+              <Form onSubmit={handleSubmit}>
+                <Form.Group controlId="formBasicEmail">
+                  <Form.Label>Correo electrónico</Form.Label>
+                  <InputGroup>
+                    <InputGroup.Text>
+                      <FaEnvelope />
+                    </InputGroup.Text>
+                    <Form.Control
+                      type="email"
+                      placeholder="Introduce tu correo electrónico"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      isInvalid={!!errors.email}
+                      required
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {errors.email}
+                    </Form.Control.Feedback>
+                  </InputGroup>
+                </Form.Group>
+                <br />
+                <Form.Group controlId="formBasicPassword">
+                  <Form.Label>Contraseña</Form.Label>
+                  <InputGroup>
+                    <InputGroup.Text>
+                      <FaLock />
+                    </InputGroup.Text>
+                    <Form.Control
+                      type="password"
+                      placeholder="Introduce tu contraseña"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      isInvalid={!!errors.password}
+                      required
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {errors.password}
+                    </Form.Control.Feedback>
+                  </InputGroup>
+                </Form.Group>
+                <br />
+                <Form.Group controlId="formBasicConfirmPassword">
+                  <Form.Label>Confirmar contraseña</Form.Label>
+                  <InputGroup>
+                    <InputGroup.Text>
+                      <FaLock />
+                    </InputGroup.Text>
+                    <Form.Control
+                      type="password"
+                      placeholder="Confirma tu contraseña"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      isInvalid={!!errors.confirmPassword}
+                      required
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {errors.confirmPassword}
+                    </Form.Control.Feedback>
+                  </InputGroup>
+                </Form.Group>
+                <br />
+                <Button variant="primary" type="submit" className="w-100" disabled={isLoading}>
+                  {isLoading ? <Spinner animation="border" size="sm" /> : 'Registrar'}
+                </Button>
+              </Form>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
     </Container>
   );
 };
