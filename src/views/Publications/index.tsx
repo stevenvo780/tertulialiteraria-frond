@@ -147,10 +147,11 @@ const PublicationsPage: React.FC = () => {
               <Editor
                 apiKey='ide9bzali9973f0fmbzusywuxlpp3mxmigqoa07eddfltlrj'
                 init={{
+                  advcode_inline: true,
                   height: 500,
                   menubar: false,
-                  plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table help wordcount code',
-                  toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | code | help | image',
+                  plugins: 'powerpaste casechange searchreplace autolink directionality visualblocks visualchars image link media mediaembed codesample table charmap pagebreak nonbreaking anchor tableofcontents insertdatetime advlist lists checklist wordcount tinymcespellchecker editimage help formatpainter permanentpen charmap linkchecker emoticons advtable export autosave advcode fullscreen',
+                  toolbar: "undo redo print spellcheckdialog formatpainter | blocks fontfamily fontsize | bold italic underline forecolor backcolor | link image | alignleft aligncenter alignright alignjustify | code",
                   images_upload_handler: uploadImage,
                 }}
                 onEditorChange={(newContent: any) => setContent(newContent)}
