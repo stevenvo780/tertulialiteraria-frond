@@ -31,7 +31,7 @@ export interface Library {
   title: string;
   description: string;
   referenceDate: Date;
-  author: User;
+  author?: User;
 }
 
 export interface Publication {
@@ -39,7 +39,7 @@ export interface Publication {
   title: string;
   content: string;
   publicationDate: Date;
-  author: User;
+  author?: User;
 }
 
 export interface RouteApi {

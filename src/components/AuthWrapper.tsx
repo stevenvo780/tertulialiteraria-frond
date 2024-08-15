@@ -4,6 +4,7 @@ import Layout from './Layout';
 import Login from '../views/Login';
 import Register from '../views/Register';
 import Events from '../views/Events';
+import Publications from '../views/Publications';
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 
@@ -16,6 +17,7 @@ const AuthWrapper: React.FC = () => {
     <Layout>
       <div style={{ margin: 10 }}>
         <Routes>
+          <Route path="/home" element={<Publications />} />
           <Route path="/events" element={<Events />} />
           <Route path="/" element={<Navigate to="/home" />} />
         </Routes>
