@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import { login } from '../../redux/auth';
 import { addNotification } from '../../redux/ui';
 import { auth } from '../../utils/firebase';
-import firebase from 'firebase/compat/app'; // Import Firebase to use GoogleAuthProvider
+import firebase from 'firebase/compat/app';
 
 const LoginPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -24,11 +24,12 @@ const LoginPage: React.FC = () => {
 
       if (user) {
         dispatch(login({ id: user.uid, email: user.email, name: user.displayName, events: [] }));
-        dispatch(addNotification({ message: 'Welcome', color: 'success' }));
+        dispatch(addNotification({ message: 'Bienvenido', color: 'success' }));
+        navigate('/home');
       }
     } catch (error: any) {
       console.error(error?.message);
-      dispatch(addNotification({ message: 'Error logging in', color: 'danger' }));
+      dispatch(addNotification({ message: 'Error al iniciar sesión', color: 'danger' }));
     } finally {
       setIsLoading(false);
     }
@@ -48,11 +49,12 @@ const LoginPage: React.FC = () => {
 
       if (user) {
         dispatch(login({ id: user.uid, email: user.email, name: user.displayName, events: [] }));
-        dispatch(addNotification({ message: 'Welcome with Google', color: 'success' }));
+        dispatch(addNotification({ message: 'Bienvenido', color: 'success' }));
+        navigate('/home');
       }
     } catch (error: any) {
       console.error(error?.message);
-      dispatch(addNotification({ message: 'Error logging in with Google', color: 'danger' }));
+      dispatch(addNotification({ message: 'Error al iniciar sesión con Google', color: 'danger' }));
     } finally {
       setIsLoading(false);
     }
@@ -64,12 +66,12 @@ const LoginPage: React.FC = () => {
         <Col sm="6" className="d-flex align-items-center justify-content-center" style={{ marginTop: "10%" }}>
           <Card style={{ width: '100%', padding: '20px', boxShadow: '0px 0px 20px 0px rgba(0,0,0,0.1)', borderRadius: '5px' }}>
             <Card.Body>
-              <Card.Title className="text-center">Login</Card.Title>
+              <Card.Title className="text-center">Iniciar Sesión</Card.Title>
               <Form onSubmit={handleSubmit}>
                 <Form.Group controlId="formBasicEmail">
                   <Form.Control
                     type="email"
-                    placeholder="Email"
+                    placeholder="Correo Electrónico"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />
@@ -78,27 +80,27 @@ const LoginPage: React.FC = () => {
                 <Form.Group controlId="formBasicPassword">
                   <Form.Control
                     type="password"
-                    placeholder="Password"
+                    placeholder="Contraseña"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
                 </Form.Group>
                 <br />
                 <Button style={{ marginRight: 10 }} variant="primary" type="submit" disabled={isLoading}>
-                  {isLoading ? 'Loading...' : 'Login'}
+                  {isLoading ? 'Cargando...' : 'Iniciar Sesión'}
                 </Button>
-                <Button variant="secondary" onClick={handleRegister}>Register</Button>
+                <Button variant="secondary" onClick={handleRegister}>Registrarse</Button>
                 <br />
                 <br />
                 <Button variant="danger" onClick={signInWithGoogle} disabled={isLoading}>
-                  {isLoading ? 'Loading...' : 'Login with Google'}
+                  {isLoading ? 'Cargando...' : 'Iniciar Sesión con Google'}
                 </Button>
               </Form>
             </Card.Body>
           </Card>
         </Col>
         <Col sm="6" className="d-flex align-items-center justify-content-center">
-          {/* You can place an image or additional content here */}
+          {/* Puedes colocar una imagen o contenido adicional aquí */}
         </Col>
       </Row>
     </Container>

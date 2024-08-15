@@ -44,7 +44,7 @@ const RegisterPage: React.FC = () => {
     }
 
     try {
-      const response = await axios.post('/register', { email, password });
+      const response = await axios.post('/auth/register', { email, password });
       if (response.status === 201) {
         dispatch(addNotification({ message: 'Registro exitoso', color: 'success' }));
         navigate('/login');
@@ -52,7 +52,11 @@ const RegisterPage: React.FC = () => {
         dispatch(addNotification({ message: 'El registro ha fallado', color: 'danger' }));
       }
     } catch (error: any) {
-      dispatch(addNotification({ message: error?.response?.data?.message || 'El registro ha fallado', color: 'danger' }));
+      if (error?.response?.status === 409) {
+        setErrors({ ...errors, email: 'El correo electrónico ya está registrado' });
+      } else {
+        dispatch(addNotification({ message: error?.response?.data?.message || 'El registro ha fallado', color: 'danger' }));
+      }
     } finally {
       setIsLoading(false);
     }

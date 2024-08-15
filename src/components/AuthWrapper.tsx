@@ -9,7 +9,6 @@ import { RootState } from '../redux/store';
 
 const AuthWrapper: React.FC = () => {
   const user = useSelector((state: RootState) => state.auth.userData);
-
   useEffect(() => {
   }, [user]);
 
@@ -18,7 +17,7 @@ const AuthWrapper: React.FC = () => {
       <div style={{ margin: 10 }}>
         <Routes>
           <Route path="/events" element={<Events />} />
-          <Route path="/" element={<Navigate to="/pos" />} />
+          <Route path="/" element={<Navigate to="/home" />} />
         </Routes>
       </div>
     </Layout>

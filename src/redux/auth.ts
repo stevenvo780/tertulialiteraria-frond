@@ -6,9 +6,11 @@ interface AuthState {
   userData: User | null;
 }
 
+const persistedUser = localStorage.getItem('userData') ? JSON.parse(localStorage.getItem('userData') as string) : null;
+
 const initialState: AuthState = {
-  isLoggedIn: false,
-  userData: null,
+  isLoggedIn: !!persistedUser,
+  userData: persistedUser,
 };
 
 const auth = createSlice({
@@ -18,10 +20,12 @@ const auth = createSlice({
     login(state, action: PayloadAction<User>) {
       state.isLoggedIn = true;
       state.userData = action.payload;
+      localStorage.setItem('userData', JSON.stringify(action.payload));
     },
     logout(state) {
       state.isLoggedIn = false;
       state.userData = null;
+      localStorage.removeItem('userData');
     },
   },
 });
