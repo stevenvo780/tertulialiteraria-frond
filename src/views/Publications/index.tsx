@@ -1,3 +1,4 @@
+/* eslint-disable no-multi-str */
 import React, { useState, useEffect } from 'react';
 import { Card, Button, Form, Modal, Container, Row, Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
@@ -8,6 +9,7 @@ import { getPublications, addPublication, updatePublication, deletePublication }
 import { storage } from '../../utils/firebase';
 import { addNotification } from '../../redux/ui';
 import { Publication } from '../../utils/types';
+import { FaEdit, FaTrash } from 'react-icons/fa';
 
 const PublicationsPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -95,7 +97,12 @@ const PublicationsPage: React.FC = () => {
     <Container>
       {/* Botón para crear publicaciones */}
       <div className="my-4 text-center">
-        <Button variant="primary" onClick={() => setShowModal(true)}>
+        <Button variant="primary" onClick={() => {
+          setShowModal(true)
+          setEditingPublication(null)
+          setTitle('')
+          setContent('')
+        }}>
           Crear Publicación
         </Button>
       </div>
@@ -105,20 +112,24 @@ const PublicationsPage: React.FC = () => {
           {publications.map((publication: Publication) => (
             <Card className="mb-4" key={publication.id}>
               <Card.Body>
-                <Card.Title>{publication.title}</Card.Title>
-                <div dangerouslySetInnerHTML={{ __html: publication.content.html }} />
-                <div className="d-flex justify-content-between mt-2">
+                <div className="d-flex justify-content-between">
+                  <Card.Title>{publication.title}</Card.Title>
                   <div>
-                    <Button variant="warning" onClick={() => handleEdit(publication)} className="mr-2">
-                      Editar
-                    </Button>
-                    <Button variant="danger" onClick={() => handleDelete(publication.id)}>
-                      Eliminar
-                    </Button>
+                    <FaEdit
+                      onClick={() => handleEdit(publication)}
+                      style={{ cursor: 'pointer', marginRight: '10px' }}
+                      size={20}
+                    />
+                    <FaTrash
+                      onClick={() => handleDelete(publication.id)}
+                      style={{ cursor: 'pointer' }}
+                      size={20}
+                    />
                   </div>
-                  <div className="text-muted">
-                    Publicado el {new Date(publication.publicationDate).toLocaleDateString()}
-                  </div>
+                </div>
+                <div dangerouslySetInnerHTML={{ __html: publication.content.html }} />
+                <div className="text-muted mt-2">
+                  Publicado el {new Date(publication.publicationDate).toLocaleDateString()}
                 </div>
               </Card.Body>
             </Card>
@@ -146,12 +157,13 @@ const PublicationsPage: React.FC = () => {
               <Form.Label>Contenido</Form.Label>
               <Editor
                 apiKey='ide9bzali9973f0fmbzusywuxlpp3mxmigqoa07eddfltlrj'
+                value={content}
                 init={{
                   advcode_inline: true,
                   height: 500,
                   menubar: false,
                   plugins: 'powerpaste casechange searchreplace autolink directionality visualblocks visualchars image link media mediaembed codesample table charmap pagebreak nonbreaking anchor tableofcontents insertdatetime advlist lists checklist wordcount tinymcespellchecker editimage help formatpainter permanentpen charmap linkchecker emoticons advtable export autosave advcode fullscreen',
-                  toolbar: "undo redo print spellcheckdialog formatpainter | blocks fontfamily fontsize | bold italic underline forecolor backcolor | link image | alignleft aligncenter alignright alignjustify | code",
+                  toolbar: "undo redo spellcheckdialog formatpainter | blocks fontfamily fontsize | bold italic underline forecolor backcolor | link image | alignleft aligncenter alignright alignjustify | code",
                   images_upload_handler: uploadImage,
                 }}
                 onEditorChange={(newContent: any) => setContent(newContent)}
