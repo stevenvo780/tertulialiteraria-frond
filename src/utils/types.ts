@@ -6,7 +6,8 @@ export interface User {
   id: string;
   email?: string | undefined | null;
   name?: string | undefined | null;
-  events: Events[];
+  role?: 'admin' | 'user'; 
+  events?: Events[];
 }
 export interface Events {
   id?: number;
