@@ -66,30 +66,54 @@ const PublicationsPage: React.FC = () => {
   };
 
   return (
-    <Container fluid>
-      <h2 className="my-4">Publicaciones</h2>
-      <Button variant="primary" onClick={() => setShowModal(true)}>
-        Crear Publicación
-      </Button>
-      <Row className="mt-4">
-        {publications.map((publication: any) => (
-          <Col md={4} key={publication.id}>
-            <Card className="mb-4">
-              <Card.Body>
-                <Card.Title>{publication.title}</Card.Title>
-                <Card.Text>{publication.content}</Card.Text>
-                <Button variant="warning" onClick={() => handleEdit(publication)} className="mr-2">
-                  Editar
-                </Button>
-                <Button variant="danger" onClick={() => handleDelete(publication.id)}>
-                  Eliminar
-                </Button>
-              </Card.Body>
-              <Card.Footer className="text-muted">Publicado el {new Date(publication.publicationDate).toLocaleDateString()}</Card.Footer>
-            </Card>
-          </Col>
-        ))}
-      </Row>
+    <>
+      <div style={{
+        position: 'fixed',
+        top: '60px',
+        width: '100%',
+        zIndex: 1000,
+        backgroundColor: '#f8f9fa',
+        padding: '10px 0',
+        boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.1)',
+      }}>
+        <Container className="d-flex justify-content-center">
+          <Button variant="primary" onClick={() => setShowModal(true)}>
+            Crear Publicación
+          </Button>
+        </Container>
+      </div>
+
+      {/* Espaciado para no sobreponer la barra fija */}
+      <div style={{ marginTop: '120px' }}>
+        <Container>
+          <Row>
+            <Col md={{ span: 8, offset: 2 }}>
+              {/* Listado de publicaciones */}
+              {publications.map((publication: any) => (
+                <Card className="mb-4" key={publication.id}>
+                  <Card.Body>
+                    <Card.Title>{publication.title}</Card.Title>
+                    <Card.Text>{publication.content}</Card.Text>
+                    <div className="d-flex justify-content-between">
+                      <div>
+                        <Button variant="warning" onClick={() => handleEdit(publication)} className="mr-2">
+                          Editar
+                        </Button>
+                        <Button variant="danger" onClick={() => handleDelete(publication.id)}>
+                          Eliminar
+                        </Button>
+                      </div>
+                      <div className="text-muted">
+                        Publicado el {new Date(publication.publicationDate).toLocaleDateString()}
+                      </div>
+                    </div>
+                  </Card.Body>
+                </Card>
+              ))}
+            </Col>
+          </Row>
+        </Container>
+      </div>
 
       {/* Modal para crear/editar publicación */}
       <Modal show={showModal} onHide={() => setShowModal(false)}>
@@ -123,7 +147,7 @@ const PublicationsPage: React.FC = () => {
           </Form>
         </Modal.Body>
       </Modal>
-    </Container>
+    </>
   );
 };
 
