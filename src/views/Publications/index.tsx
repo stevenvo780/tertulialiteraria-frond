@@ -92,7 +92,6 @@ const PublicationsPage: React.FC = () => {
     }
   };
 
-
   return (
     <Container>
       {/* Botón para crear publicaciones */}

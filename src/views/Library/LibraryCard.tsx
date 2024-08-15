@@ -35,7 +35,7 @@ const LibraryCard: React.FC<LibraryCardProps> = ({ library, onEdit, onDelete, on
             />
           </div>
         </div>
-        <div>{library.description}</div>
+        <div dangerouslySetInnerHTML={{ __html: library.description }} />
         <div className="text-muted mt-2">
           Referenciado el {new Date(library.referenceDate).toLocaleDateString()}
         </div>

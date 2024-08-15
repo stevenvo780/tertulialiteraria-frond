@@ -7,23 +7,31 @@ interface LibraryListProps {
   libraries: Library[];
   onEdit: (library: Library) => void;
   onDelete: (id: number) => void;
-  onNavigate: (library: Library) => void; // Nueva función para manejar la navegación
+  onNavigate: (library: Library) => void;
 }
 
+const calculateColSize = (totalLibraries: number) => {
+  if (totalLibraries === 1) return 12;
+  if (totalLibraries === 2) return 6;
+  if (totalLibraries === 3) return 4;
+  return 3;
+};
+
 const LibraryList: React.FC<LibraryListProps> = ({ libraries, onEdit, onDelete, onNavigate }) => {
+  const colSize = calculateColSize(libraries.length);
+
   return (
     <Row>
-      <Col md={{ span: 8, offset: 2 }}>
-        {libraries.map((library: Library) => (
+      {libraries.map((library: Library) => (
+        <Col key={library.id} md={colSize}>
           <LibraryCard
-            key={library.id}
             library={library}
             onEdit={onEdit}
             onDelete={onDelete}
-            onClick={() => onNavigate(library)} // Agregar la función de navegación
+            onClick={() => onNavigate(library)}
           />
-        ))}
-      </Col>
+        </Col>
+      ))}
     </Row>
   );
 };

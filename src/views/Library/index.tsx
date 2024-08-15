@@ -52,10 +52,16 @@ const LibraryPage: React.FC = () => {
     }
   };
 
-  const handleGoBack = () => {
+  const handleGoBack = async () => {
     const previousNote = navigationStack.pop();
     setCurrentNote(previousNote || null);
     setNavigationStack([...navigationStack]);
+
+    if (!previousNote) {
+      await fetchLibraries(); // Recargar la raíz si volvemos a ella
+    } else {
+      await fetchNoteById(previousNote.id); // Recargar la nota anterior
+    }
   };
 
   const handleCreateOrUpdate = async (libraryData: CreateLibraryDto | UpdateLibraryDto) => {
@@ -90,7 +96,7 @@ const LibraryPage: React.FC = () => {
       <div className="my-4 text-center">
         {currentNote ? (
           <>
-            <Button variant="secondary" onClick={handleGoBack} className="mr-2">
+            <Button variant="secondary" onClick={handleGoBack} className="mr-4" style={{ marginInline: 20 }}>
               <FaArrowLeft /> Volver
             </Button>
             <Button variant="primary" onClick={() => setShowModal(true)}>
@@ -107,7 +113,7 @@ const LibraryPage: React.FC = () => {
       {currentNote ? (
         <>
           <h4 className="text-center">{currentNote.title}</h4>
-          <p className="text-center">{currentNote.description}</p>
+          <div dangerouslySetInnerHTML={{ __html: currentNote.description }} />
           {currentNote.children && currentNote.children.length > 0 ? (
             <LibraryList
               libraries={currentNote.children}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import { Editor } from '@tinymce/tinymce-react';
+import { storage } from '../../utils/firebase';
 import { Library, CreateLibraryDto, UpdateLibraryDto } from '../../utils/types';
 
 interface LibraryFormModalProps {
@@ -48,6 +49,21 @@ const LibraryFormModal: React.FC<LibraryFormModalProps> = ({
     onHide();
   };
 
+  const uploadImage = async (blobInfo: any): Promise<string> => {
+    try {
+      const file = blobInfo.blob();
+      const storageRef = storage.ref();
+      const fileRef = storageRef.child(`images/${file.name}`);
+
+      const uploadTaskSnapshot = await fileRef.put(file);
+      const fileUrl = await uploadTaskSnapshot.ref.getDownloadURL();
+      return fileUrl;
+    } catch (error) {
+      console.error("Error al subir la imagen:", error);
+      throw new Error("Error al subir la imagen");
+    }
+  };
+
   return (
     <Modal show={show} onHide={onHide} size="xl">
       <Modal.Header closeButton>
@@ -72,25 +88,14 @@ const LibraryFormModal: React.FC<LibraryFormModalProps> = ({
               init={{
                 height: 300,
                 menubar: false,
-                plugins: 'link lists',
-                toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | bullist numlist | link',
+                plugins: 'powerpaste casechange searchreplace autolink directionality visualblocks visualchars image link media mediaembed codesample table charmap pagebreak nonbreaking anchor tableofcontents insertdatetime advlist lists checklist wordcount tinymcespellchecker editimage help formatpainter permanentpen charmap linkchecker emoticons advtable export autosave advcode fullscreen',
+                toolbar: "undo redo spellcheckdialog formatpainter | blocks fontfamily fontsize | bold italic underline forecolor backcolor | link image | alignleft aligncenter alignright alignjustify | code",
+                images_upload_handler: uploadImage,
               }}
               onEditorChange={(newContent: any) => setDescription(newContent)}
             />
           </Form.Group>
-          <Form.Group controlId="formLibraryParentNote">
-            <Form.Label>Subnota de</Form.Label>
-            <Form.Control
-              as="select"
-              value={parentNoteId || ''}
-              onChange={(e) => setParentNoteId(e.target.value ? Number(e.target.value) : undefined)}
-            >
-              <option value="">Ninguna</option>
-              {libraries.filter((lib) => !lib.parent).map((lib) => (
-                <option key={lib.id} value={lib.id}>{lib.title}</option>
-              ))}
-            </Form.Control>
-          </Form.Group>
+          <br/>
           <Button variant="primary" type="submit">
             {editingLibrary ? 'Actualizar' : 'Crear'}
           </Button>
