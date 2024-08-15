@@ -31,17 +31,31 @@ const LibraryPage: React.FC = () => {
     }
   };
 
-  const handleNoteClick = (note: Library) => {
+  const fetchNoteById = async (noteId: number) => {
+    try {
+      const response = await api.get<Library>(`/library/${noteId}`);
+      setCurrentNote(response.data);
+      return response.data;
+    } catch (error) {
+      dispatch(addNotification({ message: 'Error al obtener la nota', color: 'danger' }));
+      return null;
+    }
+  };
+
+  const handleNoteClick = async (note: Library) => {
     if (currentNote) {
       setNavigationStack([...navigationStack, currentNote]);
     }
-    setCurrentNote(note);
+    const fetchedNote = await fetchNoteById(note.id);
+    if (fetchedNote) {
+      setCurrentNote(fetchedNote);
+    }
   };
 
   const handleGoBack = () => {
     const previousNote = navigationStack.pop();
     setCurrentNote(previousNote || null);
-    setNavigationStack([...navigationStack]); // Actualizamos la pila de navegación
+    setNavigationStack([...navigationStack]);
   };
 
   const handleCreateOrUpdate = async (libraryData: CreateLibraryDto | UpdateLibraryDto) => {
@@ -53,13 +67,14 @@ const LibraryPage: React.FC = () => {
       } else {
         const response = await api.post<Library>('/library', {
           ...libraryData,
-          parentNoteId: currentNote?.id || undefined, // Si estamos en una nota, la nueva será una subnota
+          parentNoteId: currentNote?.id || undefined,
         } as CreateLibraryDto);
         dispatch(addLibrary(response.data));
         dispatch(addNotification({ message: 'Referencia creada correctamente', color: 'success' }));
+
+        currentNote ? fetchNoteById(currentNote.id) : fetchLibraries();
       }
       setShowModal(false);
-      fetchLibraries();
     } catch (error) {
       dispatch(addNotification({ message: 'Error al guardar la referencia', color: 'danger' }));
     }
@@ -72,7 +87,6 @@ const LibraryPage: React.FC = () => {
 
   return (
     <Container>
-      {/* Botones de navegación y creación */}
       <div className="my-4 text-center">
         {currentNote ? (
           <>
@@ -90,7 +104,6 @@ const LibraryPage: React.FC = () => {
         )}
       </div>
 
-      {/* Renderizado de notas */}
       {currentNote ? (
         <>
           <h4 className="text-center">{currentNote.title}</h4>
@@ -100,7 +113,7 @@ const LibraryPage: React.FC = () => {
               libraries={currentNote.children}
               onEdit={handleEdit}
               onDelete={() => {}}
-              onNavigate={handleNoteClick} // Pasar la función de navegación
+              onNavigate={handleNoteClick}
             />
           ) : (
             <p className="text-center text-muted">No hay subnotas.</p>
@@ -111,11 +124,10 @@ const LibraryPage: React.FC = () => {
           libraries={libraries}
           onEdit={handleEdit}
           onDelete={() => {}}
-          onNavigate={handleNoteClick} // Pasar la función de navegación
+          onNavigate={handleNoteClick}
         />
       )}
 
-      {/* Modal para crear/editar nota */}
       <LibraryFormModal
         show={showModal}
         onHide={() => setShowModal(false)}
