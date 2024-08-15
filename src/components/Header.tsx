@@ -23,6 +23,7 @@ const Header: React.FC = () => {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mr-auto">
             <Nav.Link as={Link} to="/events">Eventos</Nav.Link>
+            <Nav.Link as={Link} to="/library">Biblioteca</Nav.Link>
           </Nav>
           <Navbar.Collapse className="justify-content-end">
             {isLoggedIn && <Button variant="outline-danger" onClick={handleLogout}>Cerrar sesión</Button>}

@@ -32,6 +32,22 @@ export interface Library {
   description: string;
   referenceDate: Date;
   author?: User;
+  parent?: Library;
+  children?: Library[];
+}
+
+export interface CreateLibraryDto {
+  title: string;
+  description: string;
+  referenceDate: Date;
+  parentNoteId?: number;
+}
+
+export interface UpdateLibraryDto {
+  title?: string;
+  description?: string;
+  referenceDate?: Date;
+  parentNoteId?: number;
 }
 
 export interface Publication {
