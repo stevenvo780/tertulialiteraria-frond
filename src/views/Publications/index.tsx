@@ -1,4 +1,3 @@
-/* eslint-disable no-multi-str */
 import React, { useState, useEffect } from 'react';
 import { Card, Button, Form, Modal, Container, Row, Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
@@ -93,58 +92,42 @@ const PublicationsPage: React.FC = () => {
 
 
   return (
-    <>
-      {/* Sección fija para crear publicaciones */}
-      <div style={{
-        position: 'fixed',
-        top: '60px',
-        width: '100%',
-        zIndex: 1000,
-        backgroundColor: '#f8f9fa',
-        padding: '10px 0',
-        boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.1)',
-      }}>
-        <Container className="d-flex justify-content-center">
-          <Button variant="primary" onClick={() => setShowModal(true)}>
-            Crear Publicación
-          </Button>
-        </Container>
+    <Container>
+      {/* Botón para crear publicaciones */}
+      <div className="my-4 text-center">
+        <Button variant="primary" onClick={() => setShowModal(true)}>
+          Crear Publicación
+        </Button>
       </div>
 
-      {/* Espaciado para no sobreponer la barra fija */}
-      <div style={{ marginTop: '120px' }}>
-        <Container>
-          <Row>
-            <Col md={{ span: 8, offset: 2 }}>
-              {/* Listado de publicaciones */}
-              {publications.map((publication: Publication) => (
-                <Card className="mb-4" key={publication.id}>
-                  <Card.Body>
-                    <Card.Title>{publication.title}</Card.Title>
-                    <div dangerouslySetInnerHTML={{ __html: publication.content.html }} />
-                    <div className="d-flex justify-content-between mt-2">
-                      <div>
-                        <Button variant="warning" onClick={() => handleEdit(publication)} className="mr-2">
-                          Editar
-                        </Button>
-                        <Button variant="danger" onClick={() => handleDelete(publication.id)}>
-                          Eliminar
-                        </Button>
-                      </div>
-                      <div className="text-muted">
-                        Publicado el {new Date(publication.publicationDate).toLocaleDateString()}
-                      </div>
-                    </div>
-                  </Card.Body>
-                </Card>
-              ))}
-            </Col>
-          </Row>
-        </Container>
-      </div>
+      <Row>
+        <Col md={{ span: 8, offset: 2 }}>
+          {publications.map((publication: Publication) => (
+            <Card className="mb-4" key={publication.id}>
+              <Card.Body>
+                <Card.Title>{publication.title}</Card.Title>
+                <div dangerouslySetInnerHTML={{ __html: publication.content.html }} />
+                <div className="d-flex justify-content-between mt-2">
+                  <div>
+                    <Button variant="warning" onClick={() => handleEdit(publication)} className="mr-2">
+                      Editar
+                    </Button>
+                    <Button variant="danger" onClick={() => handleDelete(publication.id)}>
+                      Eliminar
+                    </Button>
+                  </div>
+                  <div className="text-muted">
+                    Publicado el {new Date(publication.publicationDate).toLocaleDateString()}
+                  </div>
+                </div>
+              </Card.Body>
+            </Card>
+          ))}
+        </Col>
+      </Row>
 
       {/* Modal para crear/editar publicación */}
-      <Modal show={showModal} onHide={() => setShowModal(false)} size="xl" >
+      <Modal show={showModal} onHide={() => setShowModal(false)} size="xl">
         <Modal.Header closeButton>
           <Modal.Title>{editingPublication ? 'Editar Publicación' : 'Crear Publicación'}</Modal.Title>
         </Modal.Header>
@@ -164,10 +147,10 @@ const PublicationsPage: React.FC = () => {
               <Editor
                 apiKey='ide9bzali9973f0fmbzusywuxlpp3mxmigqoa07eddfltlrj'
                 init={{
-                  height: 400,
+                  height: 500,
                   menubar: false,
-                  plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table help wordcount',
-                  toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help | image',
+                  plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table help wordcount code',
+                  toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | code | help | image',
                   images_upload_handler: uploadImage,
                 }}
                 onEditorChange={(newContent: any) => setContent(newContent)}
@@ -179,7 +162,7 @@ const PublicationsPage: React.FC = () => {
           </Form>
         </Modal.Body>
       </Modal>
-    </>
+    </Container>
   );
 };
 
