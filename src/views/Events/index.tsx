@@ -1,30 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, momentLocalizer, Event } from 'react-big-calendar';
+import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { Modal, Button, Form, Container } from 'react-bootstrap';
-import api from '../../utils/axios';
+import { useDispatch, useSelector } from 'react-redux';
 import { addNotification } from '../../redux/ui';
-import { useDispatch } from 'react-redux';
+import { RootState } from '../../redux/store';
+import { getEvents, addEvent, updateEvent, deleteEvent } from '../../redux/events';
+import api from '../../utils/axios';
+import { CalendarEvent } from '../../utils/types';
+import { convertToCalendarEvent, convertToBackendEvent } from '../../utils/conversion';
 
 const localizer = momentLocalizer(moment);
 
-interface MyEvent extends Event {
-  id: number;
-  title: string;
-  start: Date;
-  end: Date;
-  description: string;
-}
-
 const EventsCalendar: React.FC = () => {
   const dispatch = useDispatch();
-  const [events, setEvents] = useState<MyEvent[]>([]);
+  const events = useSelector((state: RootState) => state.events.events.map(convertToCalendarEvent));
   const [showModal, setShowModal] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [eventDate, setEventDate] = useState<Date | null>(null);
-  const [selectedEvent, setSelectedEvent] = useState<MyEvent | null>(null);
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
 
   useEffect(() => {
     fetchEvents();
@@ -33,39 +30,57 @@ const EventsCalendar: React.FC = () => {
   const fetchEvents = async () => {
     try {
       const response = await api.get('/events');
-      setEvents(response.data);
+      dispatch(getEvents(response.data));
     } catch (error) {
-      dispatch(addNotification({ message: 'Error fetching events', color: 'danger' }));
+      dispatch(addNotification({ message: 'Error al obtener los eventos', color: 'danger' }));
     }
   };
 
   const handleSelectSlot = (slotInfo: { start: Date; end: Date }) => {
-    setEventDate(slotInfo.start);
+    setStartDate(slotInfo.start);
+    setEndDate(slotInfo.end);
     setShowModal(true);
   };
 
-  const handleEventClick = (event: MyEvent) => {
+  const handleEventClick = (event: CalendarEvent) => {
     setSelectedEvent(event);
     setTitle(event.title);
     setDescription(event.description);
-    setEventDate(new Date(event.start));
+    setStartDate(new Date(event.start));
+    setEndDate(new Date(event.end));
     setShowModal(true);
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+
     try {
       if (selectedEvent) {
-        await api.patch(`/events/${selectedEvent.id}`, { title, description, eventDate });
-        dispatch(addNotification({ message: 'Event updated successfully', color: 'success' }));
+        const updatedEvent = convertToBackendEvent({ 
+          ...selectedEvent, 
+          title, 
+          description, 
+          start: startDate!, 
+          end: endDate! 
+        });
+        await api.patch(`/events/${selectedEvent.id}`, updatedEvent);
+        dispatch(updateEvent(updatedEvent));
+        dispatch(addNotification({ message: 'Evento actualizado correctamente', color: 'success' }));
       } else {
-        await api.post('/events', { title, description, eventDate });
-        dispatch(addNotification({ message: 'Event created successfully', color: 'success' }));
+        const newEvent = convertToBackendEvent({
+          title,
+          description,
+          start: startDate!,
+          end: endDate!,
+        });
+        const response = await api.post('/events', newEvent);
+        dispatch(addEvent(response.data));
+        dispatch(addNotification({ message: 'Evento creado correctamente', color: 'success' }));
       }
       fetchEvents();
       setShowModal(false);
     } catch (error) {
-      dispatch(addNotification({ message: 'Error saving event', color: 'danger' }));
+      dispatch(addNotification({ message: 'Error al guardar el evento', color: 'danger' }));
     }
   };
 
@@ -73,18 +88,19 @@ const EventsCalendar: React.FC = () => {
     if (selectedEvent) {
       try {
         await api.delete(`/events/${selectedEvent.id}`);
-        dispatch(addNotification({ message: 'Event deleted successfully', color: 'success' }));
+        dispatch(deleteEvent(selectedEvent.id as number));
+        dispatch(addNotification({ message: 'Evento eliminado correctamente', color: 'success' }));
         fetchEvents();
         setShowModal(false);
       } catch (error) {
-        dispatch(addNotification({ message: 'Error deleting event', color: 'danger' }));
+        dispatch(addNotification({ message: 'Error al eliminar el evento', color: 'danger' }));
       }
     }
   };
 
   return (
     <Container fluid>
-      <h2 className="my-4">Event Calendar</h2>
+      <h2 className="my-4">Calendario de Eventos</h2>
       <Calendar
         localizer={localizer}
         events={events}
@@ -97,12 +113,12 @@ const EventsCalendar: React.FC = () => {
       />
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>{selectedEvent ? 'Edit Event' : 'Create Event'}</Modal.Title>
+          <Modal.Title>{selectedEvent ? 'Editar Evento' : 'Crear Evento'}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={handleSubmit}>
             <Form.Group controlId="formEventTitle">
-              <Form.Label>Title</Form.Label>
+              <Form.Label>Título</Form.Label>
               <Form.Control
                 type="text"
                 value={title}
@@ -111,7 +127,7 @@ const EventsCalendar: React.FC = () => {
               />
             </Form.Group>
             <Form.Group controlId="formEventDescription">
-              <Form.Label>Description</Form.Label>
+              <Form.Label>Descripción</Form.Label>
               <Form.Control
                 as="textarea"
                 rows={3}
@@ -120,21 +136,30 @@ const EventsCalendar: React.FC = () => {
                 required
               />
             </Form.Group>
-            <Form.Group controlId="formEventDate">
-              <Form.Label>Date</Form.Label>
+            <Form.Group controlId="formEventStartDate">
+              <Form.Label>Fecha y Hora de Inicio</Form.Label>
               <Form.Control
-                type="date"
-                value={eventDate ? eventDate.toISOString().substr(0, 10) : ''}
-                onChange={(e) => setEventDate(new Date(e.target.value))}
+                type="datetime-local"
+                value={startDate ? moment(startDate).format('YYYY-MM-DDTHH:mm') : ''}
+                onChange={(e) => setStartDate(new Date(e.target.value))}
+                required
+              />
+            </Form.Group>
+            <Form.Group controlId="formEventEndDate">
+              <Form.Label>Fecha y Hora de Fin</Form.Label>
+              <Form.Control
+                type="datetime-local"
+                value={endDate ? moment(endDate).format('YYYY-MM-DDTHH:mm') : ''}
+                onChange={(e) => setEndDate(new Date(e.target.value))}
                 required
               />
             </Form.Group>
             <Button variant="primary" type="submit">
-              {selectedEvent ? 'Update' : 'Create'}
+              {selectedEvent ? 'Actualizar' : 'Crear'}
             </Button>
             {selectedEvent && (
               <Button variant="danger" onClick={handleDelete} className="ml-2">
-                Delete
+                Eliminar
               </Button>
             )}
           </Form>

@@ -9,11 +9,21 @@ export interface User {
   events: Events[];
 }
 export interface Events {
-  id: number;
+  id?: number;
   title: string;
-  description: object;
+  description: string;
   eventDate: Date;
-  author: User;
+  startDate: Date;
+  endDate: Date;
+  author?: User;
+}
+
+export interface CalendarEvent {
+  id?: number;
+  title: string;
+  start: Date;
+  end: Date;
+  description: string;
 }
 
 export interface Library {

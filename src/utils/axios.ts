@@ -1,7 +1,7 @@
 import axios from 'axios';
 import store from '../redux/store';
 import { loading } from '../redux/ui';
-import { getCurrentUserToken } from '../utils/firebaseHelper'; // Helper para obtener el token
+import { getCurrentUserToken } from '../utils/firebaseHelper';
 
 const api = axios.create({
   baseURL: process.env.REACT_APP_API_URL,
@@ -12,8 +12,6 @@ let calls = 0;
 api.interceptors.request.use(async function (config) {
   try {
     const token = await getCurrentUserToken();
-
-    console.log('token', token);
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
