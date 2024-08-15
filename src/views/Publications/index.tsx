@@ -1,23 +1,22 @@
+/* eslint-disable no-multi-str */
 import React, { useState, useEffect } from 'react';
 import { Card, Button, Form, Modal, Container, Row, Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { EditorState, convertToRaw } from 'draft-js';
-import { Editor } from 'react-draft-wysiwyg';
-import draftToHtml from 'draftjs-to-html';
-import { addNotification } from '../../redux/ui';
+import { Editor } from '@tinymce/tinymce-react';
 import { RootState } from '../../redux/store';
 import api from '../../utils/axios';
 import { getPublications, addPublication, updatePublication, deletePublication } from '../../redux/publications';
-import { storage } from '../../utils/firebase'; // Importamos Firebase Storage
-import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
+import { storage } from '../../utils/firebase';
+import { addNotification } from '../../redux/ui';
+import { Publication } from '../../utils/types';
 
 const PublicationsPage: React.FC = () => {
   const dispatch = useDispatch();
   const publications = useSelector((state: RootState) => state.publications.publications);
-  const [showModal, setShowModal] = useState(false);
-  const [editingPublication, setEditingPublication] = useState<any>(null);
-  const [title, setTitle] = useState('');
-  const [editorState, setEditorState] = useState(EditorState.createEmpty());
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [editingPublication, setEditingPublication] = useState<Publication | null>(null);
+  const [title, setTitle] = useState<string>('');
+  const [content, setContent] = useState<string>(''); // HTML Content
 
   useEffect(() => {
     fetchPublications();
@@ -25,40 +24,44 @@ const PublicationsPage: React.FC = () => {
 
   const fetchPublications = async () => {
     try {
-      const response = await api.get('/publications');
+      const response = await api.get<Publication[]>('/publications');
       dispatch(getPublications(response.data));
     } catch (error) {
       dispatch(addNotification({ message: 'Error al obtener las publicaciones', color: 'danger' }));
     }
   };
 
-  const handleSubmit = async (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const contentHtml = draftToHtml(convertToRaw(editorState.getCurrentContent()));
+
+    const publicationData: Omit<Publication, 'id'> = {
+      title,
+      content: { html: content },
+      publicationDate: editingPublication ? editingPublication.publicationDate : new Date(),
+      author: editingPublication?.author, // En caso de edición, conservamos el autor
+    };
 
     try {
       if (editingPublication) {
-        const updatedPublication = { id: editingPublication.id, title, content: { html: contentHtml }, publicationDate: editingPublication.publicationDate };
-        await api.patch(`/publications/${editingPublication.id}`, updatedPublication);
-        dispatch(updatePublication(updatedPublication));
+        await api.patch(`/publications/${editingPublication.id}`, publicationData);
+        dispatch(updatePublication({ ...editingPublication, ...publicationData }));
         dispatch(addNotification({ message: 'Publicación actualizada correctamente', color: 'success' }));
       } else {
-        const newPublication = { title, content: { html: contentHtml }, publicationDate: new Date() };
-        const response = await api.post('/publications', newPublication);
+        const response = await api.post<Publication>('/publications', publicationData);
         dispatch(addPublication(response.data));
         dispatch(addNotification({ message: 'Publicación creada correctamente', color: 'success' }));
       }
-      fetchPublications();
       setShowModal(false);
+      fetchPublications();
     } catch (error) {
       dispatch(addNotification({ message: 'Error al guardar la publicación', color: 'danger' }));
     }
   };
 
-  const handleEdit = (publication: any) => {
+  const handleEdit = (publication: Publication) => {
     setEditingPublication(publication);
     setTitle(publication.title);
-    // Convertir el contenido HTML a un estado del editor en el futuro
+    setContent(publication.content.html);
     setShowModal(true);
   };
 
@@ -67,18 +70,27 @@ const PublicationsPage: React.FC = () => {
       await api.delete(`/publications/${id}`);
       dispatch(deletePublication(id));
       dispatch(addNotification({ message: 'Publicación eliminada correctamente', color: 'success' }));
+      fetchPublications();
     } catch (error) {
       dispatch(addNotification({ message: 'Error al eliminar la publicación', color: 'danger' }));
     }
   };
 
-  const uploadImageCallback = async (file: File) => {
-    const storageRef = storage.ref();
-    const fileRef = storageRef.child(`images/${file.name}`);
-    await fileRef.put(file);
-    const fileUrl = await fileRef.getDownloadURL();
-    return { data: { link: fileUrl } };
+  const uploadImage = async (blobInfo: any): Promise<string> => {
+    try {
+      const file = blobInfo.blob();
+      const storageRef = storage.ref();
+      const fileRef = storageRef.child(`images/${file.name}`);
+
+      const uploadTaskSnapshot = await fileRef.put(file);
+      const fileUrl = await uploadTaskSnapshot.ref.getDownloadURL();
+      return fileUrl;
+    } catch (error) {
+      console.error("Error al subir la imagen:", error);
+      throw new Error("Error al subir la imagen");
+    }
   };
+
 
   return (
     <>
@@ -105,7 +117,7 @@ const PublicationsPage: React.FC = () => {
           <Row>
             <Col md={{ span: 8, offset: 2 }}>
               {/* Listado de publicaciones */}
-              {publications.map((publication: any) => (
+              {publications.map((publication: Publication) => (
                 <Card className="mb-4" key={publication.id}>
                   <Card.Body>
                     <Card.Title>{publication.title}</Card.Title>
@@ -132,7 +144,7 @@ const PublicationsPage: React.FC = () => {
       </div>
 
       {/* Modal para crear/editar publicación */}
-      <Modal show={showModal} onHide={() => setShowModal(false)} size="lg">
+      <Modal show={showModal} onHide={() => setShowModal(false)} size="xl" >
         <Modal.Header closeButton>
           <Modal.Title>{editingPublication ? 'Editar Publicación' : 'Crear Publicación'}</Modal.Title>
         </Modal.Header>
@@ -150,17 +162,15 @@ const PublicationsPage: React.FC = () => {
             <Form.Group controlId="formPublicationContent">
               <Form.Label>Contenido</Form.Label>
               <Editor
-                editorState={editorState}
-                toolbar={{
-                  image: { uploadCallback: uploadImageCallback, alt: { present: true, mandatory: true } },
-                  inline: { inDropdown: true },
-                  list: { inDropdown: true },
-                  textAlign: { inDropdown: true },
-                  link: { inDropdown: true },
+                apiKey='ide9bzali9973f0fmbzusywuxlpp3mxmigqoa07eddfltlrj'
+                init={{
+                  height: 400,
+                  menubar: false,
+                  plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table help wordcount',
+                  toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help | image',
+                  images_upload_handler: uploadImage,
                 }}
-                onEditorStateChange={(state) => setEditorState(state)}
-                wrapperClassName="demo-wrapper"
-                editorClassName="demo-editor"
+                onEditorChange={(newContent: any) => setContent(newContent)}
               />
             </Form.Group>
             <Button variant="primary" type="submit">
