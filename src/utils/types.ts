@@ -37,7 +37,10 @@ export interface Library {
 export interface Publication {
   id: number;
   title: string;
-  content: string;
+  content: {
+    html: string;
+    css?: string;
+  };
   publicationDate: Date;
   author?: User;
 }
