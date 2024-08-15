@@ -1,5 +1,5 @@
-import React from 'react';
-import { Card } from 'react-bootstrap';
+import React, { useState } from 'react';
+import { Card, Button } from 'react-bootstrap';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import { Library } from '../../utils/types';
 
@@ -7,10 +7,12 @@ interface LibraryCardProps {
   library: Library;
   onEdit: (library: Library) => void;
   onDelete: (id: number) => void;
-  onClick: () => void; // Función de navegación
+  onClick: () => void;
 }
 
 const LibraryCard: React.FC<LibraryCardProps> = ({ library, onEdit, onDelete, onClick }) => {
+  const [expanded, setExpanded] = useState(false);
+
   return (
     <Card className="mb-4" key={library.id} onClick={onClick} style={{ cursor: 'pointer' }}>
       <Card.Body>
@@ -19,7 +21,7 @@ const LibraryCard: React.FC<LibraryCardProps> = ({ library, onEdit, onDelete, on
           <div>
             <FaEdit
               onClick={(e) => {
-                e.stopPropagation(); // Evitar que el clic en editar dispare la navegación
+                e.stopPropagation();
                 onEdit(library);
               }}
               style={{ cursor: 'pointer', marginRight: '10px' }}
@@ -27,7 +29,7 @@ const LibraryCard: React.FC<LibraryCardProps> = ({ library, onEdit, onDelete, on
             />
             <FaTrash
               onClick={(e) => {
-                e.stopPropagation(); // Evitar que el clic en eliminar dispare la navegación
+                e.stopPropagation();
                 onDelete(library.id);
               }}
               style={{ cursor: 'pointer' }}
@@ -35,7 +37,22 @@ const LibraryCard: React.FC<LibraryCardProps> = ({ library, onEdit, onDelete, on
             />
           </div>
         </div>
-        <div dangerouslySetInnerHTML={{ __html: library.description }} />
+        <div
+          style={{
+            maxHeight: expanded ? 'none' : '150px',
+            overflow: 'hidden',
+          }}
+          dangerouslySetInnerHTML={{ __html: library.description }}
+        />
+        <Button
+          variant="link"
+          onClick={(e) => {
+            e.stopPropagation();
+            setExpanded(!expanded);
+          }}
+        >
+          {expanded ? 'Ver menos' : 'Ver más'}
+        </Button>
         <div className="text-muted mt-2">
           Referenciado el {new Date(library.referenceDate).toLocaleDateString()}
         </div>
