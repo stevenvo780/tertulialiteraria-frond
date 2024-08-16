@@ -13,6 +13,7 @@ import { FaArrowLeft, FaPlus } from 'react-icons/fa';
 const LibraryPage: React.FC = () => {
   const dispatch = useDispatch();
   const libraries = useSelector((state: RootState) => state.library.libraries);
+  const userRole = useSelector((state: RootState) => state.auth.userData?.role); // Obtener el rol del usuario
   const [currentNote, setCurrentNote] = useState<Library | null>(null);
   const [navigationStack, setNavigationStack] = useState<Library[]>([]);
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -58,7 +59,7 @@ const LibraryPage: React.FC = () => {
     setNavigationStack([...navigationStack]);
 
     if (!previousNote) {
-      await fetchLibraries(); 
+      await fetchLibraries();
     } else {
       await fetchNoteById(previousNote.id);
     }
@@ -99,14 +100,18 @@ const LibraryPage: React.FC = () => {
             <Button variant="secondary" onClick={handleGoBack} className="mr-4" style={{ marginInline: 20 }}>
               <FaArrowLeft /> Volver
             </Button>
-            <Button variant="primary" onClick={() => setShowModal(true)}>
-              <FaPlus /> Crear Subnota
-            </Button>
+            {userRole === 'admin' && (
+              <Button variant="primary" onClick={() => setShowModal(true)}>
+                <FaPlus /> Crear Subnota
+              </Button>
+            )}
           </>
         ) : (
-          <Button variant="primary" onClick={() => setShowModal(true)}>
-            <FaPlus /> Crear Nota
-          </Button>
+          userRole === 'admin' && (
+            <Button variant="primary" onClick={() => setShowModal(true)}>
+              <FaPlus /> Crear Nota
+            </Button>
+          )
         )}
       </div>
 
@@ -117,8 +122,8 @@ const LibraryPage: React.FC = () => {
           {currentNote.children && currentNote.children.length > 0 ? (
             <LibraryList
               libraries={currentNote.children}
-              onEdit={handleEdit}
-              onDelete={() => {}}
+              onEdit={userRole === 'admin' ? handleEdit : undefined}
+              onDelete={userRole === 'admin' ? () => {} : undefined}
               onNavigate={handleNoteClick}
             />
           ) : (
@@ -128,19 +133,21 @@ const LibraryPage: React.FC = () => {
       ) : (
         <LibraryList
           libraries={libraries}
-          onEdit={handleEdit}
-          onDelete={() => {}}
+          onEdit={userRole === 'admin' ? handleEdit : undefined}
+          onDelete={userRole === 'admin' ? () => {} : undefined}
           onNavigate={handleNoteClick}
         />
       )}
 
-      <LibraryFormModal
-        show={showModal}
-        onHide={() => setShowModal(false)}
-        onSubmit={handleCreateOrUpdate}
-        editingLibrary={editingLibrary}
-        libraries={libraries}
-      />
+      {userRole === 'admin' && (
+        <LibraryFormModal
+          show={showModal}
+          onHide={() => setShowModal(false)}
+          onSubmit={handleCreateOrUpdate}
+          editingLibrary={editingLibrary}
+          libraries={libraries}
+        />
+      )}
     </Container>
   );
 };

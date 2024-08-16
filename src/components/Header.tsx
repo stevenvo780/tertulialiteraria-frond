@@ -15,6 +15,10 @@ const Header: React.FC = () => {
     navigate('/');
   };
 
+  const handleLoginRedirect = () => {
+    navigate('/login');
+  };
+
   return (
     <Navbar expand="lg" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', padding: '3px', backgroundColor: '#212120' }} variant="dark">
       <Container fluid className="pl-4 pr-4">
@@ -26,7 +30,11 @@ const Header: React.FC = () => {
             <Nav.Link as={Link} to="/library">Biblioteca</Nav.Link>
           </Nav>
           <Navbar.Collapse className="justify-content-end">
-            {isLoggedIn && <Button variant="outline-danger" onClick={handleLogout}>Cerrar sesión</Button>}
+            {isLoggedIn ? (
+              <Button variant="outline-danger" onClick={handleLogout}>Cerrar sesión</Button>
+            ) : (
+              <Button variant="outline-light" onClick={handleLoginRedirect}>Iniciar sesión</Button>
+            )}
           </Navbar.Collapse>
         </Navbar.Collapse>
       </Container>

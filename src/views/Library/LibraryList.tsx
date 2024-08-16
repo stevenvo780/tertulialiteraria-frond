@@ -5,8 +5,8 @@ import LibraryCard from './LibraryCard';
 
 interface LibraryListProps {
   libraries: Library[];
-  onEdit: (library: Library) => void;
-  onDelete: (id: number) => void;
+  onEdit?: (library: Library) => void; // Hacer que onEdit y onDelete sean opcionales
+  onDelete?: (id: number) => void;
   onNavigate: (library: Library) => void;
 }
 

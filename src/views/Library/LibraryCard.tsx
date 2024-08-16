@@ -5,8 +5,8 @@ import { Library } from '../../utils/types';
 
 interface LibraryCardProps {
   library: Library;
-  onEdit: (library: Library) => void;
-  onDelete: (id: number) => void;
+  onEdit?: (library: Library) => void; // Hacer que onEdit y onDelete sean opcionales
+  onDelete?: (id: number) => void;
   onClick: () => void;
 }
 
@@ -19,22 +19,26 @@ const LibraryCard: React.FC<LibraryCardProps> = ({ library, onEdit, onDelete, on
         <div className="d-flex justify-content-between">
           <Card.Title>{library.title}</Card.Title>
           <div>
-            <FaEdit
-              onClick={(e) => {
-                e.stopPropagation();
-                onEdit(library);
-              }}
-              style={{ cursor: 'pointer', marginRight: '10px' }}
-              size={20}
-            />
-            <FaTrash
-              onClick={(e) => {
-                e.stopPropagation();
-                onDelete(library.id);
-              }}
-              style={{ cursor: 'pointer' }}
-              size={20}
-            />
+            {onEdit && (
+              <FaEdit
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit(library);
+                }}
+                style={{ cursor: 'pointer', marginRight: '10px' }}
+                size={20}
+              />
+            )}
+            {onDelete && (
+              <FaTrash
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(library.id);
+                }}
+                style={{ cursor: 'pointer' }}
+                size={20}
+              />
+            )}
           </div>
         </div>
         <div
