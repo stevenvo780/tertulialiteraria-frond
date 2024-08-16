@@ -113,6 +113,9 @@ const HomePage: React.FC = () => {
       </div>
 
       <Row>
+        <Col md={3}>
+          <Sidebar />
+        </Col>
         <Col md={9}>
           <PublicationsList
             publications={publications}
@@ -122,11 +125,7 @@ const HomePage: React.FC = () => {
             setShowModal={setShowModal}
           />
         </Col>
-        <Col md={3}>
-          <Sidebar />
-        </Col>
       </Row>
-
       <PublicationModal
         showModal={showModal}
         setShowModal={setShowModal}

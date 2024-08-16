@@ -1,10 +1,11 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Navbar, Nav, Button, Container } from 'react-bootstrap';
+import { Navbar, Nav, Container, Dropdown } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import { logout } from '../redux/auth';
 import routesConfig from '../config/routesConfig.json';
+import { FaTh } from 'react-icons/fa';
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
@@ -24,28 +25,33 @@ const Header: React.FC = () => {
   const routesForRole = routesConfig.roleRoutes[userRole];
 
   return (
-    <Navbar expand="lg" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', padding: '3px', backgroundColor: '#212120' }} variant="dark">
+    <Navbar expand="lg" className="bg-transparent navbar-light" style={{ padding: '3px' }}>
       <Container fluid className="pl-4 pr-4">
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="mr-auto">
-            {/* Renderizando las rutas del usuario */}
+        <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
+          <Nav>
             {routesForRole.map((route, index) => {
               if (route.viewHeader === false) return null;
               return (
-                <Nav.Link key={index} as={Link} to={route.path}>
-                  {route.name}
+                <Nav.Link key={index} as={Link} to={route.path} className="custom-nav-link" style={{ color: "black" }}>
+                  <p style={{ color: "black", margin: 0 }}>{route.name}</p>
                 </Nav.Link>
-              )
+              );
             })}
           </Nav>
-          <Navbar.Collapse className="justify-content-end">
-            {isLoggedIn ? (
-              <Button variant="outline-danger" onClick={handleLogout}>Cerrar sesión</Button>
-            ) : (
-              <Button variant="outline-light" onClick={handleLoginRedirect}>Iniciar sesión</Button>
-            )}
-          </Navbar.Collapse>
+          <Dropdown align="end">
+            <Dropdown.Toggle as="span" id="dropdown-basic" className="d-flex align-items-center" style={{ cursor: 'pointer', marginInline: 10 }}>
+              <FaTh size={20} className="custom-icon" />
+            </Dropdown.Toggle>
+
+            <Dropdown.Menu>
+              {isLoggedIn ? (
+                <Dropdown.Item onClick={handleLogout}>Cerrar sesión</Dropdown.Item>
+              ) : (
+                <Dropdown.Item onClick={handleLoginRedirect}>Iniciar sesión</Dropdown.Item>
+              )}
+            </Dropdown.Menu>
+          </Dropdown>
         </Navbar.Collapse>
       </Container>
     </Navbar>

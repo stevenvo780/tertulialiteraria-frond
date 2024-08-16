@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Button } from 'react-bootstrap';
+import { Card, Form } from 'react-bootstrap';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import { Publication } from '../../utils/types';
 
@@ -23,12 +23,17 @@ const PublicationsList: React.FC<PublicationsListProps> = ({
       <h2 className="text-center mb-4">Publicaciones Recientes</h2>
       {user && (
         <div className="d-flex justify-content-end mb-4">
-          <Button variant="primary" onClick={() => {
-            handleEdit(null)
-            setShowModal(true)
-          }}>
-            Crear Publicación
-          </Button>
+          <Form.Control
+            type="text"
+            placeholder="Publicar algo..."
+            className="form-control"
+            onClick={() => {
+              handleEdit(null);
+              setShowModal(true);
+            }}
+            readOnly
+            style={{ cursor: 'pointer' }}
+          />
         </div>
       )}
       {publications.map((publication: Publication) => (
