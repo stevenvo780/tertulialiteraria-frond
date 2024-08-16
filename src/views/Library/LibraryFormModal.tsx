@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import { Editor } from '@tinymce/tinymce-react';
 import { storage } from '../../utils/firebase';
@@ -9,7 +9,7 @@ interface LibraryFormModalProps {
   onHide: () => void;
   onSubmit: (libraryData: CreateLibraryDto | UpdateLibraryDto) => void;
   editingLibrary: Library | null;
-  libraries: Library[];
+  showModal: boolean;
 }
 
 const LibraryFormModal: React.FC<LibraryFormModalProps> = ({
@@ -17,7 +17,7 @@ const LibraryFormModal: React.FC<LibraryFormModalProps> = ({
   onHide,
   onSubmit,
   editingLibrary,
-  libraries,
+  showModal,
 }) => {
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>(''); // HTML Content
@@ -64,45 +64,65 @@ const LibraryFormModal: React.FC<LibraryFormModalProps> = ({
     }
   };
 
+  const editorRef = useRef<any>(null);
+
+  const handleClose = () => {
+    setTitle('');
+    setDescription('');
+    onHide();
+    if (editorRef.current) {
+      editorRef.current.remove(); // Desmonta manualmente el editor
+    }
+  }
+
   return (
-    <Modal show={show} onHide={onHide} size="xl">
-      <Modal.Header closeButton>
-        <Modal.Title>{editingLibrary ? 'Editar Referencia' : 'Crear Referencia'}</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <Form onSubmit={handleSubmit}>
-          <Form.Group controlId="formLibraryTitle">
-            <Form.Label>Título</Form.Label>
-            <Form.Control
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-            />
-          </Form.Group>
-          <Form.Group controlId="formLibraryDescription">
-            <Form.Label>Descripción</Form.Label>
-            <Editor
-              apiKey='ide9bzali9973f0fmbzusywuxlpp3mxmigqoa07eddfltlrj'
-              value={description}
-              init={{
-                advcode_inline: true,
-                height: 500,
-                menubar: false,
-                plugins: 'powerpaste casechange searchreplace autolink directionality visualblocks visualchars image link media mediaembed codesample table charmap pagebreak nonbreaking anchor tableofcontents insertdatetime advlist lists checklist wordcount tinymcespellchecker editimage help formatpainter permanentpen charmap linkchecker emoticons advtable export autosave advcode fullscreen',
-                toolbar: "undo redo spellcheckdialog formatpainter | blocks fontfamily fontsize | bold italic underline forecolor backcolor | link image | alignleft aligncenter alignright alignjustify | code",
-                images_upload_handler: uploadImage,
-              }}
-              onEditorChange={(newContent: any) => setDescription(newContent)}
-            />
-          </Form.Group>
-          <br/>
-          <Button variant="primary" type="submit">
-            {editingLibrary ? 'Actualizar' : 'Crear'}
-          </Button>
-        </Form>
-      </Modal.Body>
-    </Modal>
+    <>
+      {showModal && (
+
+        <Modal show={show} onHide={onHide} size="xl">
+          <Modal.Header closeButton>
+            <Modal.Title>{editingLibrary ? 'Editar Referencia' : 'Crear Referencia'}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form onSubmit={(e) => {
+              handleSubmit(e);
+              handleClose();
+            }}>
+              <Form.Group controlId="formLibraryTitle">
+                <Form.Label>Título</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  required
+                />
+              </Form.Group>
+              <Form.Group controlId="formLibraryDescription">
+                <Form.Label>Descripción</Form.Label>
+                <Editor
+                  apiKey='ide9bzali9973f0fmbzusywuxlpp3mxmigqoa07eddfltlrj'
+                  value={description}
+                  onInit={(evt, editor) => editorRef.current = editor}
+                  init={{
+                    advcode_inline: true,
+                    height: 500,
+                    menubar: false,
+                    plugins: 'powerpaste casechange searchreplace autolink directionality visualblocks visualchars image link media mediaembed codesample table charmap pagebreak nonbreaking anchor tableofcontents insertdatetime advlist lists checklist wordcount tinymcespellchecker editimage help formatpainter permanentpen charmap linkchecker emoticons advtable export autosave advcode fullscreen',
+                    toolbar: "undo redo spellcheckdialog formatpainter | blocks fontfamily fontsize | bold italic underline forecolor backcolor | link image | alignleft aligncenter alignright alignjustify | code",
+                    images_upload_handler: uploadImage,
+                  }}
+                  onEditorChange={(newContent: any) => setDescription(newContent)}
+                />
+              </Form.Group>
+              <br />
+              <Button variant="primary" type="submit">
+                {editingLibrary ? 'Actualizar' : 'Crear'}
+              </Button>
+            </Form>
+          </Modal.Body>
+        </Modal>
+      )}
+    </>
   );
 };
 

@@ -10,7 +10,7 @@ export interface User {
   events?: Events[];
 }
 export interface Events {
-  id?: number;
+  id?: number | null;
   title: string;
   description: string;
   eventDate: Date;
@@ -21,13 +21,17 @@ export interface Events {
 }
 
 export interface CalendarEvent {
-  id?: number;
+  id?: number | null;
   title: string;
-  start: Date;
-  end: Date;
-  description: string;
-  repetition?: string;
-  color?: string;
+  start: Date | string;
+  end: Date | string;
+  allDay?: boolean;
+  url?: string;
+  classNames?: string[];
+  editable?: boolean;
+  extendedProps?: {
+    description?: string;
+  };
 }
 
 export interface Library {

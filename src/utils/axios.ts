@@ -1,51 +1,74 @@
 import axios from 'axios';
 import store from '../redux/store';
 import { loading } from '../redux/ui';
-import { getCurrentUserToken } from '../utils/firebaseHelper';
+import { getCurrentUserToken, refreshUserToken, signOutUser } from '../utils/firebaseHelper';
+import { logout } from '../redux/auth';
 
 const api = axios.create({
   baseURL: process.env.REACT_APP_API_URL,
 });
 
-let calls = 0;
+let activeCalls = 0;
+let token: string | null = null;
 
-api.interceptors.request.use(async function (config) {
-  try {
-    const token = await getCurrentUserToken();
+const updateLoadingState = () => {
+  store.dispatch(loading(activeCalls > 0));
+};
+
+api.interceptors.request.use(
+  async function (config) {
+    activeCalls++;
+    updateLoadingState();
+
+    if (!token) {
+      token = await getCurrentUserToken();
+    }
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
 
-    calls++;
-    store.dispatch(loading(true));
     return config;
-  } catch (error) {
-    calls++;
-    store.dispatch(loading(true));
+  },
+  function (error) {
+    activeCalls++;
+    updateLoadingState();
     console.error(error);
     return Promise.reject(error);
   }
-}, function (error) {
-  calls++;
-  store.dispatch(loading(true));
-  console.error(error);
-  return Promise.reject(error);
-});
+);
 
-api.interceptors.response.use(function (response) {
-  calls--;
-  if (calls === 0) {
-    store.dispatch(loading(false));
+api.interceptors.response.use(
+  function (response) {
+    activeCalls = Math.max(0, activeCalls - 1);
+    updateLoadingState();
+    return response;
+  },
+  async function (error) {
+    activeCalls = Math.max(0, activeCalls - 1);
+    updateLoadingState();
+
+    if (error.response && error.response.status === 401) {
+      try {
+        token = await refreshUserToken();
+
+        if (token) {
+          error.config.headers.Authorization = `Bearer ${token}`;
+          return api.request(error.config);
+        } else {
+          throw new Error("Token renewal failed");
+        }
+      } catch (refreshError) {
+        console.error("Error renewing token:", refreshError);
+        store.dispatch(logout());
+        signOutUser();
+        return Promise.reject(refreshError);
+      }
+    }
+
+    console.error(error);
+    return Promise.reject(error);
   }
-  return response;
-}, function (error) {
-  console.error(error);
-  calls--;
-  if (calls === 0) {
-    store.dispatch(loading(false));
-  }
-  return Promise.reject(error);
-});
+);
 
 export default api;

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Container } from 'react-bootstrap';
+import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate, useParams } from 'react-router-dom';
 import { RootState } from '../../redux/store';
 import api from '../../utils/axios';
 import { getLibraries, addLibrary, updateLibrary } from '../../redux/library';
@@ -11,30 +12,38 @@ import LibraryFormModal from './LibraryFormModal';
 import { FaArrowLeft, FaPlus } from 'react-icons/fa';
 
 const LibraryPage: React.FC = () => {
+  const { noteId } = useParams<{ noteId: string | undefined }>();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const libraries = useSelector((state: RootState) => state.library.libraries);
-  const userRole = useSelector((state: RootState) => state.auth.userData?.role); // Obtener el rol del usuario
+  const userRole = useSelector((state: RootState) => state.auth.userData?.role);
   const [currentNote, setCurrentNote] = useState<Library | null>(null);
   const [navigationStack, setNavigationStack] = useState<Library[]>([]);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [editingLibrary, setEditingLibrary] = useState<Library | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    fetchLibraries();
-  }, []);
+    if (noteId) {
+      fetchNoteById(parseInt(noteId));
+    } else {
+      fetchLibraries();
+    }
+  }, [noteId]);
 
   const fetchLibraries = async () => {
     try {
       const response = await api.get<Library[]>('/library');
       dispatch(getLibraries(response.data));
+      setCurrentNote(null);
     } catch (error) {
       dispatch(addNotification({ message: 'Error al obtener las referencias', color: 'danger' }));
     }
   };
 
-  const fetchNoteById = async (noteId: number) => {
+  const fetchNoteById = async (id: number) => {
     try {
-      const response = await api.get<Library>(`/library/${noteId}`);
+      const response = await api.get<Library>(`/library/${id}`);
       setCurrentNote(response.data);
       return response.data;
     } catch (error) {
@@ -49,7 +58,7 @@ const LibraryPage: React.FC = () => {
     }
     const fetchedNote = await fetchNoteById(note.id);
     if (fetchedNote) {
-      setCurrentNote(fetchedNote);
+      navigate(`/library/${note.id}`);
     }
   };
 
@@ -59,8 +68,10 @@ const LibraryPage: React.FC = () => {
     setNavigationStack([...navigationStack]);
 
     if (!previousNote) {
+      navigate('/library');
       await fetchLibraries();
     } else {
+      navigate(`/library/${previousNote.id}`);
       await fetchNoteById(previousNote.id);
     }
   };
@@ -92,8 +103,47 @@ const LibraryPage: React.FC = () => {
     setShowModal(true);
   };
 
+
+  const handleSearch = async (event: React.FormEvent) => {
+    event.preventDefault();
+    try {
+      if (searchQuery && searchQuery.length > 3) {
+        const response = await api.get<Library[]>('/library/view/search', {
+          params: { query: searchQuery },
+        });
+        dispatch(getLibraries(response.data));
+        setCurrentNote(null);
+      } else {
+        fetchLibraries();
+      }
+
+    } catch (error) {
+      dispatch(addNotification({ message: 'Error al realizar la búsqueda', color: 'danger' }));
+    }
+  };
+
   return (
     <Container>
+      <Form onSubmit={handleSearch} className="mb-4">
+        <Form.Group controlId="searchQuery">
+          <Row>
+            <Col md={10} className="text-center">
+              <Form.Control
+                type="text"
+                placeholder="Buscar por título o descripción"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </Col>
+            <Col md={2} className="text-center">
+              <Button variant="primary" type="submit">
+                Buscar
+              </Button>
+            </Col>
+          </Row>
+        </Form.Group>
+      </Form>
+
       <div className="my-4 text-center">
         {currentNote ? (
           <>
@@ -123,7 +173,7 @@ const LibraryPage: React.FC = () => {
             <LibraryList
               libraries={currentNote.children}
               onEdit={userRole === 'admin' ? handleEdit : undefined}
-              onDelete={userRole === 'admin' ? () => {} : undefined}
+              onDelete={userRole === 'admin' ? () => { } : undefined}
               onNavigate={handleNoteClick}
             />
           ) : (
@@ -134,7 +184,7 @@ const LibraryPage: React.FC = () => {
         <LibraryList
           libraries={libraries}
           onEdit={userRole === 'admin' ? handleEdit : undefined}
-          onDelete={userRole === 'admin' ? () => {} : undefined}
+          onDelete={userRole === 'admin' ? () => { } : undefined}
           onNavigate={handleNoteClick}
         />
       )}
@@ -145,7 +195,7 @@ const LibraryPage: React.FC = () => {
           onHide={() => setShowModal(false)}
           onSubmit={handleCreateOrUpdate}
           editingLibrary={editingLibrary}
-          libraries={libraries}
+          showModal={showModal}
         />
       )}
     </Container>
