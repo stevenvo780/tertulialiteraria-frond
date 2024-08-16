@@ -1,32 +1,17 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './Layout';
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import routesConfig from '../config/routesConfig.json';
 
-// Importa manualmente los componentes
-import Home from '../views/Home';
-import Events from '../views/Events';
-import Normativa from '../views/Normativa';
-import Library from '../views/Library';
-import Login from '../views/Login';
-import Register from '../views/Register';
-import NormativaStaff from '../views/NormativaStaff';
-
-const componentMap: { [key: string]: React.FC } = {
-  Home,
-  Events,
-  Normativa,
-  Library,
-  Login,
-  Register,
-  NormativaStaff,
+const loadComponent = (componentName: string) => {
+  return lazy(() => import(`../views/${componentName}`));
 };
 
 const generateRoutes = (routes: { path: string; element: string }[]) => {
   return routes.map(({ path, element }) => {
-    const Component = componentMap[element];
+    const Component = loadComponent(element);
     return <Route key={path} path={path} element={<Component />} />;
   });
 };
@@ -38,11 +23,13 @@ const AuthWrapper: React.FC = () => {
   return (
     <Layout>
       <div style={{ margin: 10 }}>
-        <Routes>
-          {generateRoutes(routesConfig.publicRoutes)}
-          {generateRoutes(routesForRole)}
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
+        <Suspense fallback={<div>Cargando...</div>}>
+          <Routes>
+            {generateRoutes(routesConfig.publicRoutes)}
+            {generateRoutes(routesForRole)}
+            <Route path="*" element={<Navigate to="/" />} />
+          </Routes>
+        </Suspense>
       </div>
     </Layout>
   );
