@@ -13,7 +13,6 @@
   "roleRoutes": {
     "user": [],
     "admin": [
-      { "path": "/normativa", "element": "Normativa", "name": "Normativa", "viewHeader": true },
       { "path": "/normativa/staff", "element": "NormativaStaff", "name": "Normativa Staff", "viewHeader": true }
     ]
   }
