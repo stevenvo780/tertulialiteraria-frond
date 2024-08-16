@@ -3,20 +3,18 @@ import { Container, Row, Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import api from '../../utils/axios';
 import { getPublications, addPublication, updatePublication, deletePublication } from '../../redux/publications';
-import { getEvents } from '../../redux/events';
 import { addNotification } from '../../redux/ui';
 import { RootState } from '../../redux/store';
 import PublicationsList from './PublicationsList';
-import UpcomingEvents from './UpcomingEvents';
+import Sidebar from './Sidebar';
 import PublicationModal from './PublicationModal';
+import { Publication } from '../../utils/types';
 import { storage } from '../../utils/firebase';
-import { Publication, Events } from '../../utils/types';
 
 const HomePage: React.FC = () => {
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.auth.userData);
   const publications = useSelector((state: RootState) => state.publications.publications);
-  const events = useSelector((state: RootState) => state.events.events);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [editingPublication, setEditingPublication] = useState<Publication | null>(null);
   const [title, setTitle] = useState<string>('');
@@ -24,7 +22,6 @@ const HomePage: React.FC = () => {
 
   useEffect(() => {
     fetchPublications();
-    fetchUpcomingEvents();
   }, []);
 
   const fetchPublications = async () => {
@@ -33,15 +30,6 @@ const HomePage: React.FC = () => {
       dispatch(getPublications(response.data));
     } catch (error) {
       dispatch(addNotification({ message: 'Error al obtener las publicaciones', color: 'danger' }));
-    }
-  };
-
-  const fetchUpcomingEvents = async () => {
-    try {
-      const response = await api.get<Events[]>('/events/upcoming?limit=5');
-      dispatch(getEvents(response.data));
-    } catch (error) {
-      dispatch(addNotification({ message: 'Error al obtener los eventos próximos', color: 'danger' }));
     }
   };
 
@@ -126,7 +114,7 @@ const HomePage: React.FC = () => {
           />
         </Col>
         <Col md={3}>
-          <UpcomingEvents events={events} />
+          <Sidebar />
         </Col>
       </Row>
 

@@ -58,9 +58,9 @@ const LibraryPage: React.FC = () => {
     setNavigationStack([...navigationStack]);
 
     if (!previousNote) {
-      await fetchLibraries(); // Recargar la raíz si volvemos a ella
+      await fetchLibraries(); 
     } else {
-      await fetchNoteById(previousNote.id); // Recargar la nota anterior
+      await fetchNoteById(previousNote.id);
     }
   };
 
