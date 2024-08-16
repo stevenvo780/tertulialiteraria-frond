@@ -21,16 +21,19 @@ const UpcomingEvents: React.FC<UpcomingEventsProps> = ({ events }) => {
       <h4 className="mt-4">Próximos Eventos</h4>
       {events.length > 0 ? (
         events.map((event) => (
-          <div key={event.id} onClick={() => handleEventClick(event.id || 0)} style={{ cursor: 'pointer' }}>
-            <Card className="mb-3">
-              <Card.Body>
-                <Card.Title>{event.title}</Card.Title>
-                <Card.Text>
-                  {new Date(event.startDate).toLocaleDateString()} - {new Date(event.startDate).toLocaleTimeString()}
-                </Card.Text>
-              </Card.Body>
-            </Card>
-          </div>
+          <Card
+            className="mb-3"
+            key={event.id}
+            onClick={() => handleEventClick(event.id || 0)}
+            style={{ cursor: 'pointer' }}
+          >
+            <Card.Body>
+              <Card.Title>{event.title}</Card.Title>
+              <Card.Text>
+                {new Date(event.startDate).toLocaleDateString()} - {new Date(event.startDate).toLocaleTimeString()}
+              </Card.Text>
+            </Card.Body>
+          </Card>
         ))
       ) : (
         <p>No hay eventos próximos</p>

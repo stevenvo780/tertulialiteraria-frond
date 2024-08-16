@@ -10,7 +10,6 @@ import Sidebar from './Sidebar';
 import PublicationModal from './PublicationModal';
 import { Publication } from '../../utils/types';
 import { storage } from '../../utils/firebase';
-import { set } from 'date-fns';
 
 const HomePage: React.FC = () => {
   const dispatch = useDispatch();
