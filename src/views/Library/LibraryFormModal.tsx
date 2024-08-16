@@ -86,7 +86,8 @@ const LibraryFormModal: React.FC<LibraryFormModalProps> = ({
               apiKey='ide9bzali9973f0fmbzusywuxlpp3mxmigqoa07eddfltlrj'
               value={description}
               init={{
-                height: 300,
+                advcode_inline: true,
+                height: 500,
                 menubar: false,
                 plugins: 'powerpaste casechange searchreplace autolink directionality visualblocks visualchars image link media mediaembed codesample table charmap pagebreak nonbreaking anchor tableofcontents insertdatetime advlist lists checklist wordcount tinymcespellchecker editimage help formatpainter permanentpen charmap linkchecker emoticons advtable export autosave advcode fullscreen',
                 toolbar: "undo redo spellcheckdialog formatpainter | blocks fontfamily fontsize | bold italic underline forecolor backcolor | link image | alignleft aligncenter alignright alignjustify | code",
