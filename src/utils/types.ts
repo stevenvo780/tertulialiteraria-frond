@@ -10,7 +10,7 @@ export interface User {
   events?: Events[];
 }
 export interface Events {
-  id?: number;
+  id?: number | null;
   title: string;
   description: string;
   eventDate: Date;
@@ -21,7 +21,7 @@ export interface Events {
 }
 
 export interface CalendarEvent {
-  id?: number;
+  id?: number | null;
   title: string;
   start: Date;
   end: Date;
