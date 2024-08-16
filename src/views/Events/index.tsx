@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -28,6 +29,10 @@ const EventsCalendar: React.FC = () => {
     fetchEvents();
   }, []);
 
+  useEffect(() => {
+    fetchEvents();
+  }, [showModal]);
+
   const fetchEvents = async () => {
     try {
       const response = await api.get('/events');
@@ -38,14 +43,15 @@ const EventsCalendar: React.FC = () => {
   };
 
   const handleDateClick = (info: any) => {
+    console.log(info);
     if (userRole?.role === 'admin') {
       setSelectedEvent({
         id: null,
         title: '',
         description: '',
-        startDate: new Date(info.dateStr),
-        endDate: new Date(info.dateStr),
-        eventDate: new Date(info.dateStr),
+        startDate: info.date,
+        endDate: info.date,
+        eventDate: info.date,
         repetition: 'none',
       });
       setIsEditing(false);
@@ -56,8 +62,10 @@ const EventsCalendar: React.FC = () => {
   };
 
   const handleEventClick = (info: any) => {
+    console.log(info);
     if (userRole?.role === 'admin') {
       const clickedEvent = eventsFromStore.find(event => event.id === info.event.id);
+      console.log(clickedEvent);
       if (clickedEvent) {
         setSelectedEvent(convertToBackendEvent(clickedEvent));
         setIsEditing(true);
@@ -96,7 +104,6 @@ const EventsCalendar: React.FC = () => {
           showModal={showModal}
           setShowModal={setShowModal}
           selectedEvent={selectedEvent}
-          setSelectedEvent={setSelectedEvent}
           fetchEvents={fetchEvents}
           isEditing={isEditing}
         />

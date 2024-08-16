@@ -6,13 +6,11 @@ import api from '../../utils/axios';
 import { useDispatch } from 'react-redux';
 import { addEvent, updateEvent, deleteEvent } from '../../redux/events';
 import { addNotification } from '../../redux/ui';
-import { convertToBackendEvent } from './EventUtils';
 
 interface EventModalProps {
   showModal: boolean;
   setShowModal: (show: boolean) => void;
   selectedEvent: Events | null;
-  setSelectedEvent: (event: Events | null) => void;
   fetchEvents: () => void;
   isEditing: boolean; // Indicador de si se está editando o creando
 }
@@ -21,7 +19,6 @@ const EventModal: React.FC<EventModalProps> = ({
   showModal,
   setShowModal,
   selectedEvent,
-  setSelectedEvent,
   fetchEvents,
   isEditing,
 }) => {
@@ -44,21 +41,28 @@ const EventModal: React.FC<EventModalProps> = ({
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-
     try {
       if (isEditing && selectedEvent && selectedEvent.id !== null) {
-        const updatedEvent = selectedEvent;
-        await api.patch(`/events/${selectedEvent.id}`, updatedEvent);
-        dispatch(updateEvent(updatedEvent));
-        dispatch(addNotification({ message: 'Evento actualizado correctamente', color: 'success' }));
-      } else {
-        const newEvent = convertToBackendEvent({
+        const updatedEvent = {
+          ...selectedEvent,
           title,
           description,
           startDate: startDate!,
           endDate: endDate!,
           repetition,
-        });
+        };
+        await api.patch(`/events/${selectedEvent.id}`, updatedEvent);
+        dispatch(updateEvent(updatedEvent));
+        dispatch(addNotification({ message: 'Evento actualizado correctamente', color: 'success' }));
+      } else {
+        const newEvent = {
+          title,
+          description,
+          startDate: startDate!,
+          endDate: endDate!,
+          repetition,
+        };
+        console.log(newEvent);
         const response = await api.post('/events', newEvent);
         dispatch(addEvent(response.data));
         dispatch(addNotification({ message: 'Evento creado correctamente', color: 'success' }));
