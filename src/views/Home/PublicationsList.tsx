@@ -20,7 +20,6 @@ const PublicationsList: React.FC<PublicationsListProps> = ({
 }) => {
   return (
     <>
-      <h2 className="text-center mb-4">Publicaciones Recientes</h2>
       {user && (
         <div className="d-flex justify-content-end mb-4">
           <Form.Control

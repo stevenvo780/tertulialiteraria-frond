@@ -81,6 +81,7 @@ const PublicationModal: React.FC<PublicationModalProps> = ({
                 />
 
               </Form.Group>
+              <br />
               <Button variant="primary" type="submit">
                 {editingPublication ? 'Actualizar' : 'Publicar'}
               </Button>

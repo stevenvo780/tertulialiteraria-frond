@@ -55,7 +55,7 @@ const HomePage: React.FC = () => {
       }
       setShowModal(false);
       fetchPublications();
-      setEditingPublication(null)
+      setEditingPublication(null);
     } catch (error) {
       console.error("Error al guardar la publicación:", error);
       dispatch(addNotification({ message: 'Error al guardar la publicación', color: 'danger' }));
@@ -103,41 +103,56 @@ const HomePage: React.FC = () => {
   };
 
   return (
-    <Container>
-      {/* Header Section */}
-      <div className="text-center my-4 p-5 bg-light rounded">
-        <h1>Bienvenidos a Tertulia Literaria</h1>
-        <p>
-          Un espacio donde convergen la literatura, la filosofía, el arte, la ciencia y la tecnología para crear un ambiente de diálogo y aprendizaje.
-        </p>
+    <>
+      {/* Header Section with Banner Image */}
+      <div
+        className="d-flex align-items-center justify-content-center text-white"
+        style={{
+          backgroundImage: "url('/images/banner.jpg')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          height: '300px',
+          width: '100vw',  // Ocupar todo el ancho de la ventana
+          position: 'relative',
+          marginLeft: 'calc(-50vw + 50%)', // Alinear la imagen a la izquierda
+        }}
+      >
+        <div className="text-center" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)' }}>
+          <h1>Bienvenidos a Tertulia Literaria</h1>
+          <p>
+            Un espacio donde convergen la literatura, la filosofía, el arte, la ciencia y la tecnología para crear un ambiente de diálogo y aprendizaje.
+          </p>
+        </div>
       </div>
 
-      <Row>
-        <Col md={3}>
-          <Sidebar />
-        </Col>
-        <Col md={9}>
-          <PublicationsList
-            publications={publications}
-            handleEdit={handleEdit}
-            handleDelete={handleDelete}
-            user={user}
-            setShowModal={setShowModal}
-          />
-        </Col>
-      </Row>
-      <PublicationModal
-        showModal={showModal}
-        setShowModal={setShowModal}
-        handleSubmit={handleSubmit}
-        title={title}
-        setTitle={setTitle}
-        content={content}
-        setContent={setContent}
-        editingPublication={editingPublication}
-        uploadImage={uploadImage}
-      />
-    </Container>
+      <Container fluid className="p-0">
+        <Row className="m-0">
+          <Col md={3}>
+            <Sidebar />
+          </Col>
+          <Col md={9} style={{ marginTop: 60 }}>
+            <PublicationsList
+              publications={publications}
+              handleEdit={handleEdit}
+              handleDelete={handleDelete}
+              user={user}
+              setShowModal={setShowModal}
+            />
+          </Col>
+        </Row>
+        <PublicationModal
+          showModal={showModal}
+          setShowModal={setShowModal}
+          handleSubmit={handleSubmit}
+          title={title}
+          setTitle={setTitle}
+          content={content}
+          setContent={setContent}
+          editingPublication={editingPublication}
+          uploadImage={uploadImage}
+        />
+      </Container>
+    </>
   );
 };
 

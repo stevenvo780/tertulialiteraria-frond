@@ -7,6 +7,7 @@ import { useDispatch } from 'react-redux';
 import { addEvent, updateEvent, deleteEvent } from '../../redux/events';
 import { addNotification } from '../../redux/ui';
 import { storage } from '../../utils/firebase';
+import moment from 'moment';
 
 interface EventModalProps {
   showModal: boolean;
@@ -132,6 +133,37 @@ const EventModal: React.FC<EventModalProps> = ({
               required
             />
           </Form.Group>
+          <Form.Group controlId="formEventStartDate">
+            <Form.Label>Fecha y Hora de Inicio</Form.Label>
+            <Form.Control
+              type="datetime-local"
+              value={startDate ? moment(startDate).format('YYYY-MM-DDTHH:mm') : ''}
+              onChange={(e) => setStartDate(new Date(e.target.value))}
+              required
+            />
+          </Form.Group>
+          <Form.Group controlId="formEventEndDate">
+            <Form.Label>Fecha y Hora de Fin</Form.Label>
+            <Form.Control
+              type="datetime-local"
+              value={endDate ? moment(endDate).format('YYYY-MM-DDTHH:mm') : ''}
+              onChange={(e) => setEndDate(new Date(e.target.value))}
+              required
+            />
+          </Form.Group>
+          <Form.Group controlId="formEventRepetition">
+            <Form.Label>Repetir Evento</Form.Label>
+            <Form.Control
+              as="select"
+              value={repetition}
+              onChange={(e) => setRepetition(e.target.value)}
+            >
+              <option value="none">No repetir</option>
+              <option value="weekly">Semanalmente</option>
+              <option value="monthly">Mensualmente</option>
+              <option value="yearly">Anualmente</option>
+            </Form.Control>
+          </Form.Group>
           <Form.Group controlId="formEventDescription">
             <Form.Label>Descripción</Form.Label>
             <Editor
@@ -149,6 +181,7 @@ const EventModal: React.FC<EventModalProps> = ({
               onEditorChange={(newContent: any) => setDescription(newContent)}
             />
           </Form.Group>
+          <br />
           <Button variant="primary" type="submit">
             {isEditing ? 'Actualizar' : 'Crear'}
           </Button>
