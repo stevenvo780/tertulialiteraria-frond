@@ -1,42 +1,34 @@
 import React from 'react';
 import { Card } from 'react-bootstrap';
 import { Library } from '../../utils/types';
+import { useNavigate } from 'react-router-dom';
 
 interface LatestNotesProps {
   notes: Library[];
 }
 
 const LatestNotes: React.FC<LatestNotesProps> = ({ notes }) => {
+  const navigate = useNavigate();
+
+  const handleNoteClick = (noteId: number | null) => {
+    if (noteId !== null) {
+      navigate(`/library/${noteId}`);
+    }
+  };
+
   return (
     <div>
       <h4 className="mt-4">Últimas Notas</h4>
       {notes.length > 0 ? (
         notes.map((note) => (
-          <Card className="mb-3" key={note.id}>
+          <Card
+            className="mb-3"
+            key={note.id}
+            onClick={() => handleNoteClick(note.id || 0)}
+            style={{ cursor: 'pointer' }}
+          >
             <Card.Body>
               <Card.Title>{note.title}</Card.Title>
-              <div
-                style={{
-                  maxHeight: '100px',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                  cursor: 'pointer',
-                }}
-                onMouseEnter={(e) => {
-                  const target = e.currentTarget;
-                  target.style.overflow = 'auto';
-                  target.style.whiteSpace = 'normal';
-                  target.style.maxHeight = 'none';
-                }}
-                onMouseLeave={(e) => {
-                  const target = e.currentTarget;
-                  target.style.overflow = 'hidden';
-                  target.style.whiteSpace = 'nowrap';
-                  target.style.maxHeight = '100px';
-                }}
-                dangerouslySetInnerHTML={{ __html: note.description }}
-              />
             </Card.Body>
           </Card>
         ))

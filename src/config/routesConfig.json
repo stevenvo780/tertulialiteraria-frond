@@ -2,6 +2,7 @@
   "publicRoutes": [
     { "path": "/home", "element": "Home", "name": "Inicio", "viewHeader": true },
     { "path": "/library", "element": "Library", "name": "Biblioteca", "viewHeader": true },
+    { "path": "/library/:noteId", "element": "Library", "name": "Biblioteca con Nota", "viewHeader": true },
     { "path": "/events", "element": "Events", "name": "Eventos", "viewHeader": true },
     { "path": "/login", "element": "Login", "name": "Iniciar Sesión", "viewHeader": true },
     { "path": "/register", "element": "Register", "name": "Registrarse", "viewHeader": true },
@@ -12,14 +13,16 @@
       { "path": "/", "element": "Home", "name": "Inicio", "viewHeader": true },
       { "path": "/events", "element": "Events", "name": "Eventos", "viewHeader": true },
       { "path": "/normativa", "element": "Normativa", "name": "Normativa", "viewHeader": true },
-      { "path": "/library", "element": "Library", "name": "Biblioteca", "viewHeader": true }
+      { "path": "/library", "element": "Library", "name": "Biblioteca", "viewHeader": true },
+      { "path": "/library/:noteId", "element": "Library", "name": "Biblioteca con Nota", "viewHeader": false }
     ],
     "admin": [
       { "path": "/", "element": "Home", "name": "Inicio", "viewHeader": true },
       { "path": "/events", "element": "Events", "name": "Eventos", "viewHeader": true },
       { "path": "/normativa", "element": "Normativa", "name": "Normativa", "viewHeader": true },
       { "path": "/normativa/staff", "element": "NormativaStaff", "name": "Normativa Staff", "viewHeader": true },
-      { "path": "/library", "element": "Library", "name": "Biblioteca", "viewHeader": true }
+      { "path": "/library", "element": "Library", "name": "Biblioteca", "viewHeader": true },
+      { "path": "/library/:noteId", "element": "Library", "name": "Biblioteca con Nota", "viewHeader": false }
     ]
   }
 }

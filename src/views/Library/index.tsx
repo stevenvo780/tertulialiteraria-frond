@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Container } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate, useParams } from 'react-router-dom';
 import { RootState } from '../../redux/store';
 import api from '../../utils/axios';
 import { getLibraries, addLibrary, updateLibrary } from '../../redux/library';
@@ -11,6 +12,8 @@ import LibraryFormModal from './LibraryFormModal';
 import { FaArrowLeft, FaPlus } from 'react-icons/fa';
 
 const LibraryPage: React.FC = () => {
+  const { noteId } = useParams<{ noteId: string | undefined }>();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const libraries = useSelector((state: RootState) => state.library.libraries);
   const userRole = useSelector((state: RootState) => state.auth.userData?.role); // Obtener el rol del usuario
@@ -20,21 +23,26 @@ const LibraryPage: React.FC = () => {
   const [editingLibrary, setEditingLibrary] = useState<Library | null>(null);
 
   useEffect(() => {
-    fetchLibraries();
-  }, []);
+    if (noteId) {
+      fetchNoteById(parseInt(noteId));
+    } else {
+      fetchLibraries();
+    }
+  }, [noteId]);
 
   const fetchLibraries = async () => {
     try {
       const response = await api.get<Library[]>('/library');
       dispatch(getLibraries(response.data));
+      setCurrentNote(null); // Resetea la nota actual cuando estás en la raíz
     } catch (error) {
       dispatch(addNotification({ message: 'Error al obtener las referencias', color: 'danger' }));
     }
   };
 
-  const fetchNoteById = async (noteId: number) => {
+  const fetchNoteById = async (id: number) => {
     try {
-      const response = await api.get<Library>(`/library/${noteId}`);
+      const response = await api.get<Library>(`/library/${id}`);
       setCurrentNote(response.data);
       return response.data;
     } catch (error) {
@@ -49,7 +57,7 @@ const LibraryPage: React.FC = () => {
     }
     const fetchedNote = await fetchNoteById(note.id);
     if (fetchedNote) {
-      setCurrentNote(fetchedNote);
+      navigate(`/library/${note.id}`);
     }
   };
 
@@ -59,8 +67,10 @@ const LibraryPage: React.FC = () => {
     setNavigationStack([...navigationStack]);
 
     if (!previousNote) {
+      navigate('/library');
       await fetchLibraries();
     } else {
+      navigate(`/library/${previousNote.id}`);
       await fetchNoteById(previousNote.id);
     }
   };
