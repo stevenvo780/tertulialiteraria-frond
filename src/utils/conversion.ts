@@ -6,6 +6,7 @@ export const convertToCalendarEvent = (event: Events) => ({
   description: event.description,
   start: event.startDate,
   end: event.endDate,
+  repetition: event.repetition,
 });
 
 
@@ -16,4 +17,5 @@ export const convertToBackendEvent = (calendarEvent: CalendarEvent): Events => (
   startDate: calendarEvent.start,
   endDate: calendarEvent.end,
   eventDate: calendarEvent.start,
+  repetition: calendarEvent.repetition,
 });

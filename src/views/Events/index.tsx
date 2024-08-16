@@ -9,18 +9,65 @@ import { RootState } from '../../redux/store';
 import { getEvents, addEvent, updateEvent, deleteEvent } from '../../redux/events';
 import api from '../../utils/axios';
 import { CalendarEvent } from '../../utils/types';
-import { convertToCalendarEvent, convertToBackendEvent } from '../../utils/conversion';
+import { add, eachWeekOfInterval, eachMonthOfInterval, eachYearOfInterval, differenceInHours } from 'date-fns';
 
 const localizer = momentLocalizer(moment);
 
+const convertToCalendarEvent = (backendEvent: any): CalendarEvent => ({
+  id: backendEvent.id,
+  title: backendEvent.title,
+  description: backendEvent.description,
+  start: new Date(backendEvent.startDate),
+  end: new Date(backendEvent.endDate),
+  repetition: backendEvent.repetition,
+});
+
+const convertToBackendEvent = (calendarEvent: CalendarEvent): any => ({
+  id: calendarEvent.id,
+  title: calendarEvent.title,
+  description: calendarEvent.description,
+  startDate: calendarEvent.start,
+  endDate: calendarEvent.end,
+  repetition: calendarEvent.repetition,
+});
+
+const generateRecurringEvents = (event: CalendarEvent, start: Date, end: Date): CalendarEvent[] => {
+  const events: CalendarEvent[] = [];
+  const interval = { start, end };
+
+  switch (event.repetition) {
+    case 'weekly':
+      eachWeekOfInterval(interval).forEach(date => {
+        events.push({ ...event, start: date, end: add(date, { hours: differenceInHours(event.end, event.start) }) });
+      });
+      break;
+    case 'monthly':
+      eachMonthOfInterval(interval).forEach(date => {
+        events.push({ ...event, start: date, end: add(date, { hours: differenceInHours(event.end, event.start) }) });
+      });
+      break;
+    case 'yearly':
+      eachYearOfInterval(interval).forEach(date => {
+        events.push({ ...event, start: date, end: add(date, { hours: differenceInHours(event.end, event.start) }) });
+      });
+      break;
+    default:
+      events.push(event);
+      break;
+  }
+
+  return events;
+};
+
 const EventsCalendar: React.FC = () => {
   const dispatch = useDispatch();
-  const events = useSelector((state: RootState) => state.events.events.map(convertToCalendarEvent));
+  const eventsFromStore = useSelector((state: RootState) => state.events.events.map(convertToCalendarEvent));
   const [showModal, setShowModal] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
+  const [repetition, setRepetition] = useState<string>('none');
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
 
   useEffect(() => {
@@ -48,6 +95,7 @@ const EventsCalendar: React.FC = () => {
     setDescription(event.description);
     setStartDate(new Date(event.start));
     setEndDate(new Date(event.end));
+    setRepetition(event.repetition || 'none');
     setShowModal(true);
   };
 
@@ -61,7 +109,8 @@ const EventsCalendar: React.FC = () => {
           title, 
           description, 
           start: startDate!, 
-          end: endDate! 
+          end: endDate!,
+          repetition,
         });
         await api.patch(`/events/${selectedEvent.id}`, updatedEvent);
         dispatch(updateEvent(updatedEvent));
@@ -72,6 +121,7 @@ const EventsCalendar: React.FC = () => {
           description,
           start: startDate!,
           end: endDate!,
+          repetition,
         });
         const response = await api.post('/events', newEvent);
         dispatch(addEvent(response.data));
@@ -97,6 +147,10 @@ const EventsCalendar: React.FC = () => {
       }
     }
   };
+
+  const events = eventsFromStore.flatMap(event => {
+    return generateRecurringEvents(event, new Date(), add(new Date(), { months: 1 }));
+  });
 
   return (
     <Container fluid>
@@ -153,6 +207,19 @@ const EventsCalendar: React.FC = () => {
                 onChange={(e) => setEndDate(new Date(e.target.value))}
                 required
               />
+            </Form.Group>
+            <Form.Group controlId="formEventRepetition">
+              <Form.Label>Repetir Evento</Form.Label>
+              <Form.Control
+                as="select"
+                value={repetition}
+                onChange={(e) => setRepetition(e.target.value)}
+              >
+                <option value="none">No repetir</option>
+                <option value="weekly">Semanalmente</option>
+                <option value="monthly">Mensualmente</option>
+                <option value="yearly">Anualmente</option>
+              </Form.Control>
             </Form.Group>
             <Button variant="primary" type="submit">
               {selectedEvent ? 'Actualizar' : 'Crear'}

@@ -1,4 +1,3 @@
-/* eslint-disable no-multi-str */
 import React, { useState, useEffect } from 'react';
 import { Card, Button, Form, Modal, Container, Row, Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
@@ -11,8 +10,9 @@ import { addNotification } from '../../redux/ui';
 import { Publication } from '../../utils/types';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 
-const PublicationsPage: React.FC = () => {
+const HomePage: React.FC = () => {
   const dispatch = useDispatch();
+  const user = useSelector((state: RootState) => state.auth.userData);
   const publications = useSelector((state: RootState) => state.publications.publications);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [editingPublication, setEditingPublication] = useState<Publication | null>(null);
@@ -39,7 +39,7 @@ const PublicationsPage: React.FC = () => {
       title,
       content: { html: content },
       publicationDate: editingPublication ? editingPublication.publicationDate : new Date(),
-      author: editingPublication?.author, // En caso de edición, conservamos el autor
+      author: editingPublication?.author,
     };
 
     try {
@@ -94,17 +94,23 @@ const PublicationsPage: React.FC = () => {
 
   return (
     <Container>
-      {/* Botón para crear publicaciones */}
-      <div className="my-4 text-center">
-        <Button variant="primary" onClick={() => {
-          setShowModal(true)
-          setEditingPublication(null)
-          setTitle('')
-          setContent('')
-        }}>
-          Crear Publicación
-        </Button>
+      {/* Header Section */}
+      <div className="text-center my-4 p-5 bg-light rounded">
+        <h1>Bienvenidos a Tertulia Literaria</h1>
+        <p>
+          Un espacio donde convergen la literatura, la filosofía, el arte, la ciencia y la tecnología para crear un ambiente de diálogo y aprendizaje.
+        </p>
       </div>
+
+      <h2 className="text-center mb-4">Publicaciones Recientes</h2>
+
+      {user && (
+        <div className="d-flex justify-content-end mb-4">
+          <Button variant="primary" onClick={() => setShowModal(true)}>
+            Crear Publicación
+          </Button>
+        </div>
+      )}
 
       <Row>
         <Col md={{ span: 8, offset: 2 }}>
@@ -136,7 +142,7 @@ const PublicationsPage: React.FC = () => {
         </Col>
       </Row>
 
-      {/* Modal para crear/editar publicación */}
+      {/* Modal for creating/editing publication */}
       <Modal show={showModal} onHide={() => setShowModal(false)} size="xl">
         <Modal.Header closeButton>
           <Modal.Title>{editingPublication ? 'Editar Publicación' : 'Crear Publicación'}</Modal.Title>
@@ -178,4 +184,4 @@ const PublicationsPage: React.FC = () => {
   );
 };
 
-export default PublicationsPage;
+export default HomePage;

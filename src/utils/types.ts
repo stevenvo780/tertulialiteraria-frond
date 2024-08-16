@@ -17,6 +17,7 @@ export interface Events {
   startDate: Date;
   endDate: Date;
   author?: User;
+  repetition?: string;
 }
 
 export interface CalendarEvent {
@@ -25,6 +26,7 @@ export interface CalendarEvent {
   start: Date;
   end: Date;
   description: string;
+  repetition?: string;
 }
 
 export interface Library {
