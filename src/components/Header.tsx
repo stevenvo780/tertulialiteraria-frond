@@ -30,11 +30,14 @@ const Header: React.FC = () => {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mr-auto">
             {/* Renderizando las rutas del usuario */}
-            {routesForRole.map((route, index) => (
-              <Nav.Link key={index} as={Link} to={route.path}>
-                {route.name}
-              </Nav.Link>
-            ))}
+            {routesForRole.map((route, index) => {
+              if (route.viewHeader === false) return null;
+              return (
+                <Nav.Link key={index} as={Link} to={route.path}>
+                  {route.name}
+                </Nav.Link>
+              )
+            })}
           </Nav>
           <Navbar.Collapse className="justify-content-end">
             {isLoggedIn ? (

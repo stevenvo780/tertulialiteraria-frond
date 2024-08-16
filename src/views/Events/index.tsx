@@ -43,7 +43,6 @@ const EventsCalendar: React.FC = () => {
   };
 
   const handleDateClick = (info: any) => {
-    console.log(info);
     if (userRole?.role === 'admin') {
       setSelectedEvent({
         id: null,
