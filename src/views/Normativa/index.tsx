@@ -1,181 +1,97 @@
-/* eslint-disable no-multi-str */
-import React, { useState, useEffect } from 'react';
-import { Card, Button, Form, Modal, Container, Row, Col } from 'react-bootstrap';
-import { useDispatch, useSelector } from 'react-redux';
-import { Editor } from '@tinymce/tinymce-react';
-import { RootState } from '../../redux/store';
-import api from '../../utils/axios';
-import { getPublications, addPublication, updatePublication, deletePublication } from '../../redux/publications';
-import { storage } from '../../utils/firebase';
-import { addNotification } from '../../redux/ui';
-import { Publication } from '../../utils/types';
-import { FaEdit, FaTrash } from 'react-icons/fa';
+import React from 'react';
+import { Container, Row, Col } from 'react-bootstrap';
+import './NormativaPage.css'; // Archivo CSS para estilizar el documento
 
-const PublicationsPage: React.FC = () => {
-  const dispatch = useDispatch();
-  const publications = useSelector((state: RootState) => state.publications.publications);
-  const [showModal, setShowModal] = useState<boolean>(false);
-  const [editingPublication, setEditingPublication] = useState<Publication | null>(null);
-  const [title, setTitle] = useState<string>('');
-  const [content, setContent] = useState<string>(''); // HTML Content
-
-  useEffect(() => {
-    fetchPublications();
-  }, []);
-
-  const fetchPublications = async () => {
-    try {
-      const response = await api.get<Publication[]>('/publications');
-      dispatch(getPublications(response.data));
-    } catch (error) {
-      dispatch(addNotification({ message: 'Error al obtener las publicaciones', color: 'danger' }));
-    }
-  };
-
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    const publicationData: Omit<Publication, 'id'> = {
-      title,
-      content: { html: content },
-      publicationDate: editingPublication ? editingPublication.publicationDate : new Date(),
-      author: editingPublication?.author, // En caso de edición, conservamos el autor
-    };
-
-    try {
-      if (editingPublication) {
-        await api.patch(`/publications/${editingPublication.id}`, publicationData);
-        dispatch(updatePublication({ ...editingPublication, ...publicationData }));
-        dispatch(addNotification({ message: 'Publicación actualizada correctamente', color: 'success' }));
-      } else {
-        const response = await api.post<Publication>('/publications', publicationData);
-        dispatch(addPublication(response.data));
-        dispatch(addNotification({ message: 'Publicación creada correctamente', color: 'success' }));
-      }
-      setShowModal(false);
-      fetchPublications();
-    } catch (error) {
-      dispatch(addNotification({ message: 'Error al guardar la publicación', color: 'danger' }));
-    }
-  };
-
-  const handleEdit = (publication: Publication) => {
-    setEditingPublication(publication);
-    setTitle(publication.title);
-    setContent(publication.content.html);
-    setShowModal(true);
-  };
-
-  const handleDelete = async (id: number) => {
-    try {
-      await api.delete(`/publications/${id}`);
-      dispatch(deletePublication(id));
-      dispatch(addNotification({ message: 'Publicación eliminada correctamente', color: 'success' }));
-      fetchPublications();
-    } catch (error) {
-      dispatch(addNotification({ message: 'Error al eliminar la publicación', color: 'danger' }));
-    }
-  };
-
-  const uploadImage = async (blobInfo: any): Promise<string> => {
-    try {
-      const file = blobInfo.blob();
-      const storageRef = storage.ref();
-      const fileRef = storageRef.child(`images/${file.name}`);
-
-      const uploadTaskSnapshot = await fileRef.put(file);
-      const fileUrl = await uploadTaskSnapshot.ref.getDownloadURL();
-      return fileUrl;
-    } catch (error) {
-      console.error("Error al subir la imagen:", error);
-      throw new Error("Error al subir la imagen");
-    }
-  };
-
+const NormativaPage: React.FC = () => {
   return (
-    <Container>
-      {/* Botón para crear publicaciones */}
-      <div className="my-4 text-center">
-        <Button variant="primary" onClick={() => {
-          setShowModal(true)
-          setEditingPublication(null)
-          setTitle('')
-          setContent('')
-        }}>
-          Crear Publicación
-        </Button>
-      </div>
-
+    <Container className="normativa-container my-5">
       <Row>
-        <Col md={{ span: 8, offset: 2 }}>
-          {publications.map((publication: Publication) => (
-            <Card className="mb-4" key={publication.id}>
-              <Card.Body>
-                <div className="d-flex justify-content-between">
-                  <Card.Title>{publication.title}</Card.Title>
-                  <div>
-                    <FaEdit
-                      onClick={() => handleEdit(publication)}
-                      style={{ cursor: 'pointer', marginRight: '10px' }}
-                      size={20}
-                    />
-                    <FaTrash
-                      onClick={() => handleDelete(publication.id)}
-                      style={{ cursor: 'pointer' }}
-                      size={20}
-                    />
-                  </div>
-                </div>
-                <div dangerouslySetInnerHTML={{ __html: publication.content.html }} />
-                <div className="text-muted mt-2">
-                  Publicado el {new Date(publication.publicationDate).toLocaleDateString()}
-                </div>
-              </Card.Body>
-            </Card>
-          ))}
+        <Col>
+          <div className="document-header text-center">
+            <h1 className="display-4">⚖️ Reglas de Tertulia Literaria ⚖️</h1>
+            <p className="lead">
+              Este documento establece las normas generales y de convivencia que todos los usuarios deben seguir para asegurar un ambiente respetuoso y armonioso en Tertulia Literaria.
+            </p>
+          </div>
+
+          <div className="document-section">
+            <h2 className="section-title">Reglas Generales</h2>
+            <p className="section-paragraph">
+              <strong>1.</strong> El servidor se rige por los principios de Discord ToS: no se permite racismo, misoginia, misandria, acosos a la comunidad LGTB, ni material NSFW.
+            </p>
+            <p className="section-paragraph">
+              <strong>2.</strong> Respeto a la Moderación en general, ya que son los encargados de cuidar, mantener y dirigir este espacio del cual disfrutamos todos. La Moderación se reserva el derecho de manejar la situación a su criterio según sea el caso.
+            </p>
+            <p className="section-paragraph">
+              <strong>3.</strong> Debe pedirse permiso a la Moderación para promocionar concursos, invitaciones y publicación de contenido propio redirigido, especialmente si es con intención comercial.
+            </p>
+            <p className="section-paragraph">
+              <strong>4.</strong> No defiendas afirmaciones sin evidencia sólida, tanto desde lo fáctico como desde lo argumentativo. Evita apelar a fuentes no académicas o poco serias.
+            </p>
+            <p className="section-paragraph">
+              <strong>5.</strong> Está prohibido hacer propaganda del consumo de alucinógenos o cualquier tipo de drogas ilegales, sin importar si se disfraza con la idea de "rituales divinos" o un medio de "autoayuda".
+            </p>
+            <p className="section-paragraph">
+              <strong>6.</strong> Las multicuentas están permitidas siempre que se informe a la moderación sobre ellas y no se usen para eludir baneos o mutes.
+            </p>
+            <p className="section-paragraph">
+              <strong>7.</strong> La piratería no está permitida en el servidor, conforme a Discord ToS. Sin embargo, YOUTUBE y STREAM de Videojuegos están totalmente permitidos mientras no sea contenido adulto.
+            </p>
+          </div>
+
+          <div className="document-section">
+            <h2 className="section-title">Reglas de Convivencia</h2>
+            <p className="section-paragraph">
+              <strong>1.</strong> Molestar a otros usuarios de manera moderada es válido, pero el límite está donde el otro usuario lo disponga. Si alguien o un miembro del staff te pide que te detengas, debes hacerlo. De lo contrario, serás acreedor de un WARN.
+            </p>
+            <p className="section-paragraph">
+              <strong>2.</strong> Cualquier acusación no fundamentada que se utilice solo para incriminar a otro será acreedora de un WARN.
+            </p>
+            <p className="section-paragraph">
+              <strong>3.</strong> Con el fin de mantener un ambiente saludable y evitar la toxicidad, se prohíbe el uso reiterado de insultos y faltas de respeto sin contexto que justifique su uso.
+            </p>
+            <p className="section-paragraph">
+              <strong>4.</strong> Evita el SPAM consecutivo de imágenes, gifs, emojis y comandos.
+            </p>
+            <p className="section-paragraph">
+              <strong>5.</strong> Cualquier caso de acoso demostrado o doxeo resultará en un ban inmediato. No se permiten menciones o alusiones de Raideo ni bromas sobre golpes de estado.
+            </p>
+            <p className="section-paragraph">
+              <strong>6.</strong> A partir del 18 de junio de 2024, Tertulia Literaria solo aceptará a mayores de 15 años.
+            </p>
+            <p className="section-paragraph">
+              <strong>7.</strong> Prohibido grabar en VC o copiar/extraer material de Tertulia Literaria para fines ajenos al servidor sin permiso de la administración. Cualquier material que se saque sin permiso podría ser sancionado y, dependiendo de su gravedad, podría llevar a acciones legales.
+            </p>
+            <p className="section-paragraph">
+              ⚠️ En TL respetamos el derecho de nuestros usuarios a su imagen y voz. La administración avisará de manera pública cuando se realice la grabación de un evento para su posterior difusión. (Esta regla está en vigencia a partir del 18 de mayo de 2024).
+            </p>
+          </div>
+
+          <div className="document-section">
+            <h2 className="section-title">Sistema de Warns</h2>
+            <p className="section-paragraph">
+              <strong>1.</strong> 🤐 El primer WARN resulta en un Mute de UNA HORA.
+            </p>
+            <p className="section-paragraph">
+              <strong>2.</strong> 🤬 El segundo WARN resulta en un Mute de SEIS HORAS.
+            </p>
+            <p className="section-paragraph">
+              <strong>3.</strong> 🙅‍♀️ El tercer WARN resulta en un BANEO DEL SERVIDOR.
+            </p>
+          </div>
+
+          <div className="document-footer text-center mt-5">
+            <p className="text-muted">
+              📚 Tertulia Literaria se esmera en ser un espacio de convivencia armoniosa y tranquila entre los usuarios. Para garantizar este ambiente, es necesario que todos los usuarios respeten unas reglas básicas de interacción.
+            </p>
+            <p className="text-muted">
+              Recuerda: <strong>Trata a los demás como te gustaría ser tratado.</strong>
+            </p>
+          </div>
         </Col>
       </Row>
-
-      {/* Modal para crear/editar publicación */}
-      <Modal show={showModal} onHide={() => setShowModal(false)} size="xl">
-        <Modal.Header closeButton>
-          <Modal.Title>{editingPublication ? 'Editar Publicación' : 'Crear Publicación'}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form onSubmit={handleSubmit}>
-            <Form.Group controlId="formPublicationTitle">
-              <Form.Label>Título</Form.Label>
-              <Form.Control
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                required
-              />
-            </Form.Group>
-            <Form.Group controlId="formPublicationContent">
-              <Form.Label>Contenido</Form.Label>
-              <Editor
-                apiKey='ide9bzali9973f0fmbzusywuxlpp3mxmigqoa07eddfltlrj'
-                value={content}
-                init={{
-                  advcode_inline: true,
-                  height: 500,
-                  menubar: false,
-                  plugins: 'powerpaste casechange searchreplace autolink directionality visualblocks visualchars image link media mediaembed codesample table charmap pagebreak nonbreaking anchor tableofcontents insertdatetime advlist lists checklist wordcount tinymcespellchecker editimage help formatpainter permanentpen charmap linkchecker emoticons advtable export autosave advcode fullscreen',
-                  toolbar: "undo redo spellcheckdialog formatpainter | blocks fontfamily fontsize | bold italic underline forecolor backcolor | link image | alignleft aligncenter alignright alignjustify | code",
-                  images_upload_handler: uploadImage,
-                }}
-                onEditorChange={(newContent: any) => setContent(newContent)}
-              />
-            </Form.Group>
-            <Button variant="primary" type="submit">
-              {editingPublication ? 'Actualizar' : 'Publicar'}
-            </Button>
-          </Form>
-        </Modal.Body>
-      </Modal>
     </Container>
   );
 };
 
-export default PublicationsPage;
+export default NormativaPage;
