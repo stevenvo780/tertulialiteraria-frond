@@ -36,18 +36,20 @@ const PublicationsList: React.FC<PublicationsListProps> = ({
           <Card.Body>
             <div className="d-flex justify-content-between">
               <Card.Title>{publication.title}</Card.Title>
-              <div>
-                <FaEdit
-                  onClick={() => handleEdit(publication)}
-                  style={{ cursor: 'pointer', marginRight: '10px' }}
-                  size={20}
-                />
-                <FaTrash
-                  onClick={() => handleDelete(publication.id)}
-                  style={{ cursor: 'pointer' }}
-                  size={20}
-                />
-              </div>
+              {user?.role === 'admin' && (
+                <div>
+                  <FaEdit
+                    onClick={() => handleEdit(publication)}
+                    style={{ cursor: 'pointer', marginRight: '10px' }}
+                    size={20}
+                  />
+                  <FaTrash
+                    onClick={() => handleDelete(publication.id)}
+                    style={{ cursor: 'pointer' }}
+                    size={20}
+                  />
+                </div>
+              )}
             </div>
             <div dangerouslySetInnerHTML={{ __html: publication.content.html }} />
             <div className="text-muted mt-2">
