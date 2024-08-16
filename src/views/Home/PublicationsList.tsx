@@ -23,7 +23,10 @@ const PublicationsList: React.FC<PublicationsListProps> = ({
       <h2 className="text-center mb-4">Publicaciones Recientes</h2>
       {user && (
         <div className="d-flex justify-content-end mb-4">
-          <Button variant="primary" onClick={() => setShowModal(true)}>
+          <Button variant="primary" onClick={() => {
+            handleEdit({ id: 0, title: '', content: { html: '' }, publicationDate: new Date() })
+            setShowModal(true)
+          }}>
             Crear Publicación
           </Button>
         </div>
