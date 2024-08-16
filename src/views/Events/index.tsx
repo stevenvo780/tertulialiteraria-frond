@@ -13,6 +13,16 @@ import { add, eachWeekOfInterval, eachMonthOfInterval, eachYearOfInterval, diffe
 
 const localizer = momentLocalizer(moment);
 
+const COLORS = ['#FF5733', '#33FF57', '#3357FF', '#F333FF', '#FF33A6'];
+
+const getColorForTitle = (title: string): string => {
+  let hash = 0;
+  for (let i = 0; i < title.length; i++) {
+    hash = title.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return COLORS[Math.abs(hash) % COLORS.length];
+};
+
 const convertToCalendarEvent = (backendEvent: any): CalendarEvent => ({
   id: backendEvent.id,
   title: backendEvent.title,
@@ -20,6 +30,7 @@ const convertToCalendarEvent = (backendEvent: any): CalendarEvent => ({
   start: new Date(backendEvent.startDate),
   end: new Date(backendEvent.endDate),
   repetition: backendEvent.repetition,
+  color: getColorForTitle(backendEvent.title), // Asignar color basado en el título
 });
 
 const convertToBackendEvent = (calendarEvent: CalendarEvent): any => ({
@@ -62,6 +73,7 @@ const generateRecurringEvents = (event: CalendarEvent, start: Date, end: Date): 
 const EventsCalendar: React.FC = () => {
   const dispatch = useDispatch();
   const eventsFromStore = useSelector((state: RootState) => state.events.events.map(convertToCalendarEvent));
+  const userRole = useSelector((state: RootState) => state.auth.userData);
   const [showModal, setShowModal] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -84,19 +96,27 @@ const EventsCalendar: React.FC = () => {
   };
 
   const handleSelectSlot = (slotInfo: { start: Date; end: Date }) => {
-    setStartDate(slotInfo.start);
-    setEndDate(slotInfo.end);
-    setShowModal(true);
+    if (userRole?.role === 'admin') {
+      setStartDate(slotInfo.start);
+      setEndDate(slotInfo.end);
+      setShowModal(true);
+    } else {
+      dispatch(addNotification({ message: 'No tienes permiso para crear eventos', color: 'warning' }));
+    }
   };
 
   const handleEventClick = (event: CalendarEvent) => {
-    setSelectedEvent(event);
-    setTitle(event.title);
-    setDescription(event.description);
-    setStartDate(new Date(event.start));
-    setEndDate(new Date(event.end));
-    setRepetition(event.repetition || 'none');
-    setShowModal(true);
+    if (userRole?.role === 'admin') {
+      setSelectedEvent(event);
+      setTitle(event.title);
+      setDescription(event.description);
+      setStartDate(new Date(event.start));
+      setEndDate(new Date(event.end));
+      setRepetition(event.repetition || 'none');
+      setShowModal(true);
+    } else {
+      dispatch(addNotification({ message: 'No tienes permiso para editar eventos', color: 'warning' }));
+    }
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -161,9 +181,12 @@ const EventsCalendar: React.FC = () => {
         startAccessor="start"
         endAccessor="end"
         style={{ height: 500 }}
-        selectable
+        selectable={userRole?.role === 'admin'}
         onSelectSlot={handleSelectSlot}
         onSelectEvent={handleEventClick}
+        eventPropGetter={(event) => ({
+          style: { backgroundColor: event.color }, // Asignar color del evento
+        })}
       />
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>

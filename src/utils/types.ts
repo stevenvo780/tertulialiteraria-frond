@@ -27,6 +27,7 @@ export interface CalendarEvent {
   end: Date;
   description: string;
   repetition?: string;
+  color?: string;
 }
 
 export interface Library {
