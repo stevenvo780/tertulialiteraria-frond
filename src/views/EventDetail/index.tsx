@@ -1,20 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Container, Card } from 'react-bootstrap';
+import { Container, Card, Row, Col } from 'react-bootstrap';
 import api from '../../utils/axios';
 import { Events } from '../../utils/types';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
-import interactionPlugin from '@fullcalendar/interaction';
-import rrulePlugin from '@fullcalendar/rrule';
-import { addNotification } from '../../redux/ui';
-import { useDispatch } from 'react-redux';
 
 const EventDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [event, setEvent] = useState<Events | null>(null);
-  const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchEventDetails = async () => {
@@ -22,50 +16,62 @@ const EventDetail: React.FC = () => {
         const response = await api.get(`/events/${id}`);
         setEvent(response.data);
       } catch (error) {
-        dispatch(addNotification({ message: 'Error al obtener el detalle del evento', color: 'danger' }));
+        // Handle error gracefully (e.g., display notification)
+        console.error('Error fetching event details:', error);
       }
     };
 
     fetchEventDetails();
-  }, [id, dispatch]);
+  }, [id]);
 
   if (!event) {
     return <p>Cargando detalles del evento...</p>;
   }
 
   return (
-    <Container className="mt-4">
-      <Card>
+    <Container className="mt-4 d-flex flex-column">
+      <Card className="mb-4">
         <Card.Body>
           <Card.Title>{event.title}</Card.Title>
           <Card.Text dangerouslySetInnerHTML={{ __html: event.description }} />
-          <Card.Text>
-            Fecha de inicio: {new Date(event.startDate).toLocaleDateString()} - {new Date(event.startDate).toLocaleTimeString()}
-          </Card.Text>
-          <Card.Text>
-            Fecha de fin: {new Date(event.endDate).toLocaleDateString()} - {new Date(event.endDate).toLocaleTimeString()}
-          </Card.Text>
         </Card.Body>
       </Card>
 
-      {/* Mostrar el evento en un calendario */}
-      <div className="mt-4">
-        <FullCalendar
-          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, rrulePlugin]}
-          initialView="timeGridDay"
-          events={[{
-            title: event.title,
-            start: event.startDate,
-            end: event.endDate,
-          }]}
-          locale="es"
-          headerToolbar={{
-            left: '',
-            center: 'title',
-            right: ''
-          }}
-        />
-      </div>
+      <Row>
+        <Col xs={12} md={6}>
+          <Card>
+            <Card.Body>
+              <Card.Title>Fecha y Hora</Card.Title>
+              <Card.Text>
+                <span>Inicio:</span> {new Date(event.startDate).toLocaleString()}
+              </Card.Text>
+              <Card.Text>
+                <span>Fin:</span> {new Date(event.endDate).toLocaleString()}
+              </Card.Text>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col xs={12} md={6}>
+          <div className="calendar-container">
+            <FullCalendar
+              plugins={[dayGridPlugin]}
+              initialView="dayGridMonth"
+              events={[
+                {
+                  title: event.title,
+                  start: event.startDate,
+                  end: event.endDate,
+                  backgroundColor: '#f39c12',
+                },
+              ]}
+              headerToolbar={false}
+              dayMaxEvents={true}
+              eventClick={(info) => console.log('Event clicked:', info.event)}
+              locale="es"
+            />
+          </div>
+        </Col>
+      </Row>
     </Container>
   );
 };

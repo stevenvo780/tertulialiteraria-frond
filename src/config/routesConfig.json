@@ -3,11 +3,11 @@
     { "path": "/", "element": "Home", "name": "Inicio", "viewHeader": true },
     { "path": "/library", "element": "Library", "name": "Biblioteca", "viewHeader": true },
     { "path": "/library/:noteId", "element": "Library", "name": "Biblioteca con Nota", "viewHeader": false },
-    { "path": "/normativa", "element": "Normativa", "name": "Normativa", "viewHeader": true },
     { "path": "/events", "element": "Events", "name": "Eventos", "viewHeader": true },
+    { "path": "/events/:id", "element": "EventDetail", "name": "Detalle de Evento", "viewHeader": false },
+    { "path": "/normativa", "element": "Normativa", "name": "Normativa", "viewHeader": true },
     { "path": "/login", "element": "Login", "name": "Iniciar Sesión", "viewHeader": false },
     { "path": "/register", "element": "Register", "name": "Registrarse", "viewHeader": false },
-    { "path": "/events/:id", "element": "EventDetail", "name": "Detalle de Evento", "viewHeader": false },
     { "path": "/about", "element": "About", "name": "Acerca de", "viewHeader": true }
   ],
   "roleRoutes": {

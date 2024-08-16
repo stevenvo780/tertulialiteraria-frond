@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Navbar, Nav, Container, Dropdown } from 'react-bootstrap';
+import { Navbar, Nav, Container, Dropdown, Image } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import { logout } from '../redux/auth';
@@ -29,6 +29,14 @@ const Header: React.FC = () => {
   return (
     <Navbar expand="lg" className="bg-transparent navbar-light" style={{ padding: '3px' }}>
       <Container fluid className="pl-4 pr-4">
+        <Navbar.Brand as={Link} to="/">
+          <Image
+            src="/images/logo.jpg"
+            alt="Logo"
+            roundedCircle
+            style={{ width: '40px', height: '40px', objectFit: 'cover' }}
+          />
+        </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
           <Nav>
@@ -43,7 +51,7 @@ const Header: React.FC = () => {
           </Nav>
           <Dropdown align="end">
             <Dropdown.Toggle as="span" id="dropdown-basic" className="d-flex align-items-center" style={{ cursor: 'pointer', marginInline: 10 }}>
-              <FaTh size={20} className="custom-icon" />
+              <FaTh size={20} className="custom-icon" style={{ color: "black" }} />
             </Dropdown.Toggle>
 
             <Dropdown.Menu>

@@ -36,7 +36,7 @@ const PublicationsList: React.FC<PublicationsListProps> = ({
         </div>
       )}
       {publications.map((publication: Publication) => (
-        <Card className="mb-4" key={publication.id}>
+        <Card className="mb-4" key={publication.id} style={{ overflow: 'hidden' }}>
           <Card.Body>
             <div className="d-flex justify-content-between">
               <Card.Title>{publication.title}</Card.Title>
@@ -55,7 +55,10 @@ const PublicationsList: React.FC<PublicationsListProps> = ({
                 </div>
               )}
             </div>
-            <div dangerouslySetInnerHTML={{ __html: publication.content.html }} />
+            <div
+              style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}
+              dangerouslySetInnerHTML={{ __html: publication.content.html }}
+            />
             <div className="text-muted mt-2">
               Publicado el {new Date(publication.publicationDate).toLocaleDateString()}
             </div>
