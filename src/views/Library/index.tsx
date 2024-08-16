@@ -145,7 +145,7 @@ const LibraryPage: React.FC = () => {
           onHide={() => setShowModal(false)}
           onSubmit={handleCreateOrUpdate}
           editingLibrary={editingLibrary}
-          libraries={libraries}
+          showModal={showModal}
         />
       )}
     </Container>

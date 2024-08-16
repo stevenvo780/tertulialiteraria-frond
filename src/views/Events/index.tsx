@@ -188,6 +188,7 @@ const EventsCalendar: React.FC = () => {
           style: { backgroundColor: event.color }, // Asignar color del evento
         })}
       />
+      {showModal && (
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>{selectedEvent ? 'Editar Evento' : 'Crear Evento'}</Modal.Title>
@@ -255,6 +256,7 @@ const EventsCalendar: React.FC = () => {
           </Form>
         </Modal.Body>
       </Modal>
+      )}
     </Container>
   );
 };

@@ -58,6 +58,7 @@ const HomePage: React.FC = () => {
       fetchPublications();
       setEditingPublication(null)
     } catch (error) {
+      console.error("Error al guardar la publicación:", error);
       dispatch(addNotification({ message: 'Error al guardar la publicación', color: 'danger' }));
     }
   };

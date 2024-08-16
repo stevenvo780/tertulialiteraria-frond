@@ -26,7 +26,6 @@ const Header: React.FC = () => {
   return (
     <Navbar expand="lg" style={{ boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', padding: '3px', backgroundColor: '#212120' }} variant="dark">
       <Container fluid className="pl-4 pr-4">
-        <Navbar.Brand as={Link} to="/">Inicio</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mr-auto">

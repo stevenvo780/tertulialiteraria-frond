@@ -21,7 +21,7 @@ function App() {
     <>
       {
         loading === true && (
-          <div className="loader">
+          <div className="loader-overlay">
             <RingLoader
               color={'#0a827f'}
               loading={loading}
