@@ -5,7 +5,7 @@ import { Publication } from '../../utils/types';
 
 interface PublicationsListProps {
   publications: Publication[];
-  handleEdit: (publication: Publication) => void;
+  handleEdit: (publication: Publication | null) => void;
   handleDelete: (id: number) => void;
   user: any;
   setShowModal: (show: boolean) => void;
@@ -24,7 +24,7 @@ const PublicationsList: React.FC<PublicationsListProps> = ({
       {user && (
         <div className="d-flex justify-content-end mb-4">
           <Button variant="primary" onClick={() => {
-            handleEdit({ id: 0, title: '', content: { html: '' }, publicationDate: new Date() })
+            handleEdit(null)
             setShowModal(true)
           }}>
             Crear Publicación
