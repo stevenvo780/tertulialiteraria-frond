@@ -1,28 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, momentLocalizer } from 'react-big-calendar';
-import moment from 'moment';
-import 'react-big-calendar/lib/css/react-big-calendar.css';
+import FullCalendar from '@fullcalendar/react';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import interactionPlugin from '@fullcalendar/interaction';
+import rrulePlugin from '@fullcalendar/rrule';
 import { Container } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { addNotification } from '../../redux/ui';
 import { RootState } from '../../redux/store';
 import { getEvents } from '../../redux/events';
 import api from '../../utils/axios';
-import { CalendarEvent } from '../../utils/types';
+import { Events } from '../../utils/types';
 import EventModal from './EventModal';
-import { generateRecurringEvents, convertToCalendarEvent } from './EventUtils';
-
-const localizer = momentLocalizer(moment);
+import { convertToBackendEvent, generateRecurringEvents } from './EventUtils';
 
 const EventsCalendar: React.FC = () => {
   const dispatch = useDispatch();
   const eventsFromStore = useSelector((state: RootState) =>
-    state.events.events.map(convertToCalendarEvent)
+    state.events.events.flatMap(generateRecurringEvents)
   );
   const userRole = useSelector((state: RootState) => state.auth.userData);
   const [showModal, setShowModal] = useState(false);
-  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
-  const [isEditing, setIsEditing] = useState(false); // Nuevo estado para verificar si se está editando
+  const [selectedEvent, setSelectedEvent] = useState<Events | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     fetchEvents();
@@ -37,53 +37,59 @@ const EventsCalendar: React.FC = () => {
     }
   };
 
-  const handleSelectSlot = (slotInfo: { start: Date; end: Date }) => {
+  const handleDateClick = (info: any) => {
     if (userRole?.role === 'admin') {
       setSelectedEvent({
         id: null,
         title: '',
         description: '',
-        start: slotInfo.start,
-        end: slotInfo.end,
+        startDate: new Date(info.dateStr),
+        endDate: new Date(info.dateStr),
+        eventDate: new Date(info.dateStr),
         repetition: 'none',
-        color: '',
       });
-      setIsEditing(false); // Indicamos que no estamos editando
+      setIsEditing(false);
       setShowModal(true);
     } else {
       dispatch(addNotification({ message: 'No tienes permiso para crear eventos', color: 'warning' }));
     }
   };
 
-  const handleEventClick = (event: CalendarEvent) => {
+  const handleEventClick = (info: any) => {
     if (userRole?.role === 'admin') {
-      setSelectedEvent(event);
-      setIsEditing(true); // Indicamos que estamos editando
-      setShowModal(true);
+      const clickedEvent = eventsFromStore.find(event => event.id === info.event.id);
+      if (clickedEvent) {
+        setSelectedEvent(convertToBackendEvent(clickedEvent));
+        setIsEditing(true);
+        setShowModal(true);
+      }
     } else {
       dispatch(addNotification({ message: 'No tienes permiso para editar eventos', color: 'warning' }));
     }
   };
 
-  const events = eventsFromStore.flatMap(event =>
-    generateRecurringEvents(event, new Date(), moment().add(1, 'month').toDate())
-  );
-
   return (
     <Container fluid>
       <h2 className="my-4">Calendario de Eventos</h2>
-      <Calendar
-        localizer={localizer}
-        events={events}
-        startAccessor="start"
-        endAccessor="end"
-        style={{ height: 500 }}
-        selectable={userRole?.role === 'admin'}
-        onSelectSlot={handleSelectSlot}
-        onSelectEvent={handleEventClick}
-        eventPropGetter={(event) => ({
-          style: { backgroundColor: event.color },
-        })}
+      <FullCalendar
+        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, rrulePlugin]}
+        initialView="dayGridMonth"
+        events={eventsFromStore}
+        dateClick={handleDateClick}
+        eventClick={handleEventClick}
+        editable={true}
+        locale="es"
+        headerToolbar={{
+          left: 'prev,next today',
+          center: 'title',
+          right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        }}
+        buttonText={{
+          today: 'Hoy',
+          month: 'Mes',
+          week: 'Semana',
+          day: 'Día'
+        }}
       />
       {showModal && (
         <EventModal
@@ -92,7 +98,7 @@ const EventsCalendar: React.FC = () => {
           selectedEvent={selectedEvent}
           setSelectedEvent={setSelectedEvent}
           fetchEvents={fetchEvents}
-          isEditing={isEditing} // Pasamos el estado de edición al modal
+          isEditing={isEditing}
         />
       )}
     </Container>

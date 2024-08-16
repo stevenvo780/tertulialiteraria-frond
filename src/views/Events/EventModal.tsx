@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
-import { CalendarEvent } from '../../utils/types';
+import { Events } from '../../utils/types';
 import EventForm from './EventForm';
 import api from '../../utils/axios';
 import { useDispatch } from 'react-redux';
@@ -11,8 +11,8 @@ import { convertToBackendEvent } from './EventUtils';
 interface EventModalProps {
   showModal: boolean;
   setShowModal: (show: boolean) => void;
-  selectedEvent: CalendarEvent | null;
-  setSelectedEvent: (event: CalendarEvent | null) => void;
+  selectedEvent: Events | null;
+  setSelectedEvent: (event: Events | null) => void;
   fetchEvents: () => void;
   isEditing: boolean; // Indicador de si se está editando o creando
 }
@@ -36,8 +36,8 @@ const EventModal: React.FC<EventModalProps> = ({
     if (selectedEvent) {
       setTitle(selectedEvent.title);
       setDescription(selectedEvent.description);
-      setStartDate(new Date(selectedEvent.start));
-      setEndDate(new Date(selectedEvent.end));
+      setStartDate(new Date(selectedEvent.startDate));
+      setEndDate(new Date(selectedEvent.endDate));
       setRepetition(selectedEvent.repetition || 'none');
     }
   }, [selectedEvent]);
@@ -47,14 +47,7 @@ const EventModal: React.FC<EventModalProps> = ({
 
     try {
       if (isEditing && selectedEvent && selectedEvent.id !== null) {
-        const updatedEvent = convertToBackendEvent({ 
-          ...selectedEvent, 
-          title, 
-          description, 
-          start: startDate!, 
-          end: endDate!,
-          repetition,
-        });
+        const updatedEvent = selectedEvent;
         await api.patch(`/events/${selectedEvent.id}`, updatedEvent);
         dispatch(updateEvent(updatedEvent));
         dispatch(addNotification({ message: 'Evento actualizado correctamente', color: 'success' }));
@@ -62,8 +55,8 @@ const EventModal: React.FC<EventModalProps> = ({
         const newEvent = convertToBackendEvent({
           title,
           description,
-          start: startDate!,
-          end: endDate!,
+          startDate: startDate!,
+          endDate: endDate!,
           repetition,
         });
         const response = await api.post('/events', newEvent);
@@ -81,7 +74,7 @@ const EventModal: React.FC<EventModalProps> = ({
     if (selectedEvent && selectedEvent.id !== null) {
       try {
         await api.delete(`/events/${selectedEvent.id}`);
-        dispatch(deleteEvent(selectedEvent.id as number));
+        dispatch(deleteEvent(selectedEvent.id || 0));
         dispatch(addNotification({ message: 'Evento eliminado correctamente', color: 'success' }));
         fetchEvents();
         setShowModal(false);
