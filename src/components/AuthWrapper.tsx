@@ -12,6 +12,7 @@ import Normativa from '../views/Normativa';
 import Library from '../views/Library';
 import Login from '../views/Login';
 import Register from '../views/Register';
+import NormativaStaff from '../views/NormativaStaff';
 
 const componentMap: { [key: string]: React.FC } = {
   Home,
@@ -19,7 +20,8 @@ const componentMap: { [key: string]: React.FC } = {
   Normativa,
   Library,
   Login,
-  Register
+  Register,
+  NormativaStaff,
 };
 
 const generateRoutes = (routes: { path: string; element: string }[]) => {

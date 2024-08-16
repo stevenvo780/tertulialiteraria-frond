@@ -17,6 +17,7 @@
       { "path": "/", "element": "Home", "name": "Inicio" },
       { "path": "/events", "element": "Events", "name": "Eventos" },
       { "path": "/normativa", "element": "Normativa", "name": "Normativa" },
+      { "path": "/normativa/staff", "element": "NormativaStaff", "name": "Normativa Staff" },
       { "path": "/library", "element": "Library", "name": "Biblioteca" }
     ]
   }
