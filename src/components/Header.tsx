@@ -22,7 +22,9 @@ const Header: React.FC = () => {
     navigate('/login');
   };
 
-  const routesForRole = routesConfig.roleRoutes[userRole];
+  const publicRoutes = routesConfig.publicRoutes;
+  const roleRoutes = routesConfig.roleRoutes[userRole];
+  const combinedRoutes = [...publicRoutes, ...roleRoutes];
 
   return (
     <Navbar expand="lg" className="bg-transparent navbar-light" style={{ padding: '3px' }}>
@@ -30,7 +32,7 @@ const Header: React.FC = () => {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
           <Nav>
-            {routesForRole.map((route, index) => {
+            {combinedRoutes.map((route, index) => {
               if (route.viewHeader === false) return null;
               return (
                 <Nav.Link key={index} as={Link} to={route.path} className="custom-nav-link" style={{ color: "black" }}>
