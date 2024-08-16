@@ -10,6 +10,7 @@ import Sidebar from './Sidebar';
 import PublicationModal from './PublicationModal';
 import { Publication } from '../../utils/types';
 import { storage } from '../../utils/firebase';
+import { set } from 'date-fns';
 
 const HomePage: React.FC = () => {
   const dispatch = useDispatch();
@@ -61,7 +62,14 @@ const HomePage: React.FC = () => {
     }
   };
 
-  const handleEdit = (publication: Publication) => {
+  const handleEdit = (publication: Publication | null) => {
+    if (!publication) {
+      setTitle('');
+      setContent('');
+      setShowModal(true);
+      setEditingPublication(null);
+      return;
+    }
     setEditingPublication(publication);
     setTitle(publication.title);
     setContent(publication.content.html);
