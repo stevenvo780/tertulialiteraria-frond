@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Row, Col } from 'react-bootstrap';
+import { Container, Row, Col, Image } from 'react-bootstrap';
 
 const AboutPage: React.FC = () => {
   return (
@@ -59,6 +59,17 @@ const AboutPage: React.FC = () => {
             <p>
               Finalmente, la filosofía de Martin Buber nos recuerda la importancia de las relaciones interpersonales auténticas y el diálogo genuino, elementos fundamentales para construir una comunidad basada en el respeto mutuo y la empatía. En resumen, Tertulia Literaria es un espacio donde convergen la filosofía y la pedagogía para crear un entorno de aprendizaje y crecimiento personal y colectivo, en un ambiente libre de toxicidad y desinformación.
             </p>
+          </Col>
+        </Row>
+        <Row className="mt-5 text-center">
+          <Col>
+            <h2>Liderado por Karla Nevárez</h2>
+            <Image
+              src="/images/owner.jpg"
+              alt="Karla Nevárez"
+              roundedCircle
+              style={{ width: '150px', height: '150px', objectFit: 'cover', boxShadow: '0px 0px 15px rgba(0, 0, 0, 0.3)' }}
+            />
           </Col>
         </Row>
       </Container>
