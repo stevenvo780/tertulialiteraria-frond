@@ -1,0 +1,24 @@
+{
+  "publicRoutes": [
+    { "path": "/home", "element": "Home", "name": "Inicio" },
+    { "path": "/library", "element": "Library", "name": "Biblioteca" },
+    { "path": "/events", "element": "Events", "name": "Eventos" },
+    { "path": "/login", "element": "Login", "name": "Iniciar Sesión" },
+    { "path": "/register", "element": "Register", "name": "Registrarse" }
+  ],
+  "roleRoutes": {
+    "user": [
+      { "path": "/", "element": "Home", "name": "Inicio" },
+      { "path": "/events", "element": "Events", "name": "Eventos" },
+      { "path": "/normativa", "element": "Normativa", "name": "Normativa" },
+      { "path": "/library", "element": "Library", "name": "Biblioteca" }
+    ],
+    "admin": [
+      { "path": "/", "element": "Home", "name": "Inicio" },
+      { "path": "/events", "element": "Events", "name": "Eventos" },
+      { "path": "/normativa", "element": "Normativa", "name": "Normativa" },
+      { "path": "/normativa/staff", "element": "NormativaStaff", "name": "Normativa Staff" },
+      { "path": "/library", "element": "Library", "name": "Biblioteca" }
+    ]
+  }
+}

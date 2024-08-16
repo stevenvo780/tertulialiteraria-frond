@@ -1,30 +1,31 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { User, ResponseData } from '../utils/types';
+import { User } from '../utils/types';
 
 interface AuthState {
   isLoggedIn: boolean;
   userData: User | null;
-  access_token: string | null;
 }
 
+const persistedUser = localStorage.getItem('userData') ? JSON.parse(localStorage.getItem('userData') as string) : null;
+
 const initialState: AuthState = {
-  isLoggedIn: false,
-  userData: null,
-  access_token: null,
+  isLoggedIn: !!persistedUser,
+  userData: persistedUser,
 };
 
 const auth = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    login(state, action: PayloadAction<ResponseData>) {
+    login(state, action: PayloadAction<User>) {
       state.isLoggedIn = true;
-      state.userData = action.payload.userData;
-      state.access_token = action.payload.access_token;
+      state.userData = action.payload;
+      localStorage.setItem('userData', JSON.stringify(action.payload));
     },
     logout(state) {
       state.isLoggedIn = false;
       state.userData = null;
+      localStorage.removeItem('userData');
     },
   },
 });

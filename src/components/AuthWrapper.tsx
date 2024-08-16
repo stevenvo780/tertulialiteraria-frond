@@ -1,32 +1,37 @@
-import React, { useEffect } from 'react';
+import React, { Suspense, lazy } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './Layout';
-import Login from '../views/Login';
-import Register from '../views/Register';
-import Events from '../views/Events';
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
+import routesConfig from '../config/routesConfig.json';
+
+const loadComponent = (componentName: string) => {
+  return lazy(() => import(`../views/${componentName}`));
+};
+
+const generateRoutes = (routes: { path: string; element: string }[]) => {
+  return routes.map(({ path, element }) => {
+    const Component = loadComponent(element);
+    return <Route key={path} path={path} element={<Component />} />;
+  });
+};
 
 const AuthWrapper: React.FC = () => {
   const user = useSelector((state: RootState) => state.auth.userData);
+  const routesForRole = routesConfig.roleRoutes[user?.role || 'user'];
 
-  useEffect(() => {
-  }, [user]);
-
-  return user ? (
+  return (
     <Layout>
       <div style={{ margin: 10 }}>
-        <Routes>
-          <Route path="/events" element={<Events />} />
-          <Route path="/" element={<Navigate to="/pos" />} />
-        </Routes>
+        <Suspense fallback={<div>Cargando...</div>}>
+          <Routes>
+            {generateRoutes(routesConfig.publicRoutes)}
+            {generateRoutes(routesForRole)}
+            <Route path="*" element={<Navigate to="/" />} />
+          </Routes>
+        </Suspense>
       </div>
     </Layout>
-  ) : (
-    <Routes>
-      <Route path="/" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-    </Routes>
   );
 };
 

@@ -5,7 +5,9 @@ import { RootState } from './redux/store';
 import AuthWrapper from './components/AuthWrapper';
 import InfoAlert from './components/InfoAlert';
 import RingLoader from "react-spinners/RingLoader";
+import useFirebaseAuth from './hooks/useFirebaseAuth';
 import './App.css';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
 const override: any = {
   position: "fixed",
   top: "50%",
@@ -13,6 +15,7 @@ const override: any = {
   transform: "translate(-50%, -50%)"
 };
 function App() {
+  useFirebaseAuth();
   const loading = useSelector((state: RootState) => state.ui.loading);
   return (
     <>

@@ -2,147 +2,67 @@ export interface AuthData {
   email: string;
   password: string;
 }
-
-export enum TypeDocuments {
-  CC = 'CC',
-  NIT = 'NIT',
-}
-
 export interface User {
-  id: number;
-  email: string;
-  password: string;
-  name: string;
-  surname: string;
-  logo: string;
-  companyName: string;
-  documentNumber: number,
-  typeDocument: TypeDocuments;
-  phone: string;
-  products: Product[];
-  invoices: Invoice[];
-  clients: Client[];
-  cashBoxes: CashBox[];
-  Events: CashBox[];
-  categoryPricing: CategoryPricing[];
-  taxes: Taxes[];
-}
-
-export interface Client {
-  id?: number;
-  name?: string;
-  surname?: string;
-  email?: string;
-  phone?: string;
-  address?: string;
-  documentNumber: string;
-  invoices?: Invoice[];
-  user?: User;
-}
-
-export interface SelectInterface {
-  value: string | number,
-  label: string,
-}
-
-export interface Invoice {
-  id: number;
-  date: Date;
-  totalAmount: number;
-  client: Client;
-  iva?: number,
-  withholdingTax?: number,
-  consecutive?: number,
-  invoiceItems: { productId: number; quantity: number }[];
-  user?: User;
-}
-
-export interface Product {
-  id?: number;
-  name: string;
-  sortName: string;
-  description: string;
-  image?: string;
-  state: boolean;
-  priceTypes: ProductPriceType[];
-  categories: Category[];
-  user?: User;
-}
-
-export enum Operators {
-  Percentage = '%',
-  Subtraction = '-',
-}
-
-export interface Events {
-  id: number;
-  name: string;
-  value: number;
-  operator: Operators;
-  user: User;
-}
-
-export interface ProductPriceType {
-  id?: number;
-  category?: CategoryPricing;
-  price?: number;
+  id: string;
+  email?: string | undefined | null;
+  name?: string | undefined | null;
+  role?: 'admin' | 'user'; 
   events?: Events[];
-  taxes?: Taxes[];
-  user?: User;
 }
-
-export interface Taxes {
-  id: number;
-  name: string;
-  value: number;
-  operator: Operators;
-  user: User;
-}
-
-export interface Category {
-  id: number;
-  name?: string;
-  user?: User;
-}
-
-export interface CategoryPricing {
-  id: number;
-  name: string;
-  user?: User;
-}
-
-export interface CashBox {
+export interface Events {
   id?: number;
-  cashIn: number;
-  cashOut: number;
-  balance: number;
-  user?: User;
+  title: string;
+  description: string;
+  eventDate: Date;
+  startDate: Date;
+  endDate: Date;
+  author?: User;
+  repetition?: string;
 }
 
-export enum HttpMethod {
-  GET = 'GET',
-  POST = 'POST',
-  PUT = 'PUT',
-  DELETE = 'DELETE',
-  PATCH = 'PATCH',
-}
-
-export interface Webhook {
-  id: number;
-  bounceRoute: string;
-  targetUrl: string;
-  httpMethod: HttpMethod;
-  user: User;
-}
-
-export interface Config {
+export interface CalendarEvent {
   id?: number;
-  iva: number;
-  withholdingTax: number;
-  initialConsecutive: number;
-  finalConsecutive: number;
-  currentConsecutive?: number;
-  user?: User;
+  title: string;
+  start: Date;
+  end: Date;
+  description: string;
+  repetition?: string;
+  color?: string;
+}
+
+export interface Library {
+  id: number;
+  title: string;
+  description: string;
+  referenceDate: Date;
+  author?: User;
+  parent?: Library;
+  children?: Library[];
+}
+
+export interface CreateLibraryDto {
+  title: string;
+  description: string;
+  referenceDate: Date;
+  parentNoteId?: number;
+}
+
+export interface UpdateLibraryDto {
+  title?: string;
+  description?: string;
+  referenceDate?: Date;
+  parentNoteId?: number;
+}
+
+export interface Publication {
+  id: number;
+  title: string;
+  content: {
+    html: string;
+    css?: string;
+  };
+  publicationDate: Date;
+  author?: User;
 }
 
 export interface RouteApi {

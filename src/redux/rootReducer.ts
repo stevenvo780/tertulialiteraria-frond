@@ -1,15 +1,16 @@
 import { combineReducers } from '@reduxjs/toolkit';
 import auth from './auth';
-import products from './products';
+import events from './events';
 import ui from './ui';
-import category from './category';
-
+import publications from './publications';
+import library from './library';
 
 const rootReducer = combineReducers({
   auth,
-  products,
+  events,
   ui,
-  category
+  publications,
+  library,
 });
 
 export default rootReducer;

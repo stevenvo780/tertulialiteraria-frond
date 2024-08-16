@@ -1,147 +1,262 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Form, Table, Pagination, Container } from 'react-bootstrap';
-import api from '../../utils/axios';
-import { Events, Operators } from '../../utils/types';
+import { Calendar, momentLocalizer } from 'react-big-calendar';
+import moment from 'moment';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+import { Modal, Button, Form, Container } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
 import { addNotification } from '../../redux/ui';
-import { useDispatch } from 'react-redux';
+import { RootState } from '../../redux/store';
+import { getEvents, addEvent, updateEvent, deleteEvent } from '../../redux/events';
+import api from '../../utils/axios';
+import { CalendarEvent } from '../../utils/types';
+import { add, eachWeekOfInterval, eachMonthOfInterval, eachYearOfInterval, differenceInHours } from 'date-fns';
 
-const EventsCRUD: React.FC = () => {
+const localizer = momentLocalizer(moment);
+
+const COLORS = ['#FF5733', '#33FF57', '#3357FF', '#F333FF', '#FF33A6'];
+
+const getColorForTitle = (title: string): string => {
+  let hash = 0;
+  for (let i = 0; i < title.length; i++) {
+    hash = title.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return COLORS[Math.abs(hash) % COLORS.length];
+};
+
+const convertToCalendarEvent = (backendEvent: any): CalendarEvent => ({
+  id: backendEvent.id,
+  title: backendEvent.title,
+  description: backendEvent.description,
+  start: new Date(backendEvent.startDate),
+  end: new Date(backendEvent.endDate),
+  repetition: backendEvent.repetition,
+  color: getColorForTitle(backendEvent.title), // Asignar color basado en el título
+});
+
+const convertToBackendEvent = (calendarEvent: CalendarEvent): any => ({
+  id: calendarEvent.id,
+  title: calendarEvent.title,
+  description: calendarEvent.description,
+  startDate: calendarEvent.start,
+  endDate: calendarEvent.end,
+  repetition: calendarEvent.repetition,
+});
+
+const generateRecurringEvents = (event: CalendarEvent, start: Date, end: Date): CalendarEvent[] => {
+  const events: CalendarEvent[] = [];
+  const interval = { start, end };
+
+  switch (event.repetition) {
+    case 'weekly':
+      eachWeekOfInterval(interval).forEach(date => {
+        events.push({ ...event, start: date, end: add(date, { hours: differenceInHours(event.end, event.start) }) });
+      });
+      break;
+    case 'monthly':
+      eachMonthOfInterval(interval).forEach(date => {
+        events.push({ ...event, start: date, end: add(date, { hours: differenceInHours(event.end, event.start) }) });
+      });
+      break;
+    case 'yearly':
+      eachYearOfInterval(interval).forEach(date => {
+        events.push({ ...event, start: date, end: add(date, { hours: differenceInHours(event.end, event.start) }) });
+      });
+      break;
+    default:
+      events.push(event);
+      break;
+  }
+
+  return events;
+};
+
+const EventsCalendar: React.FC = () => {
   const dispatch = useDispatch();
-  const [events, setEvents] = useState<Events[]>([]);
-  const [selectedDiscount, setSelectedDiscount] = useState<Events | null>(null);
-  const [name, setName] = useState('');
-  const [value, setValue] = useState(0);
-  const [operator, setOperator] = useState(Operators.Percentage);
+  const eventsFromStore = useSelector((state: RootState) => state.events.events.map(convertToCalendarEvent));
+  const userRole = useSelector((state: RootState) => state.auth.userData);
   const [showModal, setShowModal] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [EventsPerPage] = useState(5);
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+  const [repetition, setRepetition] = useState<string>('none');
+  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
 
   useEffect(() => {
     fetchEvents();
   }, []);
 
   const fetchEvents = async () => {
-    const response = await api.get('/Events');
-    setEvents(response.data);
+    try {
+      const response = await api.get('/events');
+      dispatch(getEvents(response.data));
+    } catch (error) {
+      dispatch(addNotification({ message: 'Error al obtener los eventos', color: 'danger' }));
+    }
   };
 
-  const handleShowModal = (discount: Events | null = null) => {
-    setSelectedDiscount(discount);
-    setName(discount ? discount.name : '');
-    setValue(discount ? discount.value : 0);
-    setOperator(discount ? discount.operator : Operators.Percentage);
-    setShowModal(true);
+  const handleSelectSlot = (slotInfo: { start: Date; end: Date }) => {
+    if (userRole?.role === 'admin') {
+      setStartDate(slotInfo.start);
+      setEndDate(slotInfo.end);
+      setShowModal(true);
+    } else {
+      dispatch(addNotification({ message: 'No tienes permiso para crear eventos', color: 'warning' }));
+    }
   };
 
-  const handleCloseModal = () => {
-    setShowModal(false);
-    setSelectedDiscount(null);
+  const handleEventClick = (event: CalendarEvent) => {
+    if (userRole?.role === 'admin') {
+      setSelectedEvent(event);
+      setTitle(event.title);
+      setDescription(event.description);
+      setStartDate(new Date(event.start));
+      setEndDate(new Date(event.end));
+      setRepetition(event.repetition || 'none');
+      setShowModal(true);
+    } else {
+      dispatch(addNotification({ message: 'No tienes permiso para editar eventos', color: 'warning' }));
+    }
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+
     try {
-      if (selectedDiscount) {
-        await api.patch(`/Events/${selectedDiscount.id}`, { name, value, operator });
+      if (selectedEvent) {
+        const updatedEvent = convertToBackendEvent({ 
+          ...selectedEvent, 
+          title, 
+          description, 
+          start: startDate!, 
+          end: endDate!,
+          repetition,
+        });
+        await api.patch(`/events/${selectedEvent.id}`, updatedEvent);
+        dispatch(updateEvent(updatedEvent));
+        dispatch(addNotification({ message: 'Evento actualizado correctamente', color: 'success' }));
       } else {
-        await api.post('/Events', { name, value, operator });
+        const newEvent = convertToBackendEvent({
+          title,
+          description,
+          start: startDate!,
+          end: endDate!,
+          repetition,
+        });
+        const response = await api.post('/events', newEvent);
+        dispatch(addEvent(response.data));
+        dispatch(addNotification({ message: 'Evento creado correctamente', color: 'success' }));
       }
-      dispatch(addNotification({ message: 'Se guardo correctamente', color: 'success' }));
       fetchEvents();
-      handleCloseModal();
+      setShowModal(false);
     } catch (error) {
-      dispatch(addNotification({ message: 'Error al guardar', color: 'danger' }));
+      dispatch(addNotification({ message: 'Error al guardar el evento', color: 'danger' }));
     }
   };
 
-  const deleteDiscount = async (discount: Events) => {
-    try {
-      await api.delete(`/Events/${discount.id}`);
-      dispatch(addNotification({ message: 'Se borro correctamente', color: 'success' }));
-      fetchEvents();
-    } catch (error) {
-      dispatch(addNotification({ message: 'Error al borrar', color: 'danger' }));
+  const handleDelete = async () => {
+    if (selectedEvent) {
+      try {
+        await api.delete(`/events/${selectedEvent.id}`);
+        dispatch(deleteEvent(selectedEvent.id as number));
+        dispatch(addNotification({ message: 'Evento eliminado correctamente', color: 'success' }));
+        fetchEvents();
+        setShowModal(false);
+      } catch (error) {
+        dispatch(addNotification({ message: 'Error al eliminar el evento', color: 'danger' }));
+      }
     }
   };
 
-  // Get current Events
-  const indexOfLastDiscount = currentPage * EventsPerPage;
-  const indexOfFirstDiscount = indexOfLastDiscount - EventsPerPage;
-  const currentEvents = events.slice(indexOfFirstDiscount, indexOfLastDiscount);
-
-  // Change page
-  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
-
-  let active = currentPage;
-  let items = [];
-  for (let number = 1; number <= Math.ceil(events.length / EventsPerPage); number++) {
-    items.push(
-      <Pagination.Item key={number} active={number === active} onClick={() => paginate(number)}>
-        {number}
-      </Pagination.Item>,
-    );
-  }
+  const events = eventsFromStore.flatMap(event => {
+    return generateRecurringEvents(event, new Date(), add(new Date(), { months: 1 }));
+  });
 
   return (
     <Container fluid>
-      <Button variant="outline-primary" onClick={() => handleShowModal()} style={{ margin: '10px' }}>Crear nuevo beneficio</Button>
-      <Table bordered>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Nombre del beneficio</th>
-            <th>Valor</th>
-            <th>Operador</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentEvents.map((discount: Events, index: number) => (
-            <tr key={discount.id}>
-              <td>{index + 1}</td>
-              <td>{discount.name}</td>
-              <td>{discount.value}</td>
-              <td>{discount.operator}</td>
-              <td width={"20%"}>
-                <Button variant="outline-info" onClick={() => handleShowModal(discount)} style={{ margin: '5px' }}>Editar</Button>
-                <Button variant="outline-danger" onClick={() => deleteDiscount(discount)} style={{ margin: '5px' }}>Eliminar</Button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
-      <Pagination style={{ margin: '10px' }}>{items}</Pagination>
-      <Modal show={showModal} onHide={handleCloseModal}>
+      <h2 className="my-4">Calendario de Eventos</h2>
+      <Calendar
+        localizer={localizer}
+        events={events}
+        startAccessor="start"
+        endAccessor="end"
+        style={{ height: 500 }}
+        selectable={userRole?.role === 'admin'}
+        onSelectSlot={handleSelectSlot}
+        onSelectEvent={handleEventClick}
+        eventPropGetter={(event) => ({
+          style: { backgroundColor: event.color }, // Asignar color del evento
+        })}
+      />
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>{selectedDiscount ? 'Actualizar' : 'Crear'} Beneficio</Modal.Title>
+          <Modal.Title>{selectedEvent ? 'Editar Evento' : 'Crear Evento'}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={handleSubmit}>
-            <Form.Group>
-              <Form.Label>Nombre del beneficio</Form.Label>
-              <Form.Control type="text" value={name} onChange={(e) => setName(e.target.value)} />
+            <Form.Group controlId="formEventTitle">
+              <Form.Label>Título</Form.Label>
+              <Form.Control
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                required
+              />
             </Form.Group>
-            <Form.Group>
-              <Form.Label>Valor</Form.Label>
-              <Form.Control type="number" value={value} onChange={(e) => setValue(Number(e.target.value))} />
+            <Form.Group controlId="formEventDescription">
+              <Form.Label>Descripción</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                required
+              />
             </Form.Group>
-            <Form.Group>
-              <Form.Label>Operador</Form.Label>
-              <Form.Control as="select" value={operator} onChange={(e) => setOperator(e.target.value as Operators)}>
-                <option value={Operators.Percentage}>{Operators.Percentage}</option>
-                <option value={Operators.Subtraction}>{Operators.Subtraction}</option>
+            <Form.Group controlId="formEventStartDate">
+              <Form.Label>Fecha y Hora de Inicio</Form.Label>
+              <Form.Control
+                type="datetime-local"
+                value={startDate ? moment(startDate).format('YYYY-MM-DDTHH:mm') : ''}
+                onChange={(e) => setStartDate(new Date(e.target.value))}
+                required
+              />
+            </Form.Group>
+            <Form.Group controlId="formEventEndDate">
+              <Form.Label>Fecha y Hora de Fin</Form.Label>
+              <Form.Control
+                type="datetime-local"
+                value={endDate ? moment(endDate).format('YYYY-MM-DDTHH:mm') : ''}
+                onChange={(e) => setEndDate(new Date(e.target.value))}
+                required
+              />
+            </Form.Group>
+            <Form.Group controlId="formEventRepetition">
+              <Form.Label>Repetir Evento</Form.Label>
+              <Form.Control
+                as="select"
+                value={repetition}
+                onChange={(e) => setRepetition(e.target.value)}
+              >
+                <option value="none">No repetir</option>
+                <option value="weekly">Semanalmente</option>
+                <option value="monthly">Mensualmente</option>
+                <option value="yearly">Anualmente</option>
               </Form.Control>
             </Form.Group>
+            <Button variant="primary" type="submit">
+              {selectedEvent ? 'Actualizar' : 'Crear'}
+            </Button>
+            {selectedEvent && (
+              <Button variant="danger" onClick={handleDelete} className="ml-2">
+                Eliminar
+              </Button>
+            )}
           </Form>
         </Modal.Body>
-        <Modal.Footer>
-          <Button onClick={handleSubmit} variant="outline-success" type="submit">
-            {selectedDiscount ? 'Actualizar' : 'Crear'}
-          </Button>
-        </Modal.Footer>
       </Modal>
     </Container>
   );
 };
 
-export default EventsCRUD;
+export default EventsCalendar;
