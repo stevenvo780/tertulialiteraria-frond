@@ -18,15 +18,17 @@ const generateRoutes = (routes: { path: string; element: string }[]) => {
 
 const AuthWrapper: React.FC = () => {
   const user = useSelector((state: RootState) => state.auth.userData);
-  const routesForRole = routesConfig.roleRoutes[user?.role || 'user'];
+  const publicRoutes = routesConfig.publicRoutes;
+  const roleRoutes = routesConfig.roleRoutes[user?.role || 'user'];
+
+  const combinedRoutes = [...publicRoutes, ...roleRoutes];
 
   return (
     <Layout>
       <div style={{ margin: 10 }}>
         <Suspense fallback={<div>Cargando...</div>}>
           <Routes>
-            {generateRoutes(routesConfig.publicRoutes)}
-            {generateRoutes(routesForRole)}
+            {generateRoutes(combinedRoutes)}
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </Suspense>
