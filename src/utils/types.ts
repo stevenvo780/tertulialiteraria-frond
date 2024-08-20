@@ -50,6 +50,13 @@ export interface Library {
   visibility: LibraryVisibility;
 }
 
+export enum TemplateType {
+  NOTES = 'Notes',
+  EVENTS = 'Events',
+  PUBLICATIONS = 'Publications',
+  OTHERS = 'Others',
+}
+
 export interface CreateLibraryDto {
   title: string;
   description: string;

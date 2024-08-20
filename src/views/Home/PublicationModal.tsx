@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Modal, Form, Button } from 'react-bootstrap';
 import CustomEditor from '../../components/CustomEditor';
+import { TemplateType } from '../../utils/types';
 
 interface PublicationModalProps {
   showModal: boolean;
@@ -60,6 +61,7 @@ const PublicationModal: React.FC<PublicationModalProps> = ({
                 <CustomEditor
                   content={content}
                   setContent={setContent}
+                  templateType={TemplateType.PUBLICATIONS}
                 />
               </Form.Group>
               <br />

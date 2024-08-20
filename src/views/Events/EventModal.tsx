@@ -5,7 +5,7 @@ import api from '../../utils/axios';
 import { useDispatch } from 'react-redux';
 import { addEvent, updateEvent, deleteEvent } from '../../redux/events';
 import { addNotification } from '../../redux/ui';
-
+import { TemplateType } from '../../utils/types';
 import moment from 'moment';
 import CustomEditor from '../../components/CustomEditor';
 
@@ -156,6 +156,7 @@ const EventModal: React.FC<EventModalProps> = ({
             <CustomEditor
               content={description}
               setContent={setDescription}
+              templateType={TemplateType.EVENTS}
             />
           </Form.Group>
           <br />

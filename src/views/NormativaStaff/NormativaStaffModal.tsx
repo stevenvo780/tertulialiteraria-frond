@@ -1,6 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { Modal, Form, Button } from 'react-bootstrap';
-import { Editor } from '@tinymce/tinymce-react';
 import api from '../../utils/axios';
 import { useDispatch } from 'react-redux';
 import { addNotification } from '../../redux/ui';

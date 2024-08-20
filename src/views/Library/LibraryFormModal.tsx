@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
-import { Editor } from '@tinymce/tinymce-react';
+import { TemplateType } from '../../utils/types';
 import { storage } from '../../utils/firebase';
 import { Library, CreateLibraryDto, UpdateLibraryDto, LibraryVisibility } from '../../utils/types';
 import CustomEditor from '../../components/CustomEditor';
@@ -106,6 +106,7 @@ const LibraryFormModal: React.FC<LibraryFormModalProps> = ({
                 <CustomEditor
                   content={description}
                   setContent={setDescription}
+                  templateType={TemplateType.NOTES}
                 />
               </Form.Group>
               <Form.Group controlId="formLibraryVisibility">

@@ -150,14 +150,14 @@ const LibraryPage: React.FC = () => {
             <Button variant="secondary" onClick={handleGoBack} className="mr-4" style={{ marginInline: 20 }}>
               <FaArrowLeft /> Volver
             </Button>
-            {userRole === 'admin' && (
+            {(userRole === 'admin' || userRole === 'super_admin') && (
               <Button variant="primary" onClick={() => setShowModal(true)}>
                 <FaPlus /> Crear Subnota
               </Button>
             )}
           </>
         ) : (
-          userRole === 'admin' && (
+          (userRole === 'admin' || userRole === 'super_admin') && (
             <Button variant="primary" onClick={() => setShowModal(true)}>
               <FaPlus /> Crear Nota
             </Button>
@@ -172,8 +172,8 @@ const LibraryPage: React.FC = () => {
           {currentNote.children && currentNote.children.length > 0 ? (
             <LibraryList
               libraries={currentNote.children}
-              onEdit={userRole === 'admin' ? handleEdit : undefined}
-              onDelete={userRole === 'admin' ? () => { } : undefined}
+              onEdit={(userRole === 'admin' || userRole === 'super_admin') ? handleEdit : undefined}
+              onDelete={(userRole === 'admin' || userRole === 'super_admin') ? () => { } : undefined}
               onNavigate={handleNoteClick}
             />
           ) : (
@@ -183,13 +183,13 @@ const LibraryPage: React.FC = () => {
       ) : (
         <LibraryList
           libraries={libraries}
-          onEdit={userRole === 'admin' ? handleEdit : undefined}
-          onDelete={userRole === 'admin' ? () => { } : undefined}
+          onEdit={(userRole === 'admin' || userRole === 'super_admin') ? handleEdit : undefined}
+          onDelete={(userRole === 'admin' || userRole === 'super_admin') ? () => { } : undefined}
           onNavigate={handleNoteClick}
         />
       )}
 
-      {userRole === 'admin' && (
+      {(userRole === 'admin' || userRole === 'super_admin') && (
         <LibraryFormModal
           show={showModal}
           onHide={() => setShowModal(false)}
