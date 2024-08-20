@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { User } from '../utils/types';
+import { signOutUser } from '../utils/firebaseHelper';
 
 interface AuthState {
   isLoggedIn: boolean;
@@ -26,6 +27,7 @@ const auth = createSlice({
       state.isLoggedIn = false;
       state.userData = null;
       localStorage.removeItem('userData');
+      signOutUser();
     },
   },
 });

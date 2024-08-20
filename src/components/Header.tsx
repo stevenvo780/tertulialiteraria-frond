@@ -7,16 +7,18 @@ import { logout } from '../redux/auth';
 import routesConfig from '../config/routesConfig.json';
 import { FaTh } from 'react-icons/fa';
 
+
 const Header: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);
   const userRole = useSelector((state: RootState) => state.auth.userData?.role || 'user');
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     dispatch(logout());
     navigate('/');
   };
+  
 
   const handleLoginRedirect = () => {
     navigate('/login');

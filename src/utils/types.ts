@@ -7,7 +7,6 @@ export interface User {
   email?: string | undefined | null;
   name?: string | undefined | null;
   role?: 'admin' | 'user'; 
-  events?: Events[];
 }
 export interface Events {
   id?: number | null;
@@ -34,6 +33,12 @@ export interface CalendarEvent {
   };
 }
 
+export enum LibraryVisibility {
+  GENERAL = 'general',
+  USERS = 'users',
+  ADMIN = 'admin',
+}
+
 export interface Library {
   id: number;
   title: string;
@@ -42,6 +47,7 @@ export interface Library {
   author?: User;
   parent?: Library;
   children?: Library[];
+  visibility: LibraryVisibility;
 }
 
 export interface CreateLibraryDto {
@@ -49,6 +55,7 @@ export interface CreateLibraryDto {
   description: string;
   referenceDate: Date;
   parentNoteId?: number;
+  visibility: LibraryVisibility;
 }
 
 export interface UpdateLibraryDto {
@@ -56,6 +63,7 @@ export interface UpdateLibraryDto {
   description?: string;
   referenceDate?: Date;
   parentNoteId?: number;
+  visibility?: LibraryVisibility;
 }
 
 export interface Publication {
