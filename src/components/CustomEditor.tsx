@@ -13,7 +13,7 @@ interface CustomEditorProps {
   plugins?: string;
   apiKey?: string;
   contentCss?: string;
-  templateType?: string; // Nuevo parámetro para filtrar templates
+  templateType?: string;
 }
 
 const CustomEditor: React.FC<CustomEditorProps> = ({
@@ -22,7 +22,7 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
   height = 500,
   menubar = false,
   toolbar = "undo redo fullscreen spellcheckdialog formatpainter | blocks fontfamily fontsize | bold italic underline forecolor backcolor | link image | alignleft aligncenter alignright alignjustify | code",
-  plugins = 'fullscreen powerpaste casechange searchreplace autolink directionality visualblocks visualchars image link media mediaembed codesample table charmap pagebreak nonbreaking anchor tableofcontents insertdatetime advlist lists checklist wordcount tinymcespellchecker editimage help formatpainter permanentpen charmap linkchecker emoticons advtable export autosave advcode fullscreen',
+  plugins = 'fullscreen powerpaste casechange searchreplace autolink directionality visualblocks visualchars image link media mediaembed codesample table charmap pagebreak nonbreaking anchor tableofcontents insertdatetime advlist lists checklist wordcount editimage help formatpainter permanentpen charmap linkchecker emoticons advtable export autosave advcode fullscreen',
   apiKey = 'ide9bzali9973f0fmbzusywuxlpp3mxmigqoa07eddfltlrj',
   contentCss = 'https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css',
   templateType = null,
@@ -34,8 +34,8 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
     const fetchTemplates = async () => {
       try {
         let response = null;
-        if(templateType){
-          response = await axios.get(`/templte?type=${templateType}`);
+        if (templateType) {
+          response = await axios.get(`/template?type=${templateType}`);
         } else {
           response = await axios.get('/template');
         }
@@ -49,9 +49,7 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
       }
     };
 
-    if (templateType) {
-      fetchTemplates();
-    }
+    fetchTemplates();
   }, [templateType]);
 
   const uploadImage = async (blobInfo: any): Promise<string> => {
@@ -73,11 +71,21 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
     setContent(templateContent);
   };
 
+
+  useEffect(() => {
+    return () => {
+      if (editorRef.current) {
+        editorRef.current.destroy();
+        editorRef.current = null;
+      }
+    };
+  }, []);
+
   return (
     <>
       <Editor
         apiKey={apiKey}
-        value={content}
+        value={content || ''}
         onInit={(evt, editor) => {
           editorRef.current = editor;
         }}
