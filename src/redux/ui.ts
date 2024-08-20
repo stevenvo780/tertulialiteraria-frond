@@ -7,18 +7,26 @@ interface Notification {
   message: string;
 }
 
+interface Config {
+  generalNormative: string;
+  staffNormative: string;
+  projectInfo: string;
+}
+
 interface State {
   loading: boolean;
-  notifications: Notification[],
+  notifications: Notification[];
+  config: Config | null;
 }
 
 const initialState: State = {
   loading: false,
   notifications: [],
+  config: null,
 };
 
 const ui = createSlice({
-  name: 'auth',
+  name: 'ui',
   initialState,
   reducers: {
     loading(state, action: PayloadAction<boolean>) {
@@ -28,13 +36,16 @@ const ui = createSlice({
       state.notifications.push({
         id: uuid(),
         message: action.payload.message,
-        color: action.payload.color
+        color: action.payload.color,
       });
     },
     removeNotification(state, action: PayloadAction<string>) {
       state.notifications = state.notifications.filter(
         (notification) => notification.id !== action.payload
       );
+    },
+    setConfig(state, action: PayloadAction<Config>) {
+      state.config = action.payload;
     },
   },
 });
@@ -43,6 +54,7 @@ export const {
   loading,
   addNotification,
   removeNotification,
+  setConfig,
 } = ui.actions;
 
 export default ui.reducer;

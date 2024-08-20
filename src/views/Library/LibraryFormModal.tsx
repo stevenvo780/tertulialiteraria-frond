@@ -3,6 +3,7 @@ import { Modal, Button, Form } from 'react-bootstrap';
 import { Editor } from '@tinymce/tinymce-react';
 import { storage } from '../../utils/firebase';
 import { Library, CreateLibraryDto, UpdateLibraryDto, LibraryVisibility } from '../../utils/types';
+import CustomEditor from '../../components/CustomEditor';
 
 interface LibraryFormModalProps {
   show: boolean;
@@ -102,19 +103,9 @@ const LibraryFormModal: React.FC<LibraryFormModalProps> = ({
               </Form.Group>
               <Form.Group controlId="formLibraryDescription">
                 <Form.Label>Descripción</Form.Label>
-                <Editor
-                  apiKey='ide9bzali9973f0fmbzusywuxlpp3mxmigqoa07eddfltlrj'
-                  value={description}
-                  onInit={(evt, editor) => editorRef.current = editor}
-                  init={{
-                    advcode_inline: true,
-                    height: 500,
-                    menubar: false,
-                    plugins: 'powerpaste casechange searchreplace autolink directionality visualblocks visualchars image link media mediaembed codesample table charmap pagebreak nonbreaking anchor tableofcontents insertdatetime advlist lists checklist wordcount tinymcespellchecker editimage help formatpainter permanentpen charmap linkchecker emoticons advtable export autosave advcode fullscreen',
-                    toolbar: "undo redo spellcheckdialog formatpainter | blocks fontfamily fontsize | bold italic underline forecolor backcolor | link image | alignleft aligncenter alignright alignjustify | code",
-                    images_upload_handler: uploadImage,
-                  }}
-                  onEditorChange={(newContent: any) => setDescription(newContent)}
+                <CustomEditor
+                  content={description}
+                  setContent={setDescription}
                 />
               </Form.Group>
               <Form.Group controlId="formLibraryVisibility">

@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
-import { Editor } from '@tinymce/tinymce-react';
 import { Events } from '../../utils/types';
 import api from '../../utils/axios';
 import { useDispatch } from 'react-redux';
 import { addEvent, updateEvent, deleteEvent } from '../../redux/events';
 import { addNotification } from '../../redux/ui';
-import { storage } from '../../utils/firebase';
+
 import moment from 'moment';
+import CustomEditor from '../../components/CustomEditor';
 
 interface EventModalProps {
   showModal: boolean;
@@ -90,20 +90,7 @@ const EventModal: React.FC<EventModalProps> = ({
     }
   };
 
-  const uploadImage = async (blobInfo: any): Promise<string> => {
-    try {
-      const file = blobInfo.blob();
-      const storageRef = storage.ref();
-      const fileRef = storageRef.child(`images/${file.name}`);
 
-      const uploadTaskSnapshot = await fileRef.put(file);
-      const fileUrl = await uploadTaskSnapshot.ref.getDownloadURL();
-      return fileUrl;
-    } catch (error) {
-      console.error("Error al subir la imagen:", error);
-      throw new Error("Error al subir la imagen");
-    }
-  };
 
   const handleClose = () => {
     setTitle('');
@@ -166,19 +153,9 @@ const EventModal: React.FC<EventModalProps> = ({
           </Form.Group>
           <Form.Group controlId="formEventDescription">
             <Form.Label>Descripción</Form.Label>
-            <Editor
-              apiKey='ide9bzali9973f0fmbzusywuxlpp3mxmigqoa07eddfltlrj'
-              value={description}
-              onInit={(evt, editor) => editorRef.current = editor}
-              init={{
-                advcode_inline: true,
-                height: 500,
-                menubar: false,
-                plugins: 'powerpaste casechange searchreplace autolink directionality visualblocks visualchars image link media mediaembed codesample table charmap pagebreak nonbreaking anchor tableofcontents insertdatetime advlist lists checklist wordcount tinymcespellchecker editimage help formatpainter permanentpen charmap linkchecker emoticons advtable export autosave advcode fullscreen',
-                toolbar: "undo redo spellcheckdialog formatpainter | blocks fontfamily fontsize | bold italic underline forecolor backcolor | link image | alignleft aligncenter alignright alignjustify | code",
-                images_upload_handler: uploadImage,
-              }}
-              onEditorChange={(newContent: any) => setDescription(newContent)}
+            <CustomEditor
+              content={description}
+              setContent={setDescription}
             />
           </Form.Group>
           <br />

@@ -1,6 +1,6 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Modal, Form, Button } from 'react-bootstrap';
-import { Editor } from '@tinymce/tinymce-react';
+import CustomEditor from '../../components/CustomEditor';
 
 interface PublicationModalProps {
   showModal: boolean;
@@ -11,7 +11,6 @@ interface PublicationModalProps {
   content: string;
   setContent: (content: string) => void;
   editingPublication: any;
-  uploadImage: (blobInfo: any) => Promise<string>;
 }
 
 const PublicationModal: React.FC<PublicationModalProps> = ({
@@ -23,23 +22,17 @@ const PublicationModal: React.FC<PublicationModalProps> = ({
   content,
   setContent,
   editingPublication,
-  uploadImage,
 }) => {
-  const editorRef = useRef<any>(null);
 
   const handleClose = () => {
     setShowModal(false);
-
-    if (editorRef.current) {
-      editorRef.current.setContent('');
-    }
   };
 
   useEffect(() => {
-    if (!showModal && editorRef.current) {
-      editorRef.current.setContent('');
+    if (!showModal) {
+      setContent(''); // Limpiar contenido cuando se cierre el modal
     }
-  }, [showModal]);
+  }, [showModal, setContent]);
 
   return (
     <>
@@ -64,22 +57,10 @@ const PublicationModal: React.FC<PublicationModalProps> = ({
               </Form.Group>
               <Form.Group controlId="formPublicationContent">
                 <Form.Label>Contenido</Form.Label>
-
-                <Editor
-                  apiKey='ide9bzali9973f0fmbzusywuxlpp3mxmigqoa07eddfltlrj'
-                  value={content}
-                  onInit={(evt, editor) => editorRef.current = editor}
-                  init={{
-                    advcode_inline: true,
-                    height: 500,
-                    menubar: false,
-                    plugins: 'powerpaste casechange searchreplace autolink directionality visualblocks visualchars image link media mediaembed codesample table charmap pagebreak nonbreaking anchor tableofcontents insertdatetime advlist lists checklist wordcount tinymcespellchecker editimage help formatpainter permanentpen charmap linkchecker emoticons advtable export autosave advcode fullscreen',
-                    toolbar: "undo redo spellcheckdialog formatpainter | blocks fontfamily fontsize | bold italic underline forecolor backcolor | link image | alignleft aligncenter alignright alignjustify | code",
-                    images_upload_handler: uploadImage,
-                  }}
-                  onEditorChange={(newContent: any) => setContent(newContent)}
+                <CustomEditor
+                  content={content}
+                  setContent={setContent}
                 />
-
               </Form.Group>
               <br />
               <Button variant="primary" type="submit">

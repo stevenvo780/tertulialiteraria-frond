@@ -9,7 +9,6 @@ import PublicationsList from './PublicationsList';
 import Sidebar from './Sidebar';
 import PublicationModal from './PublicationModal';
 import { Publication } from '../../utils/types';
-import { storage } from '../../utils/firebase';
 
 const HomePage: React.FC = () => {
   const dispatch = useDispatch();
@@ -86,22 +85,6 @@ const HomePage: React.FC = () => {
       dispatch(addNotification({ message: 'Error al eliminar la publicación', color: 'danger' }));
     }
   };
-
-  const uploadImage = async (blobInfo: any): Promise<string> => {
-    try {
-      const file = blobInfo.blob();
-      const storageRef = storage.ref();
-      const fileRef = storageRef.child(`images/${file.name}`);
-
-      const uploadTaskSnapshot = await fileRef.put(file);
-      const fileUrl = await uploadTaskSnapshot.ref.getDownloadURL();
-      return fileUrl;
-    } catch (error) {
-      console.error("Error al subir la imagen:", error);
-      throw new Error("Error al subir la imagen");
-    }
-  };
-
   return (
     <>
       {/* Header Section with Banner Image */}
@@ -149,7 +132,6 @@ const HomePage: React.FC = () => {
           content={content}
           setContent={setContent}
           editingPublication={editingPublication}
-          uploadImage={uploadImage}
         />
       </Container>
     </>
