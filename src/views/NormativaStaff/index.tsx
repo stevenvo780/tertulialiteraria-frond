@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Button } from 'react-bootstrap';
+import { Container, Button } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
 import StaffNormativeModal from './NormativaStaffModal';
 import api from '../../utils/axios';
 import { addNotification } from '../../redux/ui';
+import { FaEdit } from 'react-icons/fa'; // Nueva importación
 
 const StaffNormativePage: React.FC = () => {
   const [staffNormative, setStaffNormative] = useState<string | null>(null);
@@ -27,10 +28,12 @@ const StaffNormativePage: React.FC = () => {
   return (
     <>
       {(userRole === 'super_admin') && (
-        <div className="text-center mt-5">
-          <Button variant="primary" onClick={() => setShowEditModal(true)}>
-            Editar Normativa del Staff
-          </Button>
+        <div className="d-flex justify-content-end mt-5" style={{ marginInline: 20 }}>
+          <FaEdit
+            size={24}
+            onClick={() => setShowEditModal(true)}
+            style={{ cursor: 'pointer' }}
+          />
         </div>
       )}
       <div dangerouslySetInnerHTML={{ __html: staffNormative || 'Cargando...' }} />

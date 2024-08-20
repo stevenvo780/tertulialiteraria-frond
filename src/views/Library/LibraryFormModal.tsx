@@ -54,21 +54,6 @@ const LibraryFormModal: React.FC<LibraryFormModalProps> = ({
     onHide();
   };
 
-  const uploadImage = async (blobInfo: any): Promise<string> => {
-    try {
-      const file = blobInfo.blob();
-      const storageRef = storage.ref();
-      const fileRef = storageRef.child(`images/${file.name}`);
-
-      const uploadTaskSnapshot = await fileRef.put(file);
-      const fileUrl = await uploadTaskSnapshot.ref.getDownloadURL();
-      return fileUrl;
-    } catch (error) {
-      console.error("Error al subir la imagen:", error);
-      throw new Error("Error al subir la imagen");
-    }
-  };
-
   const editorRef = useRef<any>(null);
 
   const handleClose = () => {
@@ -76,7 +61,7 @@ const LibraryFormModal: React.FC<LibraryFormModalProps> = ({
     setDescription('');
     onHide();
     if (editorRef.current) {
-      editorRef.current.remove(); // Desmonta manualmente el editor
+      editorRef.current.remove();
     }
   }
 

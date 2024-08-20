@@ -12,7 +12,7 @@ import { RootState } from '../../redux/store';
 import { getEvents } from '../../redux/events';
 import api from '../../utils/axios';
 import { Events } from '../../utils/types';
-import EventModal from './EventModal';
+import EventModal from '../../components/EventModal';
 import { convertToBackendEvent, generateRecurringEvents } from './EventUtils';
 
 const EventsCalendar: React.FC = () => {
@@ -61,8 +61,7 @@ const EventsCalendar: React.FC = () => {
   };
 
   const handleEventClick = (info: any) => {
-    console.log(info);
-    if (userRole?.role === 'admin') {
+    if (userRole?.role === 'admin' || userRole?.role === 'super_admin') {
       const clickedEvent = eventsFromStore.find(event => event.id === info.event.id);
       console.log(clickedEvent);
       if (clickedEvent) {

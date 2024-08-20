@@ -1,20 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
-import { Events } from '../../utils/types';
-import api from '../../utils/axios';
+import { Events } from '../utils/types';
+import api from '../utils/axios';
 import { useDispatch } from 'react-redux';
-import { addEvent, updateEvent, deleteEvent } from '../../redux/events';
-import { addNotification } from '../../redux/ui';
-import { TemplateType } from '../../utils/types';
+import { addEvent, updateEvent, deleteEvent } from '../redux/events';
+import { addNotification } from '../redux/ui';
+import { TemplateType } from '../utils/types';
 import moment from 'moment';
-import CustomEditor from '../../components/CustomEditor';
+import CustomEditor from '../components/CustomEditor';
 
 interface EventModalProps {
   showModal: boolean;
   setShowModal: (show: boolean) => void;
   selectedEvent: Events | null;
   fetchEvents: () => void;
-  isEditing: boolean; // Indicador de si se está editando o creando
+  isEditing: boolean;
 }
 
 const EventModal: React.FC<EventModalProps> = ({

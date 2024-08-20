@@ -5,10 +5,14 @@ import api from '../../utils/axios';
 import { Events } from '../../utils/types';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
+import EventModal from '../../components/EventModal';
+import { FaEdit } from 'react-icons/fa';
 
 const EventDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [event, setEvent] = useState<Events | null>(null);
+  const [showModal, setShowModal] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     const fetchEventDetails = async () => {
@@ -16,7 +20,6 @@ const EventDetail: React.FC = () => {
         const response = await api.get(`/events/${id}`);
         setEvent(response.data);
       } catch (error) {
-        // Handle error gracefully (e.g., display notification)
         console.error('Error fetching event details:', error);
       }
     };
@@ -24,19 +27,30 @@ const EventDetail: React.FC = () => {
     fetchEventDetails();
   }, [id]);
 
+  const handleEdit = () => {
+    setIsEditing(true);
+    setShowModal(true);
+  };
+
   if (!event) {
     return <p>Cargando detalles del evento...</p>;
   }
 
   return (
     <Container className="mt-4 d-flex flex-column">
+      <div className="edit-icon-container position-fixed" style={{ top: '100px', right: '50px' }}>
+        <FaEdit 
+          size={24} 
+          onClick={handleEdit} 
+          style={{ cursor: 'pointer' }} 
+        />
+      </div>
       <Card className="mb-4">
         <Card.Body>
           <Card.Title>{event.title}</Card.Title>
           <Card.Text dangerouslySetInnerHTML={{ __html: event.description }} />
         </Card.Body>
       </Card>
-
       <Row>
         <Col xs={12} md={6}>
           <Card>
@@ -72,6 +86,16 @@ const EventDetail: React.FC = () => {
           </div>
         </Col>
       </Row>
+
+      {showModal && (
+        <EventModal
+          showModal={showModal}
+          setShowModal={setShowModal}
+          selectedEvent={event}
+          fetchEvents={() => { }}
+          isEditing={isEditing}
+        />
+      )}
     </Container>
   );
 };

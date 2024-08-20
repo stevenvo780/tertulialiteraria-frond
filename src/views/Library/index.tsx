@@ -9,7 +9,7 @@ import { addNotification } from '../../redux/ui';
 import { Library, CreateLibraryDto, UpdateLibraryDto } from '../../utils/types';
 import LibraryList from './LibraryList';
 import LibraryFormModal from './LibraryFormModal';
-import { FaArrowLeft, FaPlus } from 'react-icons/fa';
+import { FaArrowLeft, FaPlus, FaEdit } from 'react-icons/fa';
 
 const LibraryPage: React.FC = () => {
   const { noteId } = useParams<{ noteId: string | undefined }>();
@@ -103,7 +103,6 @@ const LibraryPage: React.FC = () => {
     setShowModal(true);
   };
 
-
   const handleSearch = async (event: React.FormEvent) => {
     event.preventDefault();
     try {
@@ -116,7 +115,6 @@ const LibraryPage: React.FC = () => {
       } else {
         fetchLibraries();
       }
-
     } catch (error) {
       dispatch(addNotification({ message: 'Error al realizar la búsqueda', color: 'danger' }));
     }
@@ -151,9 +149,14 @@ const LibraryPage: React.FC = () => {
               <FaArrowLeft /> Volver
             </Button>
             {(userRole === 'admin' || userRole === 'super_admin') && (
-              <Button variant="primary" onClick={() => setShowModal(true)}>
-                <FaPlus /> Crear Subnota
-              </Button>
+              <>
+                <Button variant="primary" onClick={() => setShowModal(true)} style={{ marginInline: 20 }}>
+                  <FaPlus /> Crear Subnota
+                </Button>
+                <Button variant="warning" onClick={() => handleEdit(currentNote)}>
+                  <FaEdit /> Editar Nota
+                </Button>
+              </>
             )}
           </>
         ) : (
