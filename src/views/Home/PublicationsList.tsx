@@ -2,13 +2,13 @@ import React from 'react';
 import { Card, Form } from 'react-bootstrap';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import { Publication } from '../../utils/types';
-import { UserRole } from '../../utils/types';
+import { UserRole, User } from '../../utils/types';
 
 interface PublicationsListProps {
   publications: Publication[];
   handleEdit: (publication: Publication | null) => void;
   handleDelete: (id: number) => void;
-  user: any;
+  user: User | null;
   setShowModal: (show: boolean) => void;
 }
 
@@ -21,7 +21,7 @@ const PublicationsList: React.FC<PublicationsListProps> = ({
 }) => {
   return (
     <>
-      {user && (
+      {(user?.role === UserRole.ADMIN || user?.role === UserRole.SUPER_ADMIN) && (
         <div className="d-flex justify-content-end mb-4">
           <Form.Control
             type="text"
