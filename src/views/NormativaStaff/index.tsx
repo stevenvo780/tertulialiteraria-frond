@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Button } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
 import StaffNormativeModal from './NormativaStaffModal';
 import api from '../../utils/axios';
 import { addNotification } from '../../redux/ui';
-import { FaEdit } from 'react-icons/fa'; // Nueva importación
+import { FaEdit } from 'react-icons/fa';
+import { UserRole } from '../../utils/types';
 
 const StaffNormativePage: React.FC = () => {
   const [staffNormative, setStaffNormative] = useState<string | null>(null);
@@ -27,7 +27,7 @@ const StaffNormativePage: React.FC = () => {
 
   return (
     <>
-      {(userRole === 'super_admin') && (
+      {(userRole === UserRole.SUPER_ADMIN) && (
         <div className="edit-icon-container position-fixed" style={{ top: '100px', right: '50px' }}>
           <FaEdit
             size={24}

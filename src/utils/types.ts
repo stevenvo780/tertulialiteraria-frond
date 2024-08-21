@@ -2,11 +2,25 @@ export interface AuthData {
   email: string;
   password: string;
 }
+
+export enum UserRole {
+  SUPER_ADMIN = 'super_admin',
+  ADMIN = 'admin',
+  EDITOR = 'editor',
+  USER = 'user',
+}
+
 export interface User {
   id: string;
-  email?: string | undefined | null;
+  email: string;
   name?: string | undefined | null;
-  role?: 'admin' | 'user' | 'super_admin' | undefined | null; 
+  role: UserRole; 
+}
+
+export interface CreateUserDto {
+  email: string;
+  password: string;
+  name?: string;
 }
 
 export enum Repetition {

@@ -12,7 +12,7 @@ const Header: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);
-  const userRole = useSelector((state: RootState) => state.auth.userData?.role || 'user');
+  const userRole = useSelector((state: RootState) => state.auth.userData?.role);
 
   const handleLogout = async () => {
     dispatch(logout());
@@ -25,7 +25,8 @@ const Header: React.FC = () => {
   };
 
   const publicRoutes = routesConfig.publicRoutes;
-  const roleRoutes = routesConfig.roleRoutes[userRole];
+  const role = userRole as string;
+  const roleRoutes = (routesConfig.roleRoutes as { [key: string]: { path: string; element: string; name: string; viewHeader: boolean; }[] })[role];
   const combinedRoutes = [...publicRoutes, ...roleRoutes];
 
   return (

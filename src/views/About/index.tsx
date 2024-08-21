@@ -5,6 +5,7 @@ import { RootState } from '../../redux/store';
 import AboutModal from './AboutModal';
 import api from '../../utils/axios';
 import { addNotification } from '../../redux/ui';
+import { UserRole } from '../../utils/types';
 
 const AboutPage: React.FC = () => {
   const [projectInfo, setProjectInfo] = useState<string | null>(null);
@@ -27,7 +28,7 @@ const AboutPage: React.FC = () => {
 
   return (
     <>
-      {userRole === 'super_admin' && (
+      {(userRole === UserRole.SUPER_ADMIN) && (
         <div className="edit-icon-container position-fixed" style={{ top: '100px', right: '50px', zIndex:1000 }}>
           <FaEdit
             size={24}

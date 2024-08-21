@@ -11,7 +11,7 @@ import { addNotification } from '../../redux/ui';
 import { RootState } from '../../redux/store';
 import { getEvents } from '../../redux/events';
 import api from '../../utils/axios';
-import { Events, Repetition } from '../../utils/types';
+import { Events, Repetition, UserRole } from '../../utils/types';
 import EventModal from '../../components/EventModal';
 import { convertToBackendEvent, generateRecurringEvents } from './EventUtils';
 
@@ -43,7 +43,7 @@ const EventsCalendar: React.FC = () => {
   };
 
   const handleDateClick = (info: any) => {
-    if (userRole?.role === 'admin' || userRole?.role === 'super_admin') {
+    if (userRole?.role === UserRole.ADMIN || userRole?.role === UserRole.SUPER_ADMIN) {
       setSelectedEvent({
         id: null,
         title: '',
@@ -61,7 +61,7 @@ const EventsCalendar: React.FC = () => {
   };
 
   const handleEventClick = (info: any) => {
-    if (userRole?.role === 'admin' || userRole?.role === 'super_admin') {
+    if (userRole?.role === UserRole.ADMIN || userRole?.role === UserRole.SUPER_ADMIN) {
       const clickedEvent = eventsFromStore.find(event => event.id === info.event.id);
       if (clickedEvent) {
         setSelectedEvent(convertToBackendEvent(clickedEvent));

@@ -97,6 +97,7 @@ const UserListPage: React.FC = () => {
                 onChange={(e) => setRole(e.target.value)}
               >
                 <option value="user">Usuario</option>
+                <option value="editor">Editor</option>
                 <option value="admin">Administrador</option>
                 <option value="super_admin">Super Administrador</option>
               </Form.Control>
