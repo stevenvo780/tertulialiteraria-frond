@@ -4,12 +4,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { RootState } from '../../redux/store';
 import api from '../../utils/axios';
-import { getLibraries, addLibrary, updateLibrary } from '../../redux/library';
+import { getLibraries, addLibrary, updateLibrary, deleteLibrary } from '../../redux/library';
 import { addNotification } from '../../redux/ui';
 import { Library, CreateLibraryDto, UpdateLibraryDto } from '../../utils/types';
 import LibraryList from './LibraryList';
 import LibraryFormModal from './LibraryFormModal';
-import { FaArrowLeft, FaPlus, FaEdit } from 'react-icons/fa';
+import { FaArrowLeft, FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
 
 const LibraryPage: React.FC = () => {
   const { noteId } = useParams<{ noteId: string | undefined }>();
@@ -103,6 +103,20 @@ const LibraryPage: React.FC = () => {
     setShowModal(true);
   };
 
+  const handleDelete = async (library: Library) => {
+    if (window.confirm('¿Estás seguro de que deseas eliminar esta referencia?')) {
+      try {
+        await api.delete(`/library/${library.id}`);
+        dispatch(deleteLibrary(library.id));
+        dispatch(addNotification({ message: 'Referencia eliminada correctamente', color: 'success' }));
+
+        currentNote ? fetchNoteById(currentNote.id) : fetchLibraries();
+      } catch (error) {
+        dispatch(addNotification({ message: 'Error al eliminar la referencia', color: 'danger' }));
+      }
+    }
+  };
+
   const handleSearch = async (event: React.FormEvent) => {
     event.preventDefault();
     try {
@@ -160,6 +174,9 @@ const LibraryPage: React.FC = () => {
                   <Button variant="warning" onClick={() => handleEdit(currentNote)}>
                     <FaEdit /> Editar Nota
                   </Button>
+                  <Button variant="danger" onClick={() => handleDelete(currentNote)}>
+                    <FaTrash /> Eliminar Nota
+                  </Button>
                 </>
               )}
             </>
@@ -182,7 +199,7 @@ const LibraryPage: React.FC = () => {
               <LibraryList
                 libraries={currentNote.children}
                 onEdit={(userRole === 'admin' || userRole === 'super_admin') ? handleEdit : undefined}
-                onDelete={(userRole === 'admin' || userRole === 'super_admin') ? () => { } : undefined}
+                onDelete={(userRole === 'admin' || userRole === 'super_admin') ? handleDelete : () => {}}
                 onNavigate={handleNoteClick}
               />
             ) : (
@@ -193,7 +210,7 @@ const LibraryPage: React.FC = () => {
           <LibraryList
             libraries={libraries}
             onEdit={(userRole === 'admin' || userRole === 'super_admin') ? handleEdit : undefined}
-            onDelete={(userRole === 'admin' || userRole === 'super_admin') ? () => { } : undefined}
+            onDelete={(userRole === 'admin' || userRole === 'super_admin') ? handleDelete : () => {}}
             onNavigate={handleNoteClick}
           />
         )}

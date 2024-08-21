@@ -9,20 +9,35 @@ type LayoutProps = {
 };
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
-  const discordInviteLink = 'https://discord.gg/tu-enlace-de-invitacion';
+  const discordInviteLink = 'https://discord.gg/JcEJp3uu';
 
   return (
     <>
       <Header />
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
-        <a href={discordInviteLink} target="_blank" rel="noopener noreferrer">
-          <button style={{ display: 'flex', alignItems: 'center', padding: '10px 20px', backgroundColor: '#7289DA', color: '#fff', borderRadius: '5px', border: 'none', cursor: 'pointer' }}>
-            <FaDiscord style={{ marginRight: '10px' }} />
-            Join our Discord
-          </button>
-        </a>
-      </div>
       {children}
+      <a 
+        href={discordInviteLink} 
+        target="_blank" 
+        rel="noopener noreferrer" 
+        style={{
+          position: 'fixed',
+          bottom: '20px',
+          right: '20px',
+          backgroundColor: '#7289DA',
+          borderRadius: '50%',
+          width: '60px',
+          height: '60px',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          color: '#fff',
+          boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
+          cursor: 'pointer',
+          zIndex: 1000,
+        }}
+      >
+        <FaDiscord size={30} />
+      </a>
     </>
   );
 };

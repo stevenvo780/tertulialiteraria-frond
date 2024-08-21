@@ -160,7 +160,7 @@ const EventModal: React.FC<EventModalProps> = ({
             />
           </Form.Group>
           <br />
-          <Button variant="primary" type="submit">
+          <Button variant="primary" type="submit" style={{ marginInline: 10}}>
             {isEditing ? 'Actualizar' : 'Crear'}
           </Button>
           {isEditing && selectedEvent && selectedEvent.id !== null && (

@@ -1,13 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Container, Card, Row, Col, Button } from 'react-bootstrap';
+import { Container, Card, Row, Col } from 'react-bootstrap';
 import api from '../../utils/axios';
 import { Events } from '../../utils/types';
 import ReactCalendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import EventModal from '../../components/EventModal';
-import { FaEdit, FaFacebook, FaTwitter, FaInstagram, FaWhatsapp } from 'react-icons/fa';
 import ScrollableEvents from '../../components/ScrollableEvents';
+import { FaEdit } from 'react-icons/fa';
+import {
+  FacebookShareButton,
+  TwitterShareButton,
+  WhatsappShareButton,
+  FacebookIcon,
+  TwitterIcon,
+  WhatsappIcon,
+  LinkedinShareButton,
+  LinkedinIcon,
+  TelegramShareButton,
+  TelegramIcon,
+} from 'react-share';
 
 const EventDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -67,27 +79,8 @@ const EventDetail: React.FC = () => {
     setShowModal(true);
   };
 
-  const shareOnSocialMedia = (platform: string) => {
-    const url = window.location.href;
-    const text = `¡Únete a este evento: ${event?.title}!`;
-
-    switch (platform) {
-      case 'facebook':
-        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
-        break;
-      case 'twitter':
-        window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`, '_blank');
-        break;
-      case 'instagram':
-        window.open(`https://www.instagram.com/`, '_blank');
-        break;
-      case 'whatsapp':
-        window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
-        break;
-      default:
-        break;
-    }
-  };
+  const shareUrl = window.location.href;
+  const title = event ? event.title : "Evento";
 
   if (!event) {
     return <p>Cargando detalles del evento...</p>;
@@ -140,34 +133,21 @@ const EventDetail: React.FC = () => {
 
           {/* Botones de compartir en redes sociales organizados en un grid */}
           <div className="social-share-buttons d-flex flex-wrap justify-content-between mt-4">
-            <Button 
-              variant="link" 
-              className="p-0 mb-3" 
-              onClick={() => shareOnSocialMedia('facebook')}
-            >
-              <FaFacebook size={28} />
-            </Button>
-            <Button 
-              variant="link" 
-              className="p-0 mb-3" 
-              onClick={() => shareOnSocialMedia('twitter')}
-            >
-              <FaTwitter size={28} />
-            </Button>
-            <Button 
-              variant="link" 
-              className="p-0 mb-3" 
-              onClick={() => shareOnSocialMedia('instagram')}
-            >
-              <FaInstagram size={28} />
-            </Button>
-            <Button 
-              variant="link" 
-              className="p-0 mb-3" 
-              onClick={() => shareOnSocialMedia('whatsapp')}
-            >
-              <FaWhatsapp size={28} />
-            </Button>
+            <FacebookShareButton url={shareUrl}>
+              <FacebookIcon size={60} round />
+            </FacebookShareButton>
+            <TwitterShareButton url={shareUrl} title={title}>
+              <TwitterIcon size={60} round />
+            </TwitterShareButton>
+            <WhatsappShareButton url={shareUrl} title={title}>
+              <WhatsappIcon size={60} round />
+            </WhatsappShareButton>
+            <LinkedinShareButton url={shareUrl} title={title}>
+              <LinkedinIcon size={60} round />
+            </LinkedinShareButton>
+            <TelegramShareButton url={shareUrl} title={title}>
+              <TelegramIcon size={60} round />
+            </TelegramShareButton>
           </div>
         </Col>
         <Col md={8}>

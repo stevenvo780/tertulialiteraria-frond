@@ -13,7 +13,7 @@ const Sidebar: React.FC = () => {
 
   useEffect(() => {
     fetchLatestNotes();
-    fetchUpcomingEvents();
+    fetchUniqueEvents();
   }, []);
 
   const fetchLatestNotes = async () => {
@@ -25,7 +25,7 @@ const Sidebar: React.FC = () => {
     }
   };
 
-  const fetchUpcomingEvents = async () => {
+  const fetchUniqueEvents = async () => {
     try {
       const response = await api.get<Events[]>('/events/home/unique?limit=5');
       setUpcomingEvents(response.data);
