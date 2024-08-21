@@ -7,12 +7,14 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import EventModal from '../../components/EventModal';
 import { FaEdit } from 'react-icons/fa';
+import ScrollableEvents from '../../components/ScrollableEvents';
 
 const EventDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [event, setEvent] = useState<Events | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [upcomingEvents, setUpcomingEvents] = useState<Events[]>([]);
 
   useEffect(() => {
     const fetchEventDetails = async () => {
@@ -24,7 +26,17 @@ const EventDetail: React.FC = () => {
       }
     };
 
+    const fetchUpcomingEvents = async () => {
+      try {
+        const response = await api.get(`/events/home/upcoming?limit=5`);
+        setUpcomingEvents(response.data);
+      } catch (error) {
+        console.error('Error fetching upcoming events:', error);
+      }
+    };
+
     fetchEventDetails();
+    fetchUpcomingEvents();
   }, [id]);
 
   const handleEdit = () => {
@@ -45,54 +57,69 @@ const EventDetail: React.FC = () => {
           style={{ cursor: 'pointer' }} 
         />
       </div>
-      <Card className="mb-4">
-        <Card.Body>
-          <Card.Title>{event.title}</Card.Title>
-          <Card.Text dangerouslySetInnerHTML={{ __html: event.description }} />
-        </Card.Body>
-      </Card>
       <Row>
-        <Col xs={12} md={6}>
+        <Col md={4}>
+          {/* Tarjeta de Fecha */}
+          <Card className="mb-4">
+            <Card.Body>
+              <Card.Title>Fecha</Card.Title>
+              <Card.Text>{new Date(event.startDate).toLocaleDateString()}</Card.Text>
+            </Card.Body>
+          </Card>
+
+          {/* Tarjeta de Hora */}
+          <Card className="mb-4">
+            <Card.Body>
+              <Card.Title>Hora</Card.Title>
+              <Card.Text>{new Date(event.startDate).toLocaleTimeString()}</Card.Text>
+            </Card.Body>
+          </Card>
+
+          {/* Calendario Pequeño */}
           <Card>
             <Card.Body>
-              <Card.Title>Fecha y Hora</Card.Title>
-              <Card.Text>
-                <span>Inicio:</span> {new Date(event.startDate).toLocaleString()}
-              </Card.Text>
-              <Card.Text>
-                <span>Fin:</span> {new Date(event.endDate).toLocaleString()}
-              </Card.Text>
+              <FullCalendar
+                plugins={[dayGridPlugin]}
+                initialView="dayGridMonth"
+                events={[
+                  {
+                    title: event.title,
+                    start: event.startDate,
+                    end: event.endDate,
+                    backgroundColor: '#f39c12',
+                  },
+                ]}
+                headerToolbar={false}
+                dayMaxEvents={true}
+                eventClick={(info) => console.log('Event clicked:', info.event)}
+                locale="es"
+                height="auto"
+              />
             </Card.Body>
           </Card>
         </Col>
-        <Col xs={12} md={6}>
-          <div className="calendar-container">
-            <FullCalendar
-              plugins={[dayGridPlugin]}
-              initialView="dayGridMonth"
-              events={[
-                {
-                  title: event.title,
-                  start: event.startDate,
-                  end: event.endDate,
-                  backgroundColor: '#f39c12',
-                },
-              ]}
-              headerToolbar={false}
-              dayMaxEvents={true}
-              eventClick={(info) => console.log('Event clicked:', info.event)}
-              locale="es"
-            />
-          </div>
+        <Col md={8}>
+          {/* Detalles del Evento */}
+          <Card className="mb-4">
+            <Card.Body>
+              <Card.Title>{event.title}</Card.Title>
+              <Card.Text dangerouslySetInnerHTML={{ __html: event.description }} />
+            </Card.Body>
+          </Card>
+
+          {/* Otros detalles o contenido adicional */}
         </Col>
       </Row>
+
+      {/* Scrollable Events al final de la página */}
+      {upcomingEvents.length > 0 && <ScrollableEvents events={upcomingEvents} />}
 
       {showModal && (
         <EventModal
           showModal={showModal}
           setShowModal={setShowModal}
           selectedEvent={event}
-          fetchEvents={() => { }}
+          fetchEvents={() => {}}
           isEditing={isEditing}
         />
       )}

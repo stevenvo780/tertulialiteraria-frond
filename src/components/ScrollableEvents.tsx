@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { Button, Card } from 'react-bootstrap';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
-import { Events } from '../../utils/types';
+import { Events } from '../utils/types';
 import { useNavigate } from 'react-router-dom';
 
 interface ScrollableEventsProps {

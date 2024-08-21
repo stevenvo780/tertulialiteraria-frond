@@ -9,7 +9,7 @@ import PublicationsList from './PublicationsList';
 import Sidebar from './Sidebar';
 import PublicationModal from './PublicationModal';
 import { Publication, Events } from '../../utils/types';
-import ScrollableEvents from './ScrollableEvents';  // Importamos el nuevo componente
+import ScrollableEvents from '../../components/ScrollableEvents';
 
 const HomePage: React.FC = () => {
   const dispatch = useDispatch();
