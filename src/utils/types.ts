@@ -8,6 +8,14 @@ export interface User {
   name?: string | undefined | null;
   role?: 'admin' | 'user' | 'super_admin' | undefined | null; 
 }
+
+export enum Repetition {
+  NONE = 'none',
+  DAILY = 'daily',
+  WEEKLY = 'weekly',
+  MONTHLY = 'monthly',
+  YEARLY = 'yearly',
+}
 export interface Events {
   id?: number | null;
   title: string;
@@ -16,7 +24,7 @@ export interface Events {
   startDate: Date;
   endDate: Date;
   author?: User;
-  repetition?: string;
+  repetition?: Repetition;
 }
 
 export interface CalendarEvent {

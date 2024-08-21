@@ -40,7 +40,7 @@ const PublicationsList: React.FC<PublicationsListProps> = ({
           <Card.Body>
             <div className="d-flex justify-content-between">
               <Card.Title>{publication.title}</Card.Title>
-              {user?.role === 'admin' && (
+              {(user?.role === 'admin' || user?.role === 'super_admin') && (
                 <div>
                   <FaEdit
                     onClick={() => handleEdit(publication)}

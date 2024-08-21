@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
-import { Events } from '../utils/types';
+import { Events, Repetition } from '../utils/types';
 import api from '../utils/axios';
 import { useDispatch } from 'react-redux';
 import { addEvent, updateEvent, deleteEvent } from '../redux/events';
@@ -29,7 +29,7 @@ const EventModal: React.FC<EventModalProps> = ({
   const [description, setDescription] = useState('');
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
-  const [repetition, setRepetition] = useState<string>('none');
+  const [repetition, setRepetition] = useState<Repetition>(Repetition.NONE);
   const editorRef = useRef<any>(null);
 
   useEffect(() => {
@@ -38,7 +38,7 @@ const EventModal: React.FC<EventModalProps> = ({
       setDescription(selectedEvent.description);
       setStartDate(new Date(selectedEvent.startDate));
       setEndDate(new Date(selectedEvent.endDate));
-      setRepetition(selectedEvent.repetition || 'none');
+      setRepetition(selectedEvent.repetition || Repetition.NONE);
     }
   }, [selectedEvent]);
 
@@ -97,7 +97,7 @@ const EventModal: React.FC<EventModalProps> = ({
     setDescription('');
     setStartDate(null);
     setEndDate(null);
-    setRepetition('none');
+    setRepetition(Repetition.NONE);
     setShowModal(false);
     if (editorRef.current) {
       editorRef.current.remove(); // Desmonta manualmente el editor
@@ -143,12 +143,13 @@ const EventModal: React.FC<EventModalProps> = ({
             <Form.Control
               as="select"
               value={repetition}
-              onChange={(e) => setRepetition(e.target.value)}
+              onChange={(e) => setRepetition(e.target.value as Repetition)}
             >
-              <option value="none">No repetir</option>
-              <option value="weekly">Semanalmente</option>
-              <option value="monthly">Mensualmente</option>
-              <option value="yearly">Anualmente</option>
+              <option value={Repetition.NONE}>No repetir</option>
+              <option value={Repetition.DAILY}>Diariamente</option>
+              <option value={Repetition.WEEKLY}>Semanalmente</option>
+              <option value={Repetition.MONTHLY}>Mensualmente</option>
+              <option value={Repetition.YEARLY}>Anualmente</option>
             </Form.Control>
           </Form.Group>
           <Form.Group controlId="formEventDescription">
