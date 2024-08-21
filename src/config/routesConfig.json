@@ -14,6 +14,11 @@
     "user": [],
     "admin": [
       { "path": "/normativa/staff", "element": "NormativaStaff", "name": "Normativa Staff", "viewHeader": true }
+    ],
+    "super_admin": [
+      { "path": "/normativa/staff", "element": "NormativaStaff", "name": "Normativa Staff", "viewHeader": true },
+      { "path": "/users", "element": "Users", "name": "Usuarios", "viewHeader": true },
+      { "path": "/templates", "element": "Template", "name": "Plantillas", "viewHeader": true }
     ]
   }
 }

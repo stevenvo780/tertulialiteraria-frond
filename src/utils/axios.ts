@@ -1,7 +1,7 @@
 import axios from 'axios';
 import store from '../redux/store';
 import { loading } from '../redux/ui';
-import { getCurrentUserToken, refreshUserToken, signOutUser } from '../utils/firebaseHelper';
+import { getCurrentUserToken, refreshUserToken } from '../utils/firebaseHelper';
 import { logout } from '../redux/auth';
 
 const api = axios.create({
@@ -61,7 +61,6 @@ api.interceptors.response.use(
       } catch (refreshError) {
         console.error("Error renewing token:", refreshError);
         store.dispatch(logout());
-        signOutUser();
         return Promise.reject(refreshError);
       }
     }

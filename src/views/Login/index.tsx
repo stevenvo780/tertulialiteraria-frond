@@ -28,7 +28,7 @@ const LoginPage: React.FC = () => {
         const token = await user.getIdToken();
         const response = await api.get('/user/me/data', { headers: { Authorization: `Bearer ${token}` } });
         const role = response.data.role;
-        dispatch(login({ id: user.uid, email: user.email, name: user.displayName, events: [], role }));
+        dispatch(login({ id: user.uid, email: user.email, name: user.displayName, role }));
         dispatch(addNotification({ message: 'Bienvenido', color: 'success' }));
         navigate('/');
       }
@@ -55,7 +55,7 @@ const LoginPage: React.FC = () => {
         const token = await user.getIdToken();
         const response = await api.get('/user/me/data', { headers: { Authorization: `Bearer ${token}` } });
         const role = response.data.role;
-        dispatch(login({ id: user.uid, email: user.email, name: user.displayName, events: [], role }));
+        dispatch(login({ id: user.uid, email: user.email, name: user.displayName, role }));
         dispatch(addNotification({ message: 'Bienvenido', color: 'success' }));
         navigate('/');
       }

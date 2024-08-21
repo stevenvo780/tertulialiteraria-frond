@@ -14,7 +14,7 @@ const useFirebaseAuth = () => {
         console.log(response);
         const role = response.data.role;
         console.log(response.data);
-        dispatch(login({ id: user.uid, email: user.email, name: user.displayName, events: [], role }));
+        dispatch(login({ id: user.uid, email: user.email, name: user.displayName, role }));
       } else {
         dispatch(logout());
       }

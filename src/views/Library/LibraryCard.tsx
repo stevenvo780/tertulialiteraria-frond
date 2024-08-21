@@ -6,7 +6,7 @@ import { Library } from '../../utils/types';
 interface LibraryCardProps {
   library: Library;
   onEdit?: (library: Library) => void; // Hacer que onEdit y onDelete sean opcionales
-  onDelete?: (id: number) => void;
+  onDelete?: (library: Library) => void;
   onClick: () => void;
 }
 
@@ -33,7 +33,7 @@ const LibraryCard: React.FC<LibraryCardProps> = ({ library, onEdit, onDelete, on
               <FaTrash
                 onClick={(e) => {
                   e.stopPropagation();
-                  onDelete(library.id);
+                  onDelete(library);
                 }}
                 style={{ cursor: 'pointer' }}
                 size={20}

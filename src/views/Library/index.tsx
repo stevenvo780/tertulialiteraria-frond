@@ -4,12 +4,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { RootState } from '../../redux/store';
 import api from '../../utils/axios';
-import { getLibraries, addLibrary, updateLibrary } from '../../redux/library';
+import { getLibraries, addLibrary, updateLibrary, deleteLibrary } from '../../redux/library';
 import { addNotification } from '../../redux/ui';
 import { Library, CreateLibraryDto, UpdateLibraryDto } from '../../utils/types';
 import LibraryList from './LibraryList';
 import LibraryFormModal from './LibraryFormModal';
-import { FaArrowLeft, FaPlus } from 'react-icons/fa';
+import { FaArrowLeft, FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
 
 const LibraryPage: React.FC = () => {
   const { noteId } = useParams<{ noteId: string | undefined }>();
@@ -103,6 +103,19 @@ const LibraryPage: React.FC = () => {
     setShowModal(true);
   };
 
+  const handleDelete = async (library: Library) => {
+    if (window.confirm('¿Estás seguro de que deseas eliminar esta referencia?')) {
+      try {
+        await api.delete(`/library/${library.id}`);
+        dispatch(deleteLibrary(library.id));
+        dispatch(addNotification({ message: 'Referencia eliminada correctamente', color: 'success' }));
+
+        currentNote ? fetchNoteById(currentNote.id) : fetchLibraries();
+      } catch (error) {
+        dispatch(addNotification({ message: 'Error al eliminar la referencia', color: 'danger' }));
+      }
+    }
+  };
 
   const handleSearch = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -116,7 +129,6 @@ const LibraryPage: React.FC = () => {
       } else {
         fetchLibraries();
       }
-
     } catch (error) {
       dispatch(addNotification({ message: 'Error al realizar la búsqueda', color: 'danger' }));
     }
@@ -124,80 +136,95 @@ const LibraryPage: React.FC = () => {
 
   return (
     <Container>
-      <Form onSubmit={handleSearch} className="mb-4">
-        <Form.Group controlId="searchQuery">
-          <Row>
-            <Col md={10} className="text-center">
-              <Form.Control
-                type="text"
-                placeholder="Buscar por título o descripción"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </Col>
-            <Col md={2} className="text-center">
-              <Button variant="primary" type="submit">
-                Buscar
+      <Row>
+        {!currentNote && (
+          <Col md={currentNote ? 12 : 10} className="text-center">
+            <Form onSubmit={handleSearch} className="mb-4">
+              <Form.Group controlId="searchQuery">
+                <Row>
+                  <Col md={10} className="text-center">
+                    <Form.Control
+                      type="text"
+                      placeholder="Buscar por título o descripción"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                  </Col>
+                  <Col md={2} className="text-center">
+                    <Button variant="primary" type="submit">
+                      Buscar
+                    </Button>
+                  </Col>
+                </Row>
+              </Form.Group>
+            </Form>
+          </Col>
+        )}
+        <Col md={currentNote ? 12 : 2} className="text-center">
+          {currentNote ? (
+            <>
+              <Button variant="secondary" onClick={handleGoBack} className="mr-4" style={{ marginInline: 20 }}>
+                <FaArrowLeft /> Volver
               </Button>
-            </Col>
-          </Row>
-        </Form.Group>
-      </Form>
-
-      <div className="my-4 text-center">
+              {(userRole === 'admin' || userRole === 'super_admin') && (
+                <>
+                  <Button variant="primary" onClick={() => setShowModal(true)} style={{ marginInline: 20 }}>
+                    <FaPlus /> Crear Subnota
+                  </Button>
+                  <Button variant="warning" onClick={() => handleEdit(currentNote)}>
+                    <FaEdit /> Editar Nota
+                  </Button>
+                  <Button variant="danger" onClick={() => handleDelete(currentNote)}>
+                    <FaTrash /> Eliminar Nota
+                  </Button>
+                </>
+              )}
+            </>
+          ) : (
+            (userRole === 'admin' || userRole === 'super_admin') && (
+              <Button variant="primary" onClick={() => setShowModal(true)}>
+                <FaPlus /> Crear nota
+              </Button>
+            )
+          )}
+        </Col>
+      </Row>
+      <br />
+      <Row>
         {currentNote ? (
           <>
-            <Button variant="secondary" onClick={handleGoBack} className="mr-4" style={{ marginInline: 20 }}>
-              <FaArrowLeft /> Volver
-            </Button>
-            {userRole === 'admin' && (
-              <Button variant="primary" onClick={() => setShowModal(true)}>
-                <FaPlus /> Crear Subnota
-              </Button>
+            <h4 className="text-center">{currentNote.title}</h4>
+            <div dangerouslySetInnerHTML={{ __html: currentNote.description }} />
+            {currentNote.children && currentNote.children.length > 0 ? (
+              <LibraryList
+                libraries={currentNote.children}
+                onEdit={(userRole === 'admin' || userRole === 'super_admin') ? handleEdit : undefined}
+                onDelete={(userRole === 'admin' || userRole === 'super_admin') ? handleDelete : () => {}}
+                onNavigate={handleNoteClick}
+              />
+            ) : (
+              <p className="text-center text-muted">No hay subnotas.</p>
             )}
           </>
         ) : (
-          userRole === 'admin' && (
-            <Button variant="primary" onClick={() => setShowModal(true)}>
-              <FaPlus /> Crear Nota
-            </Button>
-          )
+          <LibraryList
+            libraries={libraries}
+            onEdit={(userRole === 'admin' || userRole === 'super_admin') ? handleEdit : undefined}
+            onDelete={(userRole === 'admin' || userRole === 'super_admin') ? handleDelete : () => {}}
+            onNavigate={handleNoteClick}
+          />
         )}
-      </div>
 
-      {currentNote ? (
-        <>
-          <h4 className="text-center">{currentNote.title}</h4>
-          <div dangerouslySetInnerHTML={{ __html: currentNote.description }} />
-          {currentNote.children && currentNote.children.length > 0 ? (
-            <LibraryList
-              libraries={currentNote.children}
-              onEdit={userRole === 'admin' ? handleEdit : undefined}
-              onDelete={userRole === 'admin' ? () => { } : undefined}
-              onNavigate={handleNoteClick}
-            />
-          ) : (
-            <p className="text-center text-muted">No hay subnotas.</p>
-          )}
-        </>
-      ) : (
-        <LibraryList
-          libraries={libraries}
-          onEdit={userRole === 'admin' ? handleEdit : undefined}
-          onDelete={userRole === 'admin' ? () => { } : undefined}
-          onNavigate={handleNoteClick}
-        />
-      )}
-
-      {userRole === 'admin' && (
-        <LibraryFormModal
-          show={showModal}
-          onHide={() => setShowModal(false)}
-          onSubmit={handleCreateOrUpdate}
-          editingLibrary={editingLibrary}
-          showModal={showModal}
-        />
-      )}
+        {(userRole === 'admin' || userRole === 'super_admin') && (
+          <LibraryFormModal
+            show={showModal}
+            onHide={() => setShowModal(false)}
+            onSubmit={handleCreateOrUpdate}
+            editingLibrary={editingLibrary}
+            showModal={showModal}
+          />
+        )}
+      </Row>
     </Container>
   );
 };
