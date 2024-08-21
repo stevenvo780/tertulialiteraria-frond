@@ -36,7 +36,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           zIndex: 1000,
         }}
       >
-        <FaDiscord size={30} />
+        <FaDiscord size={30} color='white' />
       </a>
     </>
   );

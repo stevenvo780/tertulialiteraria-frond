@@ -20,6 +20,7 @@ import {
   TelegramShareButton,
   TelegramIcon,
 } from 'react-share';
+import './styles.css';
 
 const EventDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -89,14 +90,23 @@ const EventDetail: React.FC = () => {
   return (
     <Container className="mt-4 d-flex flex-column">
       <div className="edit-icon-container position-fixed" style={{ top: '100px', right: '50px' }}>
-        <FaEdit 
-          size={24} 
-          onClick={handleEdit} 
-          style={{ cursor: 'pointer' }} 
+        <FaEdit
+          size={24}
+          onClick={handleEdit}
+          style={{ cursor: 'pointer' }}
         />
       </div>
       <Row>
         <Col md={4}>
+
+          {/* Contador de Tiempo Restante */}
+          <Card className="mb-4">
+            <Card.Body>
+              <Card.Title>Tiempo Restante</Card.Title>
+              <Card.Text className="countdown-text">{timeRemaining}</Card.Text>
+            </Card.Body>
+          </Card>
+
           {/* Tarjeta de Fecha */}
           <Card className="mb-4">
             <Card.Body>
@@ -113,20 +123,16 @@ const EventDetail: React.FC = () => {
             </Card.Body>
           </Card>
 
-          {/* Contador de Tiempo Restante */}
-          <Card className="mb-4">
-            <Card.Body>
-              <Card.Title>Tiempo Restante</Card.Title>
-              <Card.Text>{timeRemaining}</Card.Text>
-            </Card.Body>
-          </Card>
 
-          {/* Calendario Pequeño */}
+
+          {/* Calendario Pequeño y Minimalista */}
           <Card className="mb-4">
             <Card.Body>
               <ReactCalendar
                 value={new Date(event.startDate)}
                 tileDisabled={({ date }) => date.getTime() !== new Date(event.startDate).getTime()}
+                className="minimal-calendar"
+                showNavigation={false} // Ocultar navegación
               />
             </Card.Body>
           </Card>
@@ -169,7 +175,7 @@ const EventDetail: React.FC = () => {
           showModal={showModal}
           setShowModal={setShowModal}
           selectedEvent={event}
-          fetchEvents={() => {}}
+          fetchEvents={() => { }}
           isEditing={isEditing}
         />
       )}

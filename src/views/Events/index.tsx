@@ -75,7 +75,7 @@ const EventsCalendar: React.FC = () => {
   };
 
   return (
-    <Container fluid>
+    <Container>
       <h2 className="my-4">Calendario de Eventos</h2>
       <FullCalendar
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, rrulePlugin]}
