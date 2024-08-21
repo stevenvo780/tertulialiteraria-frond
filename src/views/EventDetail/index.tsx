@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Container, Card, Row, Col } from 'react-bootstrap';
+import { Container, Card, Row, Col, Button } from 'react-bootstrap';
 import api from '../../utils/axios';
 import { Events } from '../../utils/types';
-import FullCalendar from '@fullcalendar/react';
-import dayGridPlugin from '@fullcalendar/daygrid';
+import ReactCalendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
 import EventModal from '../../components/EventModal';
-import { FaEdit } from 'react-icons/fa';
+import { FaEdit, FaFacebook, FaTwitter, FaInstagram, FaWhatsapp } from 'react-icons/fa';
 import ScrollableEvents from '../../components/ScrollableEvents';
 
 const EventDetail: React.FC = () => {
@@ -15,6 +15,7 @@ const EventDetail: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [upcomingEvents, setUpcomingEvents] = useState<Events[]>([]);
+  const [timeRemaining, setTimeRemaining] = useState<string>('');
 
   useEffect(() => {
     const fetchEventDetails = async () => {
@@ -39,9 +40,53 @@ const EventDetail: React.FC = () => {
     fetchUpcomingEvents();
   }, [id]);
 
+  useEffect(() => {
+    if (event) {
+      const intervalId = setInterval(() => {
+        const now = new Date().getTime();
+        const startTime = new Date(event.startDate).getTime();
+        const timeDiff = startTime - now;
+
+        if (timeDiff <= 0) {
+          clearInterval(intervalId);
+          setTimeRemaining('¡El evento ha comenzado!');
+        } else {
+          const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+          const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+          setTimeRemaining(`${hours}h ${minutes}m ${seconds}s`);
+        }
+      }, 1000);
+
+      return () => clearInterval(intervalId);
+    }
+  }, [event]);
+
   const handleEdit = () => {
     setIsEditing(true);
     setShowModal(true);
+  };
+
+  const shareOnSocialMedia = (platform: string) => {
+    const url = window.location.href;
+    const text = `¡Únete a este evento: ${event?.title}!`;
+
+    switch (platform) {
+      case 'facebook':
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+        break;
+      case 'twitter':
+        window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`, '_blank');
+        break;
+      case 'instagram':
+        window.open(`https://www.instagram.com/`, '_blank');
+        break;
+      case 'whatsapp':
+        window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
+        break;
+      default:
+        break;
+    }
   };
 
   if (!event) {
@@ -75,28 +120,55 @@ const EventDetail: React.FC = () => {
             </Card.Body>
           </Card>
 
-          {/* Calendario Pequeño */}
-          <Card>
+          {/* Contador de Tiempo Restante */}
+          <Card className="mb-4">
             <Card.Body>
-              <FullCalendar
-                plugins={[dayGridPlugin]}
-                initialView="dayGridMonth"
-                events={[
-                  {
-                    title: event.title,
-                    start: event.startDate,
-                    end: event.endDate,
-                    backgroundColor: '#f39c12',
-                  },
-                ]}
-                headerToolbar={false}
-                dayMaxEvents={true}
-                eventClick={(info) => console.log('Event clicked:', info.event)}
-                locale="es"
-                height="auto"
+              <Card.Title>Tiempo Restante</Card.Title>
+              <Card.Text>{timeRemaining}</Card.Text>
+            </Card.Body>
+          </Card>
+
+          {/* Calendario Pequeño */}
+          <Card className="mb-4">
+            <Card.Body>
+              <ReactCalendar
+                value={new Date(event.startDate)}
+                tileDisabled={({ date }) => date.getTime() !== new Date(event.startDate).getTime()}
               />
             </Card.Body>
           </Card>
+
+          {/* Botones de compartir en redes sociales organizados en un grid */}
+          <div className="social-share-buttons d-flex flex-wrap justify-content-between mt-4">
+            <Button 
+              variant="link" 
+              className="p-0 mb-3" 
+              onClick={() => shareOnSocialMedia('facebook')}
+            >
+              <FaFacebook size={28} />
+            </Button>
+            <Button 
+              variant="link" 
+              className="p-0 mb-3" 
+              onClick={() => shareOnSocialMedia('twitter')}
+            >
+              <FaTwitter size={28} />
+            </Button>
+            <Button 
+              variant="link" 
+              className="p-0 mb-3" 
+              onClick={() => shareOnSocialMedia('instagram')}
+            >
+              <FaInstagram size={28} />
+            </Button>
+            <Button 
+              variant="link" 
+              className="p-0 mb-3" 
+              onClick={() => shareOnSocialMedia('whatsapp')}
+            >
+              <FaWhatsapp size={28} />
+            </Button>
+          </div>
         </Col>
         <Col md={8}>
           {/* Detalles del Evento */}
@@ -106,8 +178,6 @@ const EventDetail: React.FC = () => {
               <Card.Text dangerouslySetInnerHTML={{ __html: event.description }} />
             </Card.Body>
           </Card>
-
-          {/* Otros detalles o contenido adicional */}
         </Col>
       </Row>
 

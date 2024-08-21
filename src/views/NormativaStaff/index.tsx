@@ -28,7 +28,7 @@ const StaffNormativePage: React.FC = () => {
   return (
     <>
       {(userRole === 'super_admin') && (
-        <div className="d-flex justify-content-end mt-5" style={{ marginInline: 20 }}>
+        <div className="edit-icon-container position-fixed" style={{ top: '100px', right: '50px' }}>
           <FaEdit
             size={24}
             onClick={() => setShowEditModal(true)}

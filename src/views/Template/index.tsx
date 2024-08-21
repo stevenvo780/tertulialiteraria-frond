@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Table, Modal, Container, Row, Col } from 'react-bootstrap';
+import { Button, Card, Modal, Container, Row, Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
 import { getTemplates, updateTemplate, addTemplate, deleteTemplate } from '../../redux/templates';
@@ -42,7 +42,7 @@ const TemplatePage: React.FC = () => {
   };
 
   const handleEditClick = (template: any) => {
-    setSelectedTemplate(null);
+    setSelectedTemplate(template);
     setTitle(template.name);
     setContent(template.content);
     setType(template.type);
@@ -96,7 +96,6 @@ const TemplatePage: React.FC = () => {
 
   const handlePreviewClick = (template: any) => {
     setSelectedTemplate(template);
-    setShowEditModal(false);
   };
 
   return (
@@ -109,54 +108,36 @@ const TemplatePage: React.FC = () => {
         </Col>
       </Row>
       <Row>
-        <Col>
-          <h2 className="text-center mb-4">Lista de Plantillas</h2>
-          <Table striped bordered hover responsive>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Tipo</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {templates.map((template) => (
-                <tr key={template.id}>
-                  <td>{template.id}</td>
-                  <td>{template.name}</td>
-                  <td>{template.type}</td>
-                  <td>
-                    <Button style={{ marginInline: 10 }} variant="info" size="sm" onClick={() => handleEditClick(template)}>
-                      Editar
-                    </Button>
-                    <Button style={{ marginInline: 10 }} variant="primary" size="sm" onClick={() => handlePreviewClick(template)}>
-                      Previsualizar
-                    </Button>
-                    <Button variant="danger" size="sm" onClick={() => handleDeleteClick(template.id)}>
-                      Eliminar
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
+        <Col md={4}>
+          {templates.map((template) => (
+            <Card key={template.id} className="mb-3">
+              <Card.Body>
+                <Card.Title>{template.name}</Card.Title>
+                <Card.Subtitle className="mb-2 text-muted">{template.type}</Card.Subtitle>
+                <Button variant="info" size="sm" onClick={() => handleEditClick(template)}>
+                  Editar
+                </Button>
+                <Button className="mx-2" variant="primary" size="sm" onClick={() => handlePreviewClick(template)}>
+                  Previsualizar
+                </Button>
+                <Button variant="danger" size="sm" onClick={() => handleDeleteClick(template.id)}>
+                  Eliminar
+                </Button>
+              </Card.Body>
+            </Card>
+          ))}
+        </Col>
+        <Col md={8}>
+          {selectedTemplate && (
+            <Card>
+              <Card.Header>Previsualización de Plantilla</Card.Header>
+              <Card.Body>
+                <div dangerouslySetInnerHTML={{ __html: selectedTemplate.content }} />
+              </Card.Body>
+            </Card>
+          )}
         </Col>
       </Row>
-
-      <Modal show={!!selectedTemplate && !showEditModal} onHide={() => setSelectedTemplate(null)} size="xl">
-        <Modal.Header closeButton>
-          <Modal.Title>Previsualización de Plantilla</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div dangerouslySetInnerHTML={{ __html: selectedTemplate?.content || '' }} />
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setSelectedTemplate(null)}>
-            Cerrar
-          </Button>
-        </Modal.Footer>
-      </Modal>
 
       <TemplateEditModal
         showModal={showEditModal}
