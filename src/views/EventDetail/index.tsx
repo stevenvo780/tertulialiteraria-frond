@@ -42,7 +42,7 @@ const EventDetail: React.FC = () => {
 
     const fetchUpcomingEvents = async () => {
       try {
-        const response = await api.get(`/events/home/upcoming?limit=5`);
+        const response = await api.get(`/events/home/upcoming?limit=3`);
         setUpcomingEvents(response.data);
       } catch (error) {
         console.error('Error fetching upcoming events:', error);
