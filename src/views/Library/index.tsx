@@ -135,6 +135,8 @@ const LibraryPage: React.FC = () => {
     }
   };
 
+  const permissionsEditable = (userRole === UserRole.ADMIN || userRole === UserRole.SUPER_ADMIN || userRole === UserRole.EDITOR);
+
   return (
     <Container>
       <Row>
@@ -167,7 +169,7 @@ const LibraryPage: React.FC = () => {
               <Button variant="secondary" onClick={handleGoBack} className="mr-4" style={{ marginInline: 20 }}>
                 <FaArrowLeft /> Volver
               </Button>
-              {(userRole === UserRole.ADMIN || userRole === UserRole.SUPER_ADMIN) && (
+              {permissionsEditable && (
                 <>
                   <Button variant="primary" onClick={() => setShowModal(true)} style={{ marginInline: 20 }}>
                     <FaPlus /> Crear Subnota
@@ -181,12 +183,11 @@ const LibraryPage: React.FC = () => {
                 </>
               )}
             </>
-          ) : (
-            (userRole === UserRole.ADMIN || userRole === UserRole.SUPER_ADMIN) && (
-              <Button variant="primary" onClick={() => setShowModal(true)}>
-                <FaPlus /> Crear nota
-              </Button>
-            )
+          ) : (permissionsEditable && (
+            <Button variant="primary" onClick={() => setShowModal(true)}>
+              <FaPlus /> Crear nota
+            </Button>
+          )
           )}
         </Col>
       </Row>
@@ -199,8 +200,8 @@ const LibraryPage: React.FC = () => {
             {currentNote.children && currentNote.children.length > 0 ? (
               <LibraryList
                 libraries={currentNote.children}
-                onEdit={(userRole === UserRole.ADMIN || userRole === UserRole.SUPER_ADMIN) ? handleEdit : undefined}
-                onDelete={(userRole === UserRole.ADMIN || userRole === UserRole.SUPER_ADMIN) ? handleDelete : () => {}}
+                onEdit={permissionsEditable ? handleEdit : undefined}
+                onDelete={permissionsEditable ? handleDelete : undefined}
                 onNavigate={handleNoteClick}
               />
             ) : (
@@ -210,13 +211,13 @@ const LibraryPage: React.FC = () => {
         ) : (
           <LibraryList
             libraries={libraries}
-            onEdit={(userRole === UserRole.ADMIN || userRole === UserRole.SUPER_ADMIN) ? handleEdit : undefined}
-            onDelete={(userRole === UserRole.ADMIN || userRole === UserRole.SUPER_ADMIN) ? handleDelete : () => {}}
+            onEdit={permissionsEditable ? handleEdit : undefined}
+            onDelete={permissionsEditable ? handleDelete : undefined}
             onNavigate={handleNoteClick}
           />
         )}
 
-        {(userRole === UserRole.ADMIN || userRole === UserRole.SUPER_ADMIN) && (
+        {permissionsEditable && (
           <LibraryFormModal
             show={showModal}
             onHide={() => setShowModal(false)}

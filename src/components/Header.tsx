@@ -7,7 +7,6 @@ import { logout } from '../redux/auth';
 import routesConfig from '../config/routesConfig.json';
 import { CgMenuGridO } from "react-icons/cg";
 
-
 const Header: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -18,15 +17,18 @@ const Header: React.FC = () => {
     dispatch(logout());
     navigate('/');
   };
-  
 
   const handleLoginRedirect = () => {
     navigate('/login');
   };
 
   const publicRoutes = routesConfig.publicRoutes;
-  const role = userRole as string;
-  const roleRoutes = (routesConfig.roleRoutes as { [key: string]: { path: string; element: string; name: string; viewHeader: boolean; }[] })[role];
+
+  
+  const roleRoutes = userRole && routesConfig.roleRoutes[userRole as keyof typeof routesConfig.roleRoutes] 
+    ? routesConfig.roleRoutes[userRole as keyof typeof routesConfig.roleRoutes] 
+    : [];
+
   const combinedRoutes = [...publicRoutes, ...roleRoutes];
 
   return (

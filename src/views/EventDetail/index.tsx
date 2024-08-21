@@ -22,6 +22,9 @@ import {
 } from 'react-share';
 import { getNextOccurrence } from '../Events/EventUtils';
 import './styles.css';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/store';
+import { UserRole } from '../../utils/types';
 
 const EventDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -31,6 +34,7 @@ const EventDetail: React.FC = () => {
   const [upcomingEvents, setUpcomingEvents] = useState<Events[]>([]);
   const [timeRemaining, setTimeRemaining] = useState<string>('');
   const [nextOccurrence, setNextOccurrence] = useState<Date | null>(null);
+  const userRole = useSelector((state: RootState) => state.auth.userData);
 
   useEffect(() => {
     const fetchEventDetails = async () => {
@@ -98,13 +102,15 @@ const EventDetail: React.FC = () => {
 
   return (
     <Container className="mt-4 d-flex flex-column">
-      <div className="edit-icon-container position-fixed" style={{ top: '100px', right: '50px' }}>
-        <FaEdit
-          size={24}
-          onClick={handleEdit}
-          style={{ cursor: 'pointer' }}
-        />
-      </div>
+      {(userRole?.role === UserRole.ADMIN || userRole?.role === UserRole.SUPER_ADMIN) && (
+        <div className="edit-icon-container position-fixed" style={{ top: '100px', right: '50px' }}>
+          <FaEdit
+            size={24}
+            onClick={handleEdit}
+            style={{ cursor: 'pointer' }}
+          />
+        </div>
+      )}
       <Row>
         <Col md={4}>
           {/* Contador de Tiempo Restante */}

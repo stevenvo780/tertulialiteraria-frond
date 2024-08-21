@@ -10,7 +10,7 @@ export enum UserRole {
   USER = 'user',
 }
 
-export interface User {
+export interface User extends SharedProp {
   id: string;
   email: string;
   name?: string | undefined | null;
@@ -30,7 +30,7 @@ export enum Repetition {
   MONTHLY = 'monthly',
   YEARLY = 'yearly',
 }
-export interface Events {
+export interface Events extends SharedProp {
   id?: number | null;
   title: string;
   description: string;
@@ -38,6 +38,15 @@ export interface Events {
   startDate: Date;
   endDate: Date;
   author?: User;
+  repetition?: Repetition;
+}
+
+export interface CreateEventDto {
+  title: string;
+  description: string;
+  eventDate: Date;
+  startDate: Date;
+  endDate: Date;
   repetition?: Repetition;
 }
 
@@ -61,7 +70,7 @@ export enum LibraryVisibility {
   ADMIN = 'admin',
 }
 
-export interface Library {
+export interface Library extends SharedProp {
   id: number;
   title: string;
   description: string;
@@ -95,15 +104,21 @@ export interface UpdateLibraryDto {
   visibility?: LibraryVisibility;
 }
 
-export interface Publication {
+export interface Publication extends SharedProp {
   id: number;
   title: string;
-  content: {
-    html: string;
-    css?: string;
-  };
-  publicationDate: Date;
+  content: string;
   author?: User;
+}
+
+export interface CreatePublicationDto {
+  title: string;
+  content: string;
+}
+
+export interface  SharedProp {
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface RouteApi {

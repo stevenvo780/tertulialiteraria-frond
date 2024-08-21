@@ -58,10 +58,10 @@ const PublicationsList: React.FC<PublicationsListProps> = ({
             </div>
             <div
               style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}
-              dangerouslySetInnerHTML={{ __html: publication.content.html }}
+              dangerouslySetInnerHTML={{ __html: publication.content }}
             />
             <div className="text-muted mt-2">
-              Publicado el {new Date(publication.publicationDate).toLocaleDateString()}
+              {publication.createdAt ? new Date(publication.createdAt).toLocaleDateString() : ''}
             </div>
           </Card.Body>
         </Card>
