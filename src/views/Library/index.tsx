@@ -171,7 +171,7 @@ const LibraryPage: React.FC = () => {
                   <Button variant="primary" onClick={() => setShowModal(true)} style={{ marginInline: 20 }}>
                     <FaPlus /> Crear Subnota
                   </Button>
-                  <Button variant="warning" onClick={() => handleEdit(currentNote)}>
+                  <Button variant="warning" onClick={() => handleEdit(currentNote)} style={{ marginInline: 20 }}>
                     <FaEdit /> Editar Nota
                   </Button>
                   <Button variant="danger" onClick={() => handleDelete(currentNote)}>

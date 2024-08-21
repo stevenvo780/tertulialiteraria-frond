@@ -18,7 +18,7 @@ const Sidebar: React.FC = () => {
 
   const fetchLatestNotes = async () => {
     try {
-      const response = await api.get<Library[]>('/library/home/latest?limit=5');
+      const response = await api.get<Library[]>('/library/home/latest?limit=3');
       setLatestNotes(response.data);
     } catch (error) {
       dispatch(addNotification({ message: 'Error al obtener las últimas notas', color: 'danger' }));
@@ -27,7 +27,7 @@ const Sidebar: React.FC = () => {
 
   const fetchUniqueEvents = async () => {
     try {
-      const response = await api.get<Events[]>('/events/home/unique?limit=5');
+      const response = await api.get<Events[]>('/events/home/unique?limit=3');
       setUpcomingEvents(response.data);
     } catch (error) {
       dispatch(addNotification({ message: 'Error al obtener los próximos eventos', color: 'danger' }));

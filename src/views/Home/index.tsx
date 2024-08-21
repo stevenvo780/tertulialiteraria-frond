@@ -37,7 +37,7 @@ const HomePage: React.FC = () => {
 
   const fetchRepetitiveEvents = async () => {
     try {
-      const response = await api.get<Events[]>('/events/home/upcoming?limit=5');
+      const response = await api.get<Events[]>('/events/home/upcoming?limit=3');
       const repetitive = response.data.filter(event => event.repetition);
       setRepetitiveEvents(repetitive);
     } catch (error) {
