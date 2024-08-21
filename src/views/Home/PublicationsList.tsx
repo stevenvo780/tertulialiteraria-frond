@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, Form } from 'react-bootstrap';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import { Publication } from '../../utils/types';
+import { UserRole } from '../../utils/types';
 
 interface PublicationsListProps {
   publications: Publication[];
@@ -40,7 +41,7 @@ const PublicationsList: React.FC<PublicationsListProps> = ({
           <Card.Body>
             <div className="d-flex justify-content-between">
               <Card.Title>{publication.title}</Card.Title>
-              {user?.role === 'admin' && (
+              {(user?.role === UserRole.ADMIN || user?.role === UserRole.SUPER_ADMIN) && (
                 <div>
                   <FaEdit
                     onClick={() => handleEdit(publication)}
@@ -57,10 +58,10 @@ const PublicationsList: React.FC<PublicationsListProps> = ({
             </div>
             <div
               style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}
-              dangerouslySetInnerHTML={{ __html: publication.content.html }}
+              dangerouslySetInnerHTML={{ __html: publication.content }}
             />
             <div className="text-muted mt-2">
-              Publicado el {new Date(publication.publicationDate).toLocaleDateString()}
+              {publication.createdAt ? new Date(publication.createdAt).toLocaleDateString() : ''}
             </div>
           </Card.Body>
         </Card>

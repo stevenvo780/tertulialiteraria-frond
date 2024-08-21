@@ -7,6 +7,7 @@ import { addNotification } from '../../redux/ui';
 import { auth } from '../../utils/firebase';
 import firebase from 'firebase/compat/app';
 import api from '../../utils/axios';
+import { User } from '../../utils/types';
 
 const LoginPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -24,11 +25,11 @@ const LoginPage: React.FC = () => {
     try {
       const userCredential = await auth.signInWithEmailAndPassword(email, password);
       const user = userCredential.user;
-      if (user) {
+      if (user && user.email) {
         const token = await user.getIdToken();
         const response = await api.get('/user/me/data', { headers: { Authorization: `Bearer ${token}` } });
-        const role = response.data.role;
-        dispatch(login({ id: user.uid, email: user.email, name: user.displayName, role }));
+        const dataUser = response.data as User;
+        dispatch(login(dataUser));
         dispatch(addNotification({ message: 'Bienvenido', color: 'success' }));
         navigate('/');
       }
@@ -51,11 +52,11 @@ const LoginPage: React.FC = () => {
     try {
       const result = await auth.signInWithPopup(provider);
       const user = result.user;
-      if (user) {
+      if (user && user.email) {
         const token = await user.getIdToken();
         const response = await api.get('/user/me/data', { headers: { Authorization: `Bearer ${token}` } });
-        const role = response.data.role;
-        dispatch(login({ id: user.uid, email: user.email, name: user.displayName, role }));
+        const dataUser = response.data as User;
+        dispatch(login(dataUser));
         dispatch(addNotification({ message: 'Bienvenido', color: 'success' }));
         navigate('/');
       }

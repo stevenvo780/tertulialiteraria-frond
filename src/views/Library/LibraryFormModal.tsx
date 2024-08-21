@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import { TemplateType } from '../../utils/types';
-import { storage } from '../../utils/firebase';
 import { Library, CreateLibraryDto, UpdateLibraryDto, LibraryVisibility } from '../../utils/types';
 import CustomEditor from '../../components/CustomEditor';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/store';
+import { UserRole } from '../../utils/types';
 
 interface LibraryFormModalProps {
   show: boolean;
@@ -24,6 +26,7 @@ const LibraryFormModal: React.FC<LibraryFormModalProps> = ({
   const [description, setDescription] = useState<string>(''); // HTML Content
   const [parentNoteId, setParentNoteId] = useState<number | undefined>(undefined);
   const [visibility, setVisibility] = useState<LibraryVisibility>(LibraryVisibility.GENERAL);
+  const userRole = useSelector((state: RootState) => state.auth.userData?.role);
 
   useEffect(() => {
     if (editingLibrary) {
@@ -94,19 +97,21 @@ const LibraryFormModal: React.FC<LibraryFormModalProps> = ({
                   templateType={TemplateType.NOTES}
                 />
               </Form.Group>
-              <Form.Group controlId="formLibraryVisibility">
-                <Form.Label>Visibilidad</Form.Label>
-                <Form.Control
-                  as="select"
-                  value={visibility}
-                  onChange={(e) => setVisibility(e.target.value as LibraryVisibility)}
-                  required
-                >
-                  <option value={LibraryVisibility.GENERAL}>General</option>
-                  <option value={LibraryVisibility.USERS}>Usuarios</option>
-                  <option value={LibraryVisibility.ADMIN}>Admin</option>
-                </Form.Control>
-              </Form.Group>
+              {(userRole === UserRole.ADMIN || userRole === UserRole.SUPER_ADMIN) && (
+                <Form.Group controlId="formLibraryVisibility">
+                  <Form.Label>Visibilidad</Form.Label>
+                  <Form.Control
+                    as="select"
+                    value={visibility}
+                    onChange={(e) => setVisibility(e.target.value as LibraryVisibility)}
+                    required
+                  >
+                    <option value={LibraryVisibility.GENERAL}>General</option>
+                    <option value={LibraryVisibility.USERS}>Usuarios</option>
+                    <option value={LibraryVisibility.ADMIN}>Admin</option>
+                  </Form.Control>
+                </Form.Group>
+              )}
               <br />
               <Button variant="primary" type="submit">
                 {editingLibrary ? 'Actualizar' : 'Crear'}

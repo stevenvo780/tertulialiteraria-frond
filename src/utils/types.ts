@@ -2,13 +2,35 @@ export interface AuthData {
   email: string;
   password: string;
 }
-export interface User {
-  id: string;
-  email?: string | undefined | null;
-  name?: string | undefined | null;
-  role?: 'admin' | 'user' | 'super_admin' | undefined | null; 
+
+export enum UserRole {
+  SUPER_ADMIN = 'super_admin',
+  ADMIN = 'admin',
+  EDITOR = 'editor',
+  USER = 'user',
 }
-export interface Events {
+
+export interface User extends SharedProp {
+  id: string;
+  email: string;
+  name?: string | undefined | null;
+  role: UserRole; 
+}
+
+export interface CreateUserDto {
+  email: string;
+  password: string;
+  name?: string;
+}
+
+export enum Repetition {
+  NONE = 'none',
+  DAILY = 'daily',
+  WEEKLY = 'weekly',
+  MONTHLY = 'monthly',
+  YEARLY = 'yearly',
+}
+export interface Events extends SharedProp {
   id?: number | null;
   title: string;
   description: string;
@@ -16,7 +38,16 @@ export interface Events {
   startDate: Date;
   endDate: Date;
   author?: User;
-  repetition?: string;
+  repetition?: Repetition;
+}
+
+export interface CreateEventDto {
+  title: string;
+  description: string;
+  eventDate: Date;
+  startDate: Date;
+  endDate: Date;
+  repetition?: Repetition;
 }
 
 export interface CalendarEvent {
@@ -39,7 +70,7 @@ export enum LibraryVisibility {
   ADMIN = 'admin',
 }
 
-export interface Library {
+export interface Library extends SharedProp {
   id: number;
   title: string;
   description: string;
@@ -73,15 +104,21 @@ export interface UpdateLibraryDto {
   visibility?: LibraryVisibility;
 }
 
-export interface Publication {
+export interface Publication extends SharedProp {
   id: number;
   title: string;
-  content: {
-    html: string;
-    css?: string;
-  };
-  publicationDate: Date;
+  content: string;
   author?: User;
+}
+
+export interface CreatePublicationDto {
+  title: string;
+  content: string;
+}
+
+export interface  SharedProp {
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface RouteApi {

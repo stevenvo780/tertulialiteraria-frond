@@ -8,7 +8,7 @@ import { RootState } from '../../redux/store';
 import PublicationsList from './PublicationsList';
 import Sidebar from './Sidebar';
 import PublicationModal from './PublicationModal';
-import { Publication, Events } from '../../utils/types';
+import { Publication, Events, CreatePublicationDto } from '../../utils/types';
 import ScrollableEvents from '../../components/ScrollableEvents';
 
 const HomePage: React.FC = () => {
@@ -48,11 +48,9 @@ const HomePage: React.FC = () => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const publicationData: Omit<Publication, 'id'> = {
+    const publicationData: CreatePublicationDto = {
       title,
-      content: { html: content },
-      publicationDate: editingPublication ? editingPublication.publicationDate : new Date(),
-      author: editingPublication?.author,
+      content,
     };
 
     try {
@@ -84,7 +82,7 @@ const HomePage: React.FC = () => {
     }
     setEditingPublication(publication);
     setTitle(publication.title);
-    setContent(publication.content.html);
+    setContent(publication.content);
     setShowModal(true);
   };
 

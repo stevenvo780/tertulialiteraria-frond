@@ -1,5 +1,5 @@
 import { Events } from '../../utils/types';
-import { add, eachWeekOfInterval, eachMonthOfInterval, eachYearOfInterval, differenceInHours } from 'date-fns';
+import { add, eachWeekOfInterval, eachMonthOfInterval, eachYearOfInterval, differenceInHours, isAfter } from 'date-fns';
 import { EventInput } from '@fullcalendar/core';
 
 const COLORS = ['#FF5733', '#33FF57', '#3357FF', '#F333FF', '#FF33A6'];
@@ -79,4 +79,35 @@ export const generateRecurringEvents = (event: Events): EventInput[] => {
   }
 
   return events;
+};
+
+export const getNextOccurrence = (event: Events): Date | null => {
+  const now = new Date();
+  const startDate = new Date(event.startDate);
+
+  if (!event.repetition || isAfter(startDate, now)) {
+    return startDate;
+  }
+
+  let nextDate = null;
+
+  switch (event.repetition) {
+    case 'weekly':
+      nextDate = eachWeekOfInterval({ start: startDate, end: add(now, { months: 1 }) })
+        .find(date => isAfter(date, now));
+      break;
+    case 'monthly':
+      nextDate = eachMonthOfInterval({ start: startDate, end: add(now, { years: 1 }) })
+        .find(date => isAfter(date, now));
+      break;
+    case 'yearly':
+      nextDate = eachYearOfInterval({ start: startDate, end: add(now, { years: 5 }) })
+        .find(date => isAfter(date, now));
+      break;
+    default:
+      nextDate = startDate;
+      break;
+  }
+
+  return nextDate || startDate;
 };

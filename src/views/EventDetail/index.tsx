@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Container, Card, Row, Col } from 'react-bootstrap';
 import api from '../../utils/axios';
-import { Events } from '../../utils/types';
+import { Events, Repetition } from '../../utils/types';
 import ReactCalendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import EventModal from '../../components/EventModal';
@@ -20,7 +20,11 @@ import {
   TelegramShareButton,
   TelegramIcon,
 } from 'react-share';
+import { getNextOccurrence } from '../Events/EventUtils';
 import './styles.css';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/store';
+import { UserRole } from '../../utils/types';
 
 const EventDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -29,6 +33,8 @@ const EventDetail: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [upcomingEvents, setUpcomingEvents] = useState<Events[]>([]);
   const [timeRemaining, setTimeRemaining] = useState<string>('');
+  const [nextOccurrence, setNextOccurrence] = useState<Date | null>(null);
+  const userRole = useSelector((state: RootState) => state.auth.userData);
 
   useEffect(() => {
     const fetchEventDetails = async () => {
@@ -55,9 +61,16 @@ const EventDetail: React.FC = () => {
 
   useEffect(() => {
     if (event) {
+      const next = getNextOccurrence(event);
+      setNextOccurrence(next);
+    }
+  }, [event]);
+
+  useEffect(() => {
+    if (nextOccurrence) {
       const intervalId = setInterval(() => {
         const now = new Date().getTime();
-        const startTime = new Date(event.startDate).getTime();
+        const startTime = nextOccurrence.getTime();
         const timeDiff = startTime - now;
 
         if (timeDiff <= 0) {
@@ -73,7 +86,7 @@ const EventDetail: React.FC = () => {
 
       return () => clearInterval(intervalId);
     }
-  }, [event]);
+  }, [nextOccurrence]);
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -89,16 +102,17 @@ const EventDetail: React.FC = () => {
 
   return (
     <Container className="mt-4 d-flex flex-column">
-      <div className="edit-icon-container position-fixed" style={{ top: '100px', right: '50px' }}>
-        <FaEdit
-          size={24}
-          onClick={handleEdit}
-          style={{ cursor: 'pointer' }}
-        />
-      </div>
+      {(userRole?.role === UserRole.ADMIN || userRole?.role === UserRole.SUPER_ADMIN) && (
+        <div className="edit-icon-container position-fixed" style={{ top: '100px', right: '50px' }}>
+          <FaEdit
+            size={24}
+            onClick={handleEdit}
+            style={{ cursor: 'pointer' }}
+          />
+        </div>
+      )}
       <Row>
         <Col md={4}>
-
           {/* Contador de Tiempo Restante */}
           <Card className="mb-4">
             <Card.Body>
@@ -111,7 +125,7 @@ const EventDetail: React.FC = () => {
           <Card className="mb-4">
             <Card.Body>
               <Card.Title>Fecha</Card.Title>
-              <Card.Text>{new Date(event.startDate).toLocaleDateString()}</Card.Text>
+              <Card.Text>{nextOccurrence ? nextOccurrence.toLocaleDateString() : 'Sin próxima fecha'}</Card.Text>
             </Card.Body>
           </Card>
 
@@ -119,20 +133,20 @@ const EventDetail: React.FC = () => {
           <Card className="mb-4">
             <Card.Body>
               <Card.Title>Hora</Card.Title>
-              <Card.Text>{new Date(event.startDate).toLocaleTimeString()}</Card.Text>
+              <Card.Text>{nextOccurrence ? nextOccurrence.toLocaleTimeString() : 'Sin próxima hora'}</Card.Text>
             </Card.Body>
           </Card>
-
-
 
           {/* Calendario Pequeño y Minimalista */}
           <Card className="mb-4">
             <Card.Body>
               <ReactCalendar
-                value={new Date(event.startDate)}
-                tileDisabled={({ date }) => date.getTime() !== new Date(event.startDate).getTime()}
+                value={nextOccurrence || new Date(event.startDate)}
+                tileDisabled={({ date }) => {
+                  return false;
+                }}
                 className="minimal-calendar"
-                showNavigation={false} // Ocultar navegación
+                showNavigation={false}
               />
             </Card.Body>
           </Card>

@@ -9,11 +9,9 @@ const useFirebaseAuth = () => {
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
-      if (user) {
+      if (user && user.email) {
         const response = await api.get('/user/me/data');
-        console.log(response);
         const role = response.data.role;
-        console.log(response.data);
         dispatch(login({ id: user.uid, email: user.email, name: user.displayName, role }));
       } else {
         dispatch(logout());

@@ -5,6 +5,7 @@ import { RootState } from '../../redux/store';
 import NormativaModal from './NormativaModal';
 import api from '../../utils/axios';
 import { addNotification } from '../../redux/ui';
+import { UserRole } from '../../utils/types';
 
 const NormativaPage: React.FC = () => {
   const [generalNormative, setGeneralNormative] = useState<string | null>(null);
@@ -27,7 +28,7 @@ const NormativaPage: React.FC = () => {
 
   return (
     <>
-      {userRole === 'super_admin' && (
+      {userRole === UserRole.SUPER_ADMIN && (
         <div className="edit-icon-container position-fixed" style={{ top: '100px', right: '50px' }}>
           <FaEdit
             size={24}

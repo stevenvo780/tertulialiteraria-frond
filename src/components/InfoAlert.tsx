@@ -18,8 +18,9 @@ const InfoAlert: React.FC = () => {
   const handleRemoveNotification = (id: string) => {
     dispatch(removeNotification(id));
   };
+
   return (
-    <div className='info-alert'>
+    <div className="alert-container">
       {notifications.map((notification, i) => (
         <AlertComponent
           key={i}
@@ -54,30 +55,21 @@ const AlertComponent: React.FC<AlertComponentProps> = ({ id, color, message, onR
   }
 
   return (
-    <div
+    <Alert
+      variant={color}
+      dismissible
+      onClose={onDismiss}
       style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'flex-end',
+        marginBottom: '10px',
+        paddingRight: '40px',
+        pointerEvents: 'auto',
+        wordWrap: 'break-word',
+        overflowY: 'auto',
       }}
     >
-      <Alert
-        variant={color}
-        dismissible
-        onClose={onDismiss}
-        style={{
-          display: 'inline-block',
-          whiteSpace: 'pre-wrap',
-          pointerEvents: 'auto',
-          wordWrap: 'break-word',
-          overflowY: 'auto',
-        }}
-      >
-        {message}
-      </Alert>
-    </div>
+      <p>{message}</p>
+    </Alert>
   );
 };
-
 
 export default InfoAlert;

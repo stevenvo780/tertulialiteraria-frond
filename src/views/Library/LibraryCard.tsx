@@ -5,7 +5,7 @@ import { Library } from '../../utils/types';
 
 interface LibraryCardProps {
   library: Library;
-  onEdit?: (library: Library) => void; // Hacer que onEdit y onDelete sean opcionales
+  onEdit?: (library: Library) => void;
   onDelete?: (library: Library) => void;
   onClick: () => void;
 }
@@ -58,7 +58,7 @@ const LibraryCard: React.FC<LibraryCardProps> = ({ library, onEdit, onDelete, on
           {expanded ? 'Ver menos' : 'Ver más'}
         </Button>
         <div className="text-muted mt-2">
-          Referenciado el {new Date(library.referenceDate).toLocaleDateString()}
+          {library.createdAt ? new Date(library.createdAt).toLocaleDateString() : ''}
         </div>
       </Card.Body>
     </Card>

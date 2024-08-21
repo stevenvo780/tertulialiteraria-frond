@@ -19,9 +19,10 @@ const generateRoutes = (routes: { path: string; element: string }[]) => {
 const AuthWrapper: React.FC = () => {
   const user = useSelector((state: RootState) => state.auth.userData);
   const publicRoutes = routesConfig.publicRoutes;
-  const roleRoutes = routesConfig.roleRoutes[user?.role || 'user'];
+  const role = user?.role as string | undefined;
+  const roleRoutes = role ? routesConfig.roleRoutes[role as keyof typeof routesConfig.roleRoutes] : [];
 
-  const combinedRoutes = [...publicRoutes, ...roleRoutes];
+  const combinedRoutes = [...publicRoutes, ...(roleRoutes || [])];
 
   return (
     <Layout>
