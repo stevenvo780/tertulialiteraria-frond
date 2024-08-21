@@ -8,7 +8,8 @@ import { RootState } from '../../redux/store';
 import PublicationsList from './PublicationsList';
 import Sidebar from './Sidebar';
 import PublicationModal from './PublicationModal';
-import { Publication } from '../../utils/types';
+import { Publication, Events } from '../../utils/types';
+import ScrollableEvents from './ScrollableEvents';  // Importamos el nuevo componente
 
 const HomePage: React.FC = () => {
   const dispatch = useDispatch();
@@ -18,9 +19,11 @@ const HomePage: React.FC = () => {
   const [editingPublication, setEditingPublication] = useState<Publication | null>(null);
   const [title, setTitle] = useState<string>('');
   const [content, setContent] = useState<string>(''); // HTML Content
+  const [repetitiveEvents, setRepetitiveEvents] = useState<Events[]>([]);
 
   useEffect(() => {
     fetchPublications();
+    fetchRepetitiveEvents();
   }, []);
 
   const fetchPublications = async () => {
@@ -29,6 +32,16 @@ const HomePage: React.FC = () => {
       dispatch(getPublications(response.data));
     } catch (error) {
       dispatch(addNotification({ message: 'Error al obtener las publicaciones', color: 'danger' }));
+    }
+  };
+
+  const fetchRepetitiveEvents = async () => {
+    try {
+      const response = await api.get<Events[]>('/events/home/upcoming?limit=5');
+      const repetitive = response.data.filter(event => event.repetition);
+      setRepetitiveEvents(repetitive);
+    } catch (error) {
+      dispatch(addNotification({ message: 'Error al obtener los eventos repetitivos', color: 'danger' }));
     }
   };
 
@@ -85,9 +98,9 @@ const HomePage: React.FC = () => {
       dispatch(addNotification({ message: 'Error al eliminar la publicación', color: 'danger' }));
     }
   };
+
   return (
     <>
-      {/* Header Section with Banner Image */}
       <div
         className="d-flex align-items-center justify-content-center text-white"
         style={{
@@ -95,9 +108,9 @@ const HomePage: React.FC = () => {
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           height: '300px',
-          width: '100vw',  // Ocupar todo el ancho de la ventana
+          width: '100vw',
           position: 'relative',
-          marginLeft: 'calc(-50vw + 50%)', // Alinear la imagen a la izquierda
+          marginLeft: 'calc(-50vw + 50%)',
         }}
       >
         <div className="text-center" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)' }}>
@@ -108,7 +121,12 @@ const HomePage: React.FC = () => {
         </div>
       </div>
 
-      <Container fluid className="p-0">
+      <Container className="p-0">
+        <Row className="m-0">
+          <Col md={12}>
+            {repetitiveEvents.length > 0 && <ScrollableEvents events={repetitiveEvents} />}
+          </Col>
+        </Row>
         <Row className="m-0">
           <Col md={3}>
             <Sidebar />

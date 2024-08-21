@@ -1,51 +1,55 @@
 :root {
-  --font-color: #5D4037; /* Color cálido tipo café */
-  --bg-color: #F3E5AB; /* Color crema suave */
-  --white-color: #FFFFFF; /* Color blanco */
-  --border-color: #ac9d8369; /* Color más difuminado para los bordes */
+  --font-color: #3E2723; /* Marrón oscuro */
+  --bg-color: #F5F5F5; /* Blanco suave */
+  --white-color: #FFFFFF; /* Blanco */
+  --border-color: #d7ccc88c; /* Borde tenue para botones */
 
   /* Primary Color Palette */
-  --primary-color: #8D6E63; /* Color marrón claro */
-  --primary-hover: #795548; /* Color más oscuro para el hover */
+  --primary-color: #6D4C41; /* Marrón profundo */
+  --primary-hover: #5D4037; /* Marrón oscuro para hover */
 
   /* Secondary Color Palette */
-  --secondary-color: #747474; /* Gris cálido */
-  --secondary-hover: #5c5c5c; /* Gris más oscuro para el hover */
+  --secondary-color: #8D6E63; /* Marrón claro */
+  --secondary-hover: #795548; /* Marrón medio para hover */
+
+  /* Accent Color */
+  --accent-color: #3e272333; /* Marrón muy oscuro para detalles importantes */
 
   /* Info Color Palette */
-  --info-color: #e7f0f7;
-  --info-border: #bee5eb;
-  --info-text: #31708f;
+  --info-color: #E3F2FD; /* Azul claro */
+  --info-border: #90CAF9; /* Azul medio para bordes */
+  --info-text: #1976D2; /* Azul fuerte para texto */
 
   /* Success Color Palette */
-  --success-color: #d4edda;
-  --success-border: #c3e6cb;
-  --success-text: #155724;
+  --success-color: #C8E6C9; /* Verde claro */
+  --success-border: #66BB6A; /* Verde medio para bordes */
+  --success-text: #388E3C; /* Verde oscuro para texto */
 
   /* Warning Color Palette */
-  --warning-color: #fff3cd;
-  --warning-border: #ffeeba;
-  --warning-text: #856404;
+  --warning-color: #FFF9C4; /* Amarillo claro */
+  --warning-border: #FFEB3B; /* Amarillo medio para bordes */
+  --warning-text: #614902; /* Marrón oscuro para mejor legibilidad */
 
   /* Danger Color Palette */
-  --danger-color: #f8d7da;
-  --danger-border: #f5c6cb;
-  --danger-text: #721c24;
+  --danger-color: #FFCDD2; /* Rojo claro */
+  --danger-border: #EF5350; /* Rojo medio para bordes */
+  --danger-text: #D32F2F; /* Rojo fuerte para texto */
 
   /* Link Color */
-  --link-color: #5D4037;
-  --link-hover: #795548;
+  --link-color: #3E2723; /* Marrón oscuro */
+  --link-hover: #5D4037; /* Marrón oscuro para hover */
 
   /* Outline and Box Shadow Colors */
-  --outline-color: var(--secondary-color); /* Color marrón claro para outline */
+  --outline-color: var(--secondary-color);
 }
-
 /* Global Styles */
 body {
   margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-family: 'Montaga', serif; /* Tipografía Montaga */
+  background-color: var(--bg-color);
+  color: var(--font-color);
+  /* font-family: 'Montaga', serif; */
 }
 
 /* Links */
@@ -70,22 +74,32 @@ a:focus,
   font-weight: 600;
   text-transform: none;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-color: var(--border-color); 
 }
 
 .btn-primary {
   background-color: var(--primary-color);
-  border-color: var(--border-color);
+  border-color: var(--accent-color);
 }
 
 .btn-primary:hover, .btn-primary:focus {
   background-color: var(--primary-hover);
   border-color: var(--primary-hover);
-  color: var(--white-color);
+}
+
+.btn-secondary {
+  background-color: var(--secondary-color);
+  border-color: var(--accent-color);
+}
+
+.btn-secondary:hover, .btn-secondary:focus {
+  background-color: var(--secondary-hover);
+  border-color: var(--secondary-hover);
 }
 
 .btn-outline-primary {
   color: var(--primary-color);
-  border-color: var(--border-color);
+  border-color: var(--accent-color);
   background-color: transparent;
 }
 
@@ -95,20 +109,9 @@ a:focus,
   color: var(--white-color);
 }
 
-.btn-secondary {
-  background-color: var(--secondary-color);
-  border-color: var(--border-color);
-}
-
-.btn-secondary:hover, .btn-secondary:focus {
-  background-color: var(--secondary-hover);
-  border-color: var(--secondary-hover);
-  color: var(--white-color);
-}
-
 .btn-outline-secondary {
   color: var(--secondary-color);
-  border-color: var(--border-color);
+  border-color: var(--accent-color);
   background-color: transparent;
 }
 
@@ -116,6 +119,108 @@ a:focus,
   background-color: var(--secondary-color);
   border-color: var(--secondary-color);
   color: var(--white-color);
+}
+
+.btn-info {
+  background-color: var(--info-color);
+  border-color: var(--info-border);
+  color: var(--info-text);
+}
+
+.btn-info:hover, .btn-info:focus {
+  background-color: var(--info-text);
+  border-color: var(--info-text);
+}
+
+.btn-outline-info {
+  color: var(--info-color);
+  border-color: var(--info-border);
+  background-color: transparent;
+}
+
+.btn-outline-info:hover, .btn-outline-info:focus {
+  background-color: var(--info-color);
+  border-color: var(--info-color);
+  color: var(--white-color);
+}
+
+.btn-success {
+  background-color: var(--success-color);
+  border-color: var(--success-border);
+}
+
+.btn-success:hover, .btn-success:focus {
+  background-color: var(--success-text);
+  border-color: var(--success-text);
+}
+
+.btn-outline-success {
+  color: var(--success-color);
+  border-color: var(--success-border);
+  background-color: transparent;
+}
+
+.btn-outline-success:hover, .btn-outline-success:focus {
+  background-color: var(--success-color);
+  border-color: var(--success-color);
+  color: var(--white-color);
+}
+
+.btn-warning {
+  background-color: var(--warning-color);
+  border-color: var(--warning-border);
+  color: var(--warning-text);
+}
+
+.btn-warning:hover, .btn-warning:focus {
+  background-color: var(--warning-text);
+  border-color: var(--warning-text);
+  color: var(--white-color);
+}
+
+.btn-outline-warning {
+  color: var(--warning-color);
+  border-color: var(--warning-border);
+  background-color: transparent;
+}
+
+.btn-outline-warning:hover, .btn-outline-warning:focus {
+  background-color: var(--warning-color);
+  border-color: var(--warning-color);
+  color: var(--white-color);
+}
+
+.btn-danger {
+  background-color: var(--danger-color);
+  border-color: var(--danger-border);
+}
+
+.btn-danger:hover, .btn-danger:focus {
+  background-color: var(--danger-text);
+  border-color: var(--danger-text);
+}
+
+.btn-outline-danger {
+  color: var(--danger-color);
+  border-color: var(--danger-border);
+  background-color: transparent;
+}
+
+.btn-outline-danger:hover, .btn-outline-danger:focus {
+  background-color: var(--danger-color);
+  border-color: var(--danger-color);
+  color: var(--white-color);
+}
+
+/* Button Sizes */
+.btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}
+
+.btn-lg {
+  padding: 0.5rem 1rem;
+  font-size: 1.25rem;
 }
 
 /* Link Buttons */

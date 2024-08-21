@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import { logout } from '../redux/auth';
 import routesConfig from '../config/routesConfig.json';
-import { FaTh } from 'react-icons/fa';
+import { CgMenuGridO } from "react-icons/cg";
 
 
 const Header: React.FC = () => {
@@ -29,7 +29,7 @@ const Header: React.FC = () => {
   const combinedRoutes = [...publicRoutes, ...roleRoutes];
 
   return (
-    <Navbar expand="lg" className="bg-transparent navbar-light" style={{ padding: '3px' }}>
+    <Navbar expand="lg" className="bg-transparent navbar-light" style={{ paddingBottom: '0px' }}>
       <Container fluid className="pl-4 pr-4">
         <Navbar.Brand as={Link} to="/">
           <Image
@@ -53,9 +53,8 @@ const Header: React.FC = () => {
           </Nav>
           <Dropdown align="end">
             <Dropdown.Toggle as="span" id="dropdown-basic" className="d-flex align-items-center" style={{ cursor: 'pointer', marginInline: 10 }}>
-              <FaTh size={20} className="custom-icon" style={{ color: "black" }} />
+              <CgMenuGridO size={20} className="custom-icon" style={{ color: "black" }} />
             </Dropdown.Toggle>
-
             <Dropdown.Menu>
               {isLoggedIn ? (
                 <Dropdown.Item onClick={handleLogout}>Cerrar sesión</Dropdown.Item>

@@ -122,85 +122,92 @@ const LibraryPage: React.FC = () => {
 
   return (
     <Container>
-      <Form onSubmit={handleSearch} className="mb-4">
-        <Form.Group controlId="searchQuery">
-          <Row>
-            <Col md={10} className="text-center">
-              <Form.Control
-                type="text"
-                placeholder="Buscar por título o descripción"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </Col>
-            <Col md={2} className="text-center">
-              <Button variant="primary" type="submit">
-                Buscar
+      <Row>
+        {!currentNote && (
+          <Col md={currentNote ? 12 : 10} className="text-center">
+            <Form onSubmit={handleSearch} className="mb-4">
+              <Form.Group controlId="searchQuery">
+                <Row>
+                  <Col md={10} className="text-center">
+                    <Form.Control
+                      type="text"
+                      placeholder="Buscar por título o descripción"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                  </Col>
+                  <Col md={2} className="text-center">
+                    <Button variant="primary" type="submit">
+                      Buscar
+                    </Button>
+                  </Col>
+                </Row>
+              </Form.Group>
+            </Form>
+          </Col>
+        )}
+        <Col md={currentNote ? 12 : 2} className="text-center">
+          {currentNote ? (
+            <>
+              <Button variant="secondary" onClick={handleGoBack} className="mr-4" style={{ marginInline: 20 }}>
+                <FaArrowLeft /> Volver
               </Button>
-            </Col>
-          </Row>
-        </Form.Group>
-      </Form>
-
-      <div className="my-4 text-center">
+              {(userRole === 'admin' || userRole === 'super_admin') && (
+                <>
+                  <Button variant="primary" onClick={() => setShowModal(true)} style={{ marginInline: 20 }}>
+                    <FaPlus /> Crear Subnota
+                  </Button>
+                  <Button variant="warning" onClick={() => handleEdit(currentNote)}>
+                    <FaEdit /> Editar Nota
+                  </Button>
+                </>
+              )}
+            </>
+          ) : (
+            (userRole === 'admin' || userRole === 'super_admin') && (
+              <Button variant="primary" onClick={() => setShowModal(true)}>
+                <FaPlus /> Crear nota
+              </Button>
+            )
+          )}
+        </Col>
+      </Row>
+      <br />
+      <Row>
         {currentNote ? (
           <>
-            <Button variant="secondary" onClick={handleGoBack} className="mr-4" style={{ marginInline: 20 }}>
-              <FaArrowLeft /> Volver
-            </Button>
-            {(userRole === 'admin' || userRole === 'super_admin') && (
-              <>
-                <Button variant="primary" onClick={() => setShowModal(true)} style={{ marginInline: 20 }}>
-                  <FaPlus /> Crear Subnota
-                </Button>
-                <Button variant="warning" onClick={() => handleEdit(currentNote)}>
-                  <FaEdit /> Editar Nota
-                </Button>
-              </>
+            <h4 className="text-center">{currentNote.title}</h4>
+            <div dangerouslySetInnerHTML={{ __html: currentNote.description }} />
+            {currentNote.children && currentNote.children.length > 0 ? (
+              <LibraryList
+                libraries={currentNote.children}
+                onEdit={(userRole === 'admin' || userRole === 'super_admin') ? handleEdit : undefined}
+                onDelete={(userRole === 'admin' || userRole === 'super_admin') ? () => { } : undefined}
+                onNavigate={handleNoteClick}
+              />
+            ) : (
+              <p className="text-center text-muted">No hay subnotas.</p>
             )}
           </>
         ) : (
-          (userRole === 'admin' || userRole === 'super_admin') && (
-            <Button variant="primary" onClick={() => setShowModal(true)}>
-              <FaPlus /> Crear Nota
-            </Button>
-          )
+          <LibraryList
+            libraries={libraries}
+            onEdit={(userRole === 'admin' || userRole === 'super_admin') ? handleEdit : undefined}
+            onDelete={(userRole === 'admin' || userRole === 'super_admin') ? () => { } : undefined}
+            onNavigate={handleNoteClick}
+          />
         )}
-      </div>
 
-      {currentNote ? (
-        <>
-          <h4 className="text-center">{currentNote.title}</h4>
-          <div dangerouslySetInnerHTML={{ __html: currentNote.description }} />
-          {currentNote.children && currentNote.children.length > 0 ? (
-            <LibraryList
-              libraries={currentNote.children}
-              onEdit={(userRole === 'admin' || userRole === 'super_admin') ? handleEdit : undefined}
-              onDelete={(userRole === 'admin' || userRole === 'super_admin') ? () => { } : undefined}
-              onNavigate={handleNoteClick}
-            />
-          ) : (
-            <p className="text-center text-muted">No hay subnotas.</p>
-          )}
-        </>
-      ) : (
-        <LibraryList
-          libraries={libraries}
-          onEdit={(userRole === 'admin' || userRole === 'super_admin') ? handleEdit : undefined}
-          onDelete={(userRole === 'admin' || userRole === 'super_admin') ? () => { } : undefined}
-          onNavigate={handleNoteClick}
-        />
-      )}
-
-      {(userRole === 'admin' || userRole === 'super_admin') && (
-        <LibraryFormModal
-          show={showModal}
-          onHide={() => setShowModal(false)}
-          onSubmit={handleCreateOrUpdate}
-          editingLibrary={editingLibrary}
-          showModal={showModal}
-        />
-      )}
+        {(userRole === 'admin' || userRole === 'super_admin') && (
+          <LibraryFormModal
+            show={showModal}
+            onHide={() => setShowModal(false)}
+            onSubmit={handleCreateOrUpdate}
+            editingLibrary={editingLibrary}
+            showModal={showModal}
+          />
+        )}
+      </Row>
     </Container>
   );
 };
