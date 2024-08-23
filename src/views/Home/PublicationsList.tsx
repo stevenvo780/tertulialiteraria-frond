@@ -98,7 +98,7 @@ const PublicationsList: React.FC<PublicationsListProps> = ({
                   onClick={() => handleShare(publication)} 
                   className="text-info"
                 >
-                  <FaShareAlt /> Compartir
+                  <FaShareAlt />
                 </Button>
               </div>
             </Card.Body>

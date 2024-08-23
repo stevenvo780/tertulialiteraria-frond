@@ -9,7 +9,7 @@ import { RootState } from '../../redux/store';
 import PublicationsList from './PublicationsList';
 import Sidebar from './Sidebar';
 import PublicationModal from './PublicationModal';
-import ShareModal from '../../components/ShareModal'; 
+import ShareModal from './ShareModal'; 
 import { Publication, Events, CreatePublicationDto, Like, LikeTarget } from '../../utils/types';
 import ScrollableEvents from '../../components/ScrollableEvents';
 
@@ -32,18 +32,16 @@ const HomePage: React.FC = () => {
   const publicationRefs = useRef<Record<number, HTMLDivElement | null>>({}); // Referencia para las publicaciones
 
   useEffect(() => {
-    // Agrega un event listener para el cambio de hash
     window.addEventListener('hashchange', handleHashChange);
     
-    const publicationId = window.location.hash.replace('#', ''); // Obtén el ID de la publicación desde el hash
+    const publicationId = window.location.hash.replace('#', '');
     if (publicationId) {
-      fetchPublicationById(publicationId); // Si hay un ID en el hash, cargamos esa publicación y luego desplazamos el foco
+      fetchPublicationById(publicationId);
     } else {
-      fetchPublications(); // Si no hay ID, cargamos las publicaciones normalmente
+      fetchPublications();
     }
     fetchRepetitiveEvents();
 
-    // Limpia el event listener al desmontar el componente
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
@@ -78,15 +76,14 @@ const HomePage: React.FC = () => {
     try {
       const response = await api.get<Publication>(`/publications/${id}`);
       
-      // Verifica si la publicación ya está en la lista
       const existingPublication = publications.find(p => p.id === parseInt(id));
       
       if (!existingPublication) {
-        dispatch(addPublication(response.data)); // Añade la publicación a la lista si no está presente
+        dispatch(addPublication(response.data));
       }
 
       setSelectedPublication(response.data); 
-      scrollToPublication(response.data.id); // Desplaza hasta la publicación
+      scrollToPublication(response.data.id);
     } catch (error) {
       dispatch(addNotification({ message: 'Error al obtener la publicación', color: 'danger' }));
     }
@@ -204,10 +201,6 @@ const HomePage: React.FC = () => {
     setShareModalVisible(true); 
   };
 
-  const handleFocusPublication = (publicationId: number) => {
-    window.location.hash = publicationId.toString(); // Actualiza el hash en la URL
-    scrollToPublication(publicationId); // Desplaza hasta la publicación
-  };
 
   return (
     <>

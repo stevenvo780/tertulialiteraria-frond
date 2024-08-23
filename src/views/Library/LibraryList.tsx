@@ -1,6 +1,6 @@
 import React from 'react';
 import { Row, Col } from 'react-bootstrap';
-import { Library } from '../../utils/types';
+import { Library, Like } from '../../utils/types';
 import LibraryCard from './LibraryCard';
 
 interface LibraryListProps {
@@ -8,6 +8,9 @@ interface LibraryListProps {
   onEdit?: (library: Library) => void;
   onDelete?: (library: Library) => void;
   onNavigate: (library: Library) => void;
+  likesData: Record<number, { likes: number; dislikes: number; userLike: Like | null }>;
+  handleLikeToggle: (libraryId: number, isLike: boolean) => void;
+  handleShare: (library: Library) => void;
 }
 
 const calculateColSize = (totalLibraries: number) => {
@@ -17,7 +20,15 @@ const calculateColSize = (totalLibraries: number) => {
   return 3;
 };
 
-const LibraryList: React.FC<LibraryListProps> = ({ libraries, onEdit, onDelete, onNavigate }) => {
+const LibraryList: React.FC<LibraryListProps> = ({
+  libraries,
+  onEdit,
+  onDelete,
+  onNavigate,
+  likesData,
+  handleLikeToggle,
+  handleShare,
+}) => {
   const colSize = calculateColSize(libraries.length);
 
   return (
@@ -29,6 +40,9 @@ const LibraryList: React.FC<LibraryListProps> = ({ libraries, onEdit, onDelete, 
             onEdit={onEdit}
             onDelete={onDelete}
             onClick={() => onNavigate(library)}
+            likesData={likesData[library.id] || { likes: 0, dislikes: 0, userLike: null }}
+            handleLikeToggle={handleLikeToggle}
+            handleShare={handleShare}
           />
         </Col>
       ))}

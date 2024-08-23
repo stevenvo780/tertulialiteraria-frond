@@ -1,17 +1,27 @@
 import React, { useState } from 'react';
 import { Card, Button } from 'react-bootstrap';
-import { FaEdit, FaTrash } from 'react-icons/fa';
-import { Library } from '../../utils/types';
+import { FaEdit, FaTrash, FaThumbsUp, FaThumbsDown, FaShareAlt } from 'react-icons/fa';
+import { Library, Like } from '../../utils/types';
 
 interface LibraryCardProps {
   library: Library;
   onEdit?: (library: Library) => void;
   onDelete?: (library: Library) => void;
   onClick: () => void;
+  likesData: { likes: number; dislikes: number; userLike: Like | null };
+  handleLikeToggle: (libraryId: number, isLike: boolean) => void;
+  handleShare: (library: Library) => void;
 }
 
-const LibraryCard: React.FC<LibraryCardProps> = ({ library, onEdit, onDelete, onClick }) => {
-  const [expanded, setExpanded] = useState(false);
+const LibraryCard: React.FC<LibraryCardProps> = ({
+  library,
+  onEdit,
+  onDelete,
+  onClick,
+  likesData,
+  handleLikeToggle,
+  handleShare,
+}) => {
 
   return (
     <Card className="mb-4" key={library.id} onClick={onClick} style={{ cursor: 'pointer' }}>
@@ -43,22 +53,33 @@ const LibraryCard: React.FC<LibraryCardProps> = ({ library, onEdit, onDelete, on
         </div>
         <div
           style={{
-            maxHeight: expanded ? 'none' : '150px',
+            maxHeight: '150px',
             overflow: 'hidden',
           }}
           dangerouslySetInnerHTML={{ __html: library.description }}
         />
-        <Button
-          variant="link"
-          onClick={(e) => {
-            e.stopPropagation();
-            setExpanded(!expanded);
-          }}
-        >
-          {expanded ? 'Ver menos' : 'Ver más'}
-        </Button>
-        <div className="text-muted mt-2">
-          {library.createdAt ? new Date(library.createdAt).toLocaleDateString() : ''}
+        <div className="d-flex align-items-center mt-3">
+          <Button
+            variant="link"
+            onClick={(e) => { e.stopPropagation(); handleLikeToggle(library.id, true); }}
+            className={likesData.userLike?.isLike ? 'text-primary' : ''}
+          >
+            <FaThumbsUp /> {likesData.likes}
+          </Button>
+          <Button
+            variant="link"
+            onClick={(e) => { e.stopPropagation(); handleLikeToggle(library.id, false); }}
+            className={likesData.userLike && !likesData.userLike.isLike ? 'text-danger' : ''}
+          >
+            <FaThumbsDown /> {likesData.dislikes}
+          </Button>
+          <Button
+            variant="link"
+            onClick={(e) => { e.stopPropagation(); handleShare(library); }}
+            className="text-info"
+          >
+            <FaShareAlt />
+          </Button>
         </div>
       </Card.Body>
     </Card>
