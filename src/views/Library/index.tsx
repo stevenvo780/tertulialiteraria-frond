@@ -9,9 +9,9 @@ import { addNotification } from '../../redux/ui';
 import { Library, CreateLibraryDto, UpdateLibraryDto, Like, LikeTarget } from '../../utils/types';
 import LibraryList from './LibraryList';
 import LibraryFormModal from './LibraryFormModal';
-import { FaArrowLeft, FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
+import { FaArrowLeft, FaPlus, FaEdit, FaTrash, FaThumbsUp, FaThumbsDown, FaShareAlt } from 'react-icons/fa';
 import { UserRole } from '../../utils/types';
-import ShareNoteModal from './ShareModal';
+import ShareNoteModal from './ShareNoteModal';
 
 const LibraryPage: React.FC = () => {
   const { noteId } = useParams<{ noteId: string | undefined }>();
@@ -51,6 +51,7 @@ const LibraryPage: React.FC = () => {
     try {
       const response = await api.get<Library>(`/library/${id}`);
       setCurrentNote(response.data);
+      fetchLikesDataAsync([response.data]); // Fetch likes for the current note
       return response.data;
     } catch (error) {
       dispatch(addNotification({ message: 'Error al obtener la nota', color: 'danger' }));
@@ -89,7 +90,7 @@ const LibraryPage: React.FC = () => {
         await api.post('/likes', { targetType: LikeTarget.LIBRARY, targetId: libraryId, isLike });
       }
 
-      fetchLikesDataAsync(libraries);
+      fetchLikesDataAsync([currentNote as Library]);
     } catch (error) {
       dispatch(addNotification({ message: 'Error al dar like o dislike', color: 'danger' }));
     }
@@ -210,7 +211,8 @@ const LibraryPage: React.FC = () => {
             </Form>
           </Col>
         )}
-        <Col md={currentNote ? 12 : 2} className="text-center">
+      </Row>
+      <Col md={currentNote ? 12 : 2} className="text-center">
           {currentNote ? (
             <>
               <Button variant="secondary" onClick={handleGoBack} className="mr-4" style={{ marginInline: 20 }}>
@@ -237,12 +239,45 @@ const LibraryPage: React.FC = () => {
           )
           )}
         </Col>
-      </Row>
       <br />
+      {currentNote && (
+        <>
+          <Row className="align-items-center mb-3">
+            <Col md={9}>
+              <h4 className="m-0">{currentNote.title}</h4>
+              {currentNote.author && (
+                <p className="text-muted m-0">{`Por ${currentNote.author.name} - ${currentNote.author.role}`}</p>
+              )}
+            </Col>
+            <Col md={3} className="text-right">
+              <Button
+                variant="link"
+                onClick={() => handleLikeToggle(currentNote.id, true)}
+                className={likesData[currentNote.id]?.userLike?.isLike ? 'text-primary' : ''}
+              >
+                <FaThumbsUp /> {likesData[currentNote.id]?.likes || 0}
+              </Button>
+              <Button
+                variant="link"
+                onClick={() => handleLikeToggle(currentNote.id, false)}
+                className={likesData[currentNote.id]?.userLike?.isLike === false ? 'text-danger' : ''}
+              >
+                <FaThumbsDown /> {likesData[currentNote.id]?.dislikes || 0}
+              </Button>
+              <Button
+                variant="link"
+                onClick={() => handleShare(currentNote)}
+                className="text-info"
+              >
+                <FaShareAlt /> Compartir
+              </Button>
+            </Col>
+          </Row>
+        </>
+      )}
       <Row>
         {currentNote ? (
           <>
-            <h4 className="text-center">{currentNote.title}</h4>
             <div dangerouslySetInnerHTML={{ __html: currentNote.description }} />
             {currentNote.children && currentNote.children.length > 0 ? (
               <LibraryList
