@@ -8,7 +8,7 @@ import { RootState } from '../../redux/store';
 import PublicationsList from './PublicationsList';
 import Sidebar from './Sidebar';
 import PublicationModal from './PublicationModal';
-import { Publication, Events, CreatePublicationDto } from '../../utils/types';
+import { Publication, Events, CreatePublicationDto, Like, LikeTarget } from '../../utils/types';
 import ScrollableEvents from '../../components/ScrollableEvents';
 
 const HomePage: React.FC = () => {
@@ -18,8 +18,9 @@ const HomePage: React.FC = () => {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [editingPublication, setEditingPublication] = useState<Publication | null>(null);
   const [title, setTitle] = useState<string>('');
-  const [content, setContent] = useState<string>(''); // HTML Content
+  const [content, setContent] = useState<string>('');
   const [repetitiveEvents, setRepetitiveEvents] = useState<Events[]>([]);
+  const [likesData, setLikesData] = useState<Record<number, { likes: number; dislikes: number; userLike: Like | null }>>({});
 
   useEffect(() => {
     fetchPublications();
@@ -30,6 +31,7 @@ const HomePage: React.FC = () => {
     try {
       const response = await api.get<Publication[]>('/publications');
       dispatch(getPublications(response.data));
+      fetchLikesDataAsync(response.data);
     } catch (error) {
       dispatch(addNotification({ message: 'Error al obtener las publicaciones', color: 'danger' }));
     }
@@ -37,12 +39,33 @@ const HomePage: React.FC = () => {
 
   const fetchRepetitiveEvents = async () => {
     try {
-      const response = await api.get<Events[]>('/events/home/upcoming?limit=3');
+      const response = await api.get<Events[]>('/events/home/upcoming?limit=31');
       const repetitive = response.data.filter(event => event.repetition);
       setRepetitiveEvents(repetitive);
     } catch (error) {
       dispatch(addNotification({ message: 'Error al obtener los eventos repetitivos', color: 'danger' }));
     }
+  };
+
+  const fetchLikesDataAsync = (publications: Publication[]) => {
+    publications.forEach(async (publication) => {
+      try {
+        const [countResponse, userLikeResponse] = await Promise.all([
+          api.get(`/likes/publication/${publication.id}/count`),
+          api.get(`/likes/publication/${publication.id}/user-like`),
+        ]);
+        setLikesData(prevLikesData => ({
+          ...prevLikesData,
+          [publication.id]: {
+            likes: countResponse.data.likes,
+            dislikes: countResponse.data.dislikes,
+            userLike: userLikeResponse.data || null,
+          },
+        }));
+      } catch (error) {
+        dispatch(addNotification({ message: `Error al obtener los likes de la publicación ${publication.id}`, color: 'danger' }));
+      }
+    });
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -97,28 +120,24 @@ const HomePage: React.FC = () => {
     }
   };
 
+  const handleLikeToggle = async (publicationId: number, isLike: boolean) => {
+    try {
+      const currentLike = likesData[publicationId]?.userLike;
+  
+      if (currentLike && currentLike.isLike === isLike) {
+        await api.delete(`/likes/${currentLike.id}`);
+      } else {
+        await api.post('/likes', { targetType: LikeTarget.PUBLICATION, targetId: publicationId, isLike });
+      }
+  
+      fetchLikesDataAsync(publications);
+    } catch (error) {
+      dispatch(addNotification({ message: 'Error al dar like o dislike', color: 'danger' }));
+    }
+  };
+
   return (
     <>
-      <div
-        className="d-flex align-items-center justify-content-center text-white"
-        style={{
-          backgroundImage: "url('/images/banner.jpg')",
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          height: '300px',
-          width: '100vw',
-          position: 'relative',
-          marginLeft: 'calc(-50vw + 50%)',
-        }}
-      >
-        <div className="text-center" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)' }}>
-          <h1>Bienvenidos a Tertulia Literaria</h1>
-          <p>
-            Un espacio donde convergen la literatura, la filosofía, el arte, la ciencia y la tecnología para crear un ambiente de diálogo y aprendizaje.
-          </p>
-        </div>
-      </div>
-
       <Container className="p-0">
         <Row className="m-0">
           <Col md={12}>
@@ -129,11 +148,13 @@ const HomePage: React.FC = () => {
           <Col md={3}>
             <Sidebar />
           </Col>
-          <Col md={9} style={{ marginTop: 60 }}>
+          <Col md={9} style={{ marginTop: 40 }}>
             <PublicationsList
               publications={publications}
               handleEdit={handleEdit}
               handleDelete={handleDelete}
+              handleLikeToggle={handleLikeToggle}
+              likesData={likesData}
               user={user}
               setShowModal={setShowModal}
             />

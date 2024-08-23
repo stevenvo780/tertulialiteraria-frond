@@ -35,12 +35,13 @@ const Header: React.FC = () => {
     <Navbar expand="lg" className="bg-transparent navbar-light" style={{ paddingBottom: '0px' }}>
       <Container fluid className="pl-4 pr-4">
         <Navbar.Brand as={Link} to="/">
-          <Image
+            <Image
             src="/images/logo.jpg"
             alt="Logo"
             roundedCircle
-            style={{ width: '40px', height: '40px', objectFit: 'cover' }}
-          />
+            style={{ width: '40px', height: '40px', objectFit: 'cover', marginInline: 10 }}
+            />
+            <span style={{ fontFamily: "Montaga", fontSize: "1.5rem" }}  className="ml-2">Tertulia Literaria</span>
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">

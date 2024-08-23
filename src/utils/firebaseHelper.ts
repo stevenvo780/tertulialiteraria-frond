@@ -1,6 +1,5 @@
 import { auth } from '../utils/firebase';
 
-// Obtiene el token del usuario actual
 export const getCurrentUserToken = (): Promise<string | null> => {
   return new Promise((resolve, reject) => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
@@ -14,18 +13,17 @@ export const getCurrentUserToken = (): Promise<string | null> => {
       } else {
         resolve(null);
       }
-      unsubscribe(); // Nos desuscribimos después de recibir el estado del usuario
+      unsubscribe();
     });
   });
 };
 
-// Renueva el token del usuario
 export const refreshUserToken = async (): Promise<string | null> => {
   const user = auth.currentUser;
 
   if (user) {
     try {
-      const token = await user.getIdToken(true); // Forzamos la renovación del token
+      const token = await user.getIdToken(true);
       return token;
     } catch (error) {
       console.error("Error refreshing user token:", error);
@@ -36,7 +34,6 @@ export const refreshUserToken = async (): Promise<string | null> => {
   }
 };
 
-// Cierra la sesión del usuario
 export const signOutUser = async () => {
   try {
     await auth.signOut();

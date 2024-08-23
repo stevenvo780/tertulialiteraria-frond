@@ -28,7 +28,7 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
   templateType = null,
 }) => {
   const editorRef = useRef<any>(null);
-  const [templates, setTemplates] = useState<any[]>([]); // Estado para los templates filtrados
+  const [templates, setTemplates] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchTemplates = async () => {
