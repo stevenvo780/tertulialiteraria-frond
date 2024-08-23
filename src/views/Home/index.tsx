@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import api from '../../utils/axios';
 import { getPublications, addPublication, updatePublication, deletePublication } from '../../redux/publications';
 import { addNotification } from '../../redux/ui';
@@ -21,6 +22,9 @@ const HomePage: React.FC = () => {
   const [content, setContent] = useState<string>('');
   const [repetitiveEvents, setRepetitiveEvents] = useState<Events[]>([]);
   const [likesData, setLikesData] = useState<Record<number, { likes: number; dislikes: number; userLike: Like | null }>>({});
+  const [offset, setOffset] = useState<number>(0);
+  const [hasMore, setHasMore] = useState<boolean>(true);
+  const limit = 4; // Número de publicaciones por solicitud
 
   useEffect(() => {
     fetchPublications();
@@ -28,10 +32,20 @@ const HomePage: React.FC = () => {
   }, []);
 
   const fetchPublications = async () => {
+    if (!hasMore) return;
+
     try {
-      const response = await api.get<Publication[]>('/publications');
-      dispatch(getPublications(response.data));
-      fetchLikesDataAsync(response.data);
+      const response = await api.get<Publication[]>('/publications', {
+        params: { limit, offset },
+      });
+
+      if (response.data.length === 0) {
+        setHasMore(false); // No hay más publicaciones para cargar
+      } else {
+        dispatch(getPublications(response.data)); // Añadir nuevas publicaciones sin sobrescribir
+        fetchLikesDataAsync(response.data);
+        setOffset(offset + limit);
+      }
     } catch (error) {
       dispatch(addNotification({ message: 'Error al obtener las publicaciones', color: 'danger' }));
     }
@@ -87,7 +101,6 @@ const HomePage: React.FC = () => {
         dispatch(addNotification({ message: 'Publicación creada correctamente', color: 'success' }));
       }
       setShowModal(false);
-      fetchPublications();
       setEditingPublication(null);
     } catch (error) {
       console.error("Error al guardar la publicación:", error);
@@ -114,7 +127,6 @@ const HomePage: React.FC = () => {
       await api.delete(`/publications/${id}`);
       dispatch(deletePublication(id));
       dispatch(addNotification({ message: 'Publicación eliminada correctamente', color: 'success' }));
-      fetchPublications();
     } catch (error) {
       dispatch(addNotification({ message: 'Error al eliminar la publicación', color: 'danger' }));
     }
@@ -123,13 +135,13 @@ const HomePage: React.FC = () => {
   const handleLikeToggle = async (publicationId: number, isLike: boolean) => {
     try {
       const currentLike = likesData[publicationId]?.userLike;
-  
+
       if (currentLike && currentLike.isLike === isLike) {
         await api.delete(`/likes/${currentLike.id}`);
       } else {
         await api.post('/likes', { targetType: LikeTarget.PUBLICATION, targetId: publicationId, isLike });
       }
-  
+
       fetchLikesDataAsync(publications);
     } catch (error) {
       dispatch(addNotification({ message: 'Error al dar like o dislike', color: 'danger' }));
@@ -149,15 +161,25 @@ const HomePage: React.FC = () => {
             <Sidebar />
           </Col>
           <Col md={9} style={{ marginTop: 40 }}>
-            <PublicationsList
-              publications={publications}
-              handleEdit={handleEdit}
-              handleDelete={handleDelete}
-              handleLikeToggle={handleLikeToggle}
-              likesData={likesData}
-              user={user}
-              setShowModal={setShowModal}
-            />
+            <InfiniteScroll
+              dataLength={publications.length}
+              next={fetchPublications}
+              hasMore={hasMore}
+              loader={<h4>Cargando más publicaciones...</h4>}
+              scrollableTarget="scrollableDiv"
+            >
+              <div id="scrollableDiv" style={{ height: '45vw', overflowY: 'auto' }}>
+                <PublicationsList
+                  publications={publications}
+                  handleEdit={handleEdit}
+                  handleDelete={handleDelete}
+                  handleLikeToggle={handleLikeToggle}
+                  likesData={likesData}
+                  user={user}
+                  setShowModal={setShowModal}
+                />
+              </div>
+            </InfiniteScroll>
           </Col>
         </Row>
         <PublicationModal
