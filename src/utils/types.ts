@@ -111,6 +111,20 @@ export interface Publication extends SharedProp {
   author?: User;
 }
 
+export enum LikeTarget {
+  LIBRARY = 'library',
+  PUBLICATION = 'publication',
+  EVENT = 'event',
+}
+
+export interface Like {
+  id: number;
+  isLike: boolean;
+  targetType: LikeTarget;
+  targetId: number;
+  user: User;
+}
+
 export interface CreatePublicationDto {
   title: string;
   content: string;

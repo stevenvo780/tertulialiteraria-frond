@@ -31,7 +31,7 @@ const PublicationModal: React.FC<PublicationModalProps> = ({
 
   useEffect(() => {
     if (!showModal) {
-      setContent(''); // Limpiar contenido cuando se cierre el modal
+      setContent('');
     }
   }, [showModal, setContent]);
 

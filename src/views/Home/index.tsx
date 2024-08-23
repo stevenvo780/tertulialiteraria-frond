@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import api from '../../utils/axios';
 import { getPublications, addPublication, updatePublication, deletePublication } from '../../redux/publications';
 import { addNotification } from '../../redux/ui';
@@ -8,7 +9,8 @@ import { RootState } from '../../redux/store';
 import PublicationsList from './PublicationsList';
 import Sidebar from './Sidebar';
 import PublicationModal from './PublicationModal';
-import { Publication, Events, CreatePublicationDto } from '../../utils/types';
+import ShareModal from './ShareModal'; 
+import { Publication, Events, CreatePublicationDto, Like, LikeTarget } from '../../utils/types';
 import ScrollableEvents from '../../components/ScrollableEvents';
 
 const HomePage: React.FC = () => {
@@ -16,32 +18,115 @@ const HomePage: React.FC = () => {
   const user = useSelector((state: RootState) => state.auth.userData);
   const publications = useSelector((state: RootState) => state.publications.publications);
   const [showModal, setShowModal] = useState<boolean>(false);
+  const [shareModalVisible, setShareModalVisible] = useState<boolean>(false); 
   const [editingPublication, setEditingPublication] = useState<Publication | null>(null);
+  const [selectedPublication, setSelectedPublication] = useState<Publication | null>(null); 
   const [title, setTitle] = useState<string>('');
-  const [content, setContent] = useState<string>(''); // HTML Content
+  const [content, setContent] = useState<string>('');
   const [repetitiveEvents, setRepetitiveEvents] = useState<Events[]>([]);
+  const [likesData, setLikesData] = useState<Record<number, { likes: number; dislikes: number; userLike: Like | null }>>({});
+  const [offset, setOffset] = useState<number>(0);
+  const [hasMore, setHasMore] = useState<boolean>(true);
+  const limit = 4; 
+
+  const publicationRefs = useRef<Record<number, HTMLDivElement | null>>({}); // Referencia para las publicaciones
 
   useEffect(() => {
-    fetchPublications();
+    window.addEventListener('hashchange', handleHashChange);
+    
+    const publicationId = window.location.hash.replace('#', '');
+    if (publicationId) {
+      fetchPublicationById(publicationId);
+    } else {
+      fetchPublications();
+    }
     fetchRepetitiveEvents();
+
+    return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
+  const handleHashChange = () => {
+    const publicationId = window.location.hash.replace('#', '');
+    if (publicationId) {
+      scrollToPublication(parseInt(publicationId));
+    }
+  };
+
   const fetchPublications = async () => {
+    if (!hasMore) return;
+
     try {
-      const response = await api.get<Publication[]>('/publications');
-      dispatch(getPublications(response.data));
+      const response = await api.get<Publication[]>('/publications', {
+        params: { limit, offset },
+      });
+
+      if (response.data.length === 0) {
+        setHasMore(false); 
+      } else {
+        dispatch(getPublications(response.data)); 
+        fetchLikesDataAsync(response.data);
+        setOffset(offset + limit);
+      }
     } catch (error) {
       dispatch(addNotification({ message: 'Error al obtener las publicaciones', color: 'danger' }));
     }
   };
 
+  const fetchPublicationById = async (id: string) => {
+    try {
+      const response = await api.get<Publication>(`/publications/${id}`);
+      
+      const existingPublication = publications.find(p => p.id === parseInt(id));
+      
+      if (!existingPublication) {
+        dispatch(addPublication(response.data));
+      }
+
+      setSelectedPublication(response.data); 
+      scrollToPublication(response.data.id);
+    } catch (error) {
+      dispatch(addNotification({ message: 'Error al obtener la publicación', color: 'danger' }));
+    }
+  };
+
   const fetchRepetitiveEvents = async () => {
     try {
-      const response = await api.get<Events[]>('/events/home/upcoming?limit=3');
+      const response = await api.get<Events[]>('/events/home/upcoming?limit=31');
       const repetitive = response.data.filter(event => event.repetition);
       setRepetitiveEvents(repetitive);
     } catch (error) {
       dispatch(addNotification({ message: 'Error al obtener los eventos repetitivos', color: 'danger' }));
+    }
+  };
+
+  const fetchLikesDataAsync = (publications: Publication[]) => {
+    publications.forEach(async (publication) => {
+      try {
+        const [countResponse, userLikeResponse] = await Promise.all([
+          api.get(`/likes/publication/${publication.id}/count`),
+          api.get(`/likes/publication/${publication.id}/user-like`),
+        ]);
+        setLikesData(prevLikesData => ({
+          ...prevLikesData,
+          [publication.id]: {
+            likes: countResponse.data.likes,
+            dislikes: countResponse.data.dislikes,
+            userLike: userLikeResponse.data || null,
+          },
+        }));
+      } catch (error) {
+        dispatch(addNotification({ message: `Error al obtener los likes de la publicación ${publication.id}`, color: 'danger' }));
+      }
+    });
+  };
+
+  const scrollToPublication = (publicationId: number) => {
+    const publicationElement = publicationRefs.current[publicationId];
+    if (publicationElement) {
+      // Delay the scroll to ensure the element is rendered
+      setTimeout(() => {
+        publicationElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 100);
     }
   };
 
@@ -64,7 +149,6 @@ const HomePage: React.FC = () => {
         dispatch(addNotification({ message: 'Publicación creada correctamente', color: 'success' }));
       }
       setShowModal(false);
-      fetchPublications();
       setEditingPublication(null);
     } catch (error) {
       console.error("Error al guardar la publicación:", error);
@@ -91,34 +175,35 @@ const HomePage: React.FC = () => {
       await api.delete(`/publications/${id}`);
       dispatch(deletePublication(id));
       dispatch(addNotification({ message: 'Publicación eliminada correctamente', color: 'success' }));
-      fetchPublications();
     } catch (error) {
       dispatch(addNotification({ message: 'Error al eliminar la publicación', color: 'danger' }));
     }
   };
 
+  const handleLikeToggle = async (publicationId: number, isLike: boolean) => {
+    try {
+      const currentLike = likesData[publicationId]?.userLike;
+
+      if (currentLike && currentLike.isLike === isLike) {
+        await api.delete(`/likes/${currentLike.id}`);
+      } else {
+        await api.post('/likes', { targetType: LikeTarget.PUBLICATION, targetId: publicationId, isLike });
+      }
+
+      fetchLikesDataAsync(publications);
+    } catch (error) {
+      dispatch(addNotification({ message: 'Error al dar like o dislike', color: 'danger' }));
+    }
+  };
+
+  const handleShare = (publication: Publication) => {
+    setSelectedPublication(publication);
+    setShareModalVisible(true); 
+  };
+
+
   return (
     <>
-      <div
-        className="d-flex align-items-center justify-content-center text-white"
-        style={{
-          backgroundImage: "url('/images/banner.jpg')",
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          height: '300px',
-          width: '100vw',
-          position: 'relative',
-          marginLeft: 'calc(-50vw + 50%)',
-        }}
-      >
-        <div className="text-center" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)' }}>
-          <h1>Bienvenidos a Tertulia Literaria</h1>
-          <p>
-            Un espacio donde convergen la literatura, la filosofía, el arte, la ciencia y la tecnología para crear un ambiente de diálogo y aprendizaje.
-          </p>
-        </div>
-      </div>
-
       <Container className="p-0">
         <Row className="m-0">
           <Col md={12}>
@@ -129,14 +214,28 @@ const HomePage: React.FC = () => {
           <Col md={3}>
             <Sidebar />
           </Col>
-          <Col md={9} style={{ marginTop: 60 }}>
-            <PublicationsList
-              publications={publications}
-              handleEdit={handleEdit}
-              handleDelete={handleDelete}
-              user={user}
-              setShowModal={setShowModal}
-            />
+          <Col md={9} style={{ marginTop: 40 }}>
+            <InfiniteScroll
+              dataLength={publications.length}
+              next={fetchPublications}
+              hasMore={hasMore}
+              loader={<h4>Cargando más publicaciones...</h4>}
+              scrollableTarget="scrollableDiv"
+            >
+              <div id="scrollableDiv" style={{ height: '45vw', overflowY: 'auto' }}>
+                <PublicationsList
+                  publications={publications}
+                  handleEdit={handleEdit}
+                  handleDelete={handleDelete}
+                  handleLikeToggle={handleLikeToggle}
+                  handleShare={handleShare} 
+                  likesData={likesData}
+                  user={user}
+                  setShowModal={setShowModal}
+                  publicationRefs={publicationRefs} 
+                />
+              </div>
+            </InfiniteScroll>
           </Col>
         </Row>
         <PublicationModal
@@ -149,6 +248,13 @@ const HomePage: React.FC = () => {
           setContent={setContent}
           editingPublication={editingPublication}
         />
+        {selectedPublication && (
+          <ShareModal
+            show={shareModalVisible}
+            onHide={() => setShareModalVisible(false)}
+            publication={selectedPublication}
+          />
+        )}
       </Container>
     </>
   );

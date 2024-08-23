@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { addNotification } from '../../redux/ui';
 import axios from '../../utils/axios';
-import { FaEnvelope, FaLock } from 'react-icons/fa';
+import { FaEnvelope, FaLock, FaUser } from 'react-icons/fa';
 
 const RegisterPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -12,8 +12,9 @@ const RegisterPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [name, setName] = useState(''); // Nuevo campo para el nombre
   const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState({ email: '', password: '', confirmPassword: '' });
+  const [errors, setErrors] = useState({ email: '', password: '', confirmPassword: '', name: '' });
 
   const validateEmail = (email: string) => {
     const re = /\S+@\S+\.\S+/;
@@ -23,7 +24,7 @@ const RegisterPage: React.FC = () => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setIsLoading(true);
-    let formErrors = { email: '', password: '', confirmPassword: '' };
+    let formErrors = { email: '', password: '', confirmPassword: '', name: '' };
 
     if (!validateEmail(email)) {
       formErrors.email = 'Formato de correo electrónico inválido';
@@ -37,14 +38,18 @@ const RegisterPage: React.FC = () => {
       formErrors.confirmPassword = 'Las contraseñas no coinciden';
     }
 
-    if (formErrors.email || formErrors.password || formErrors.confirmPassword) {
+    if (!name) {
+      formErrors.name = 'El nombre es obligatorio';
+    }
+
+    if (formErrors.email || formErrors.password || formErrors.confirmPassword || formErrors.name) {
       setErrors(formErrors);
       setIsLoading(false);
       return;
     }
 
     try {
-      const response = await axios.post('/auth/register', { email, password });
+      const response = await axios.post('/auth/register', { email, password, name });
       if (response.status === 201) {
         dispatch(addNotification({ message: 'Registro exitoso', color: 'success' }));
         navigate('/login');
@@ -70,6 +75,26 @@ const RegisterPage: React.FC = () => {
             <Card.Body>
               <h2 className="text-center mb-4">Registro</h2>
               <Form onSubmit={handleSubmit}>
+                <Form.Group controlId="formBasicName">
+                  <Form.Label>Nombre</Form.Label>
+                  <InputGroup>
+                    <InputGroup.Text>
+                      <FaUser />
+                    </InputGroup.Text>
+                    <Form.Control
+                      type="text"
+                      placeholder="Introduce tu nombre"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      isInvalid={!!errors.name}
+                      required
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {errors.name}
+                    </Form.Control.Feedback>
+                  </InputGroup>
+                </Form.Group>
+                <br />
                 <Form.Group controlId="formBasicEmail">
                   <Form.Label>Correo electrónico</Form.Label>
                   <InputGroup>

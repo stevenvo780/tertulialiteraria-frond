@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Container, Card, Row, Col } from 'react-bootstrap';
 import api from '../../utils/axios';
-import { Events, Repetition } from '../../utils/types';
+import { Events } from '../../utils/types';
 import ReactCalendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import EventModal from '../../components/EventModal';
@@ -48,7 +48,7 @@ const EventDetail: React.FC = () => {
 
     const fetchUpcomingEvents = async () => {
       try {
-        const response = await api.get(`/events/home/upcoming?limit=3`);
+        const response = await api.get(`/events`);
         setUpcomingEvents(response.data);
       } catch (error) {
         console.error('Error fetching upcoming events:', error);

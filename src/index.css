@@ -386,3 +386,32 @@ input:focus, textarea:focus, select:focus {
   background-color: var(--white-color);
   border-color: var(--font-color);
 }
+
+.card-events-home{
+  background-color: var(--secondary-color);
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.card-events-home .card-header{
+  background-color: var(--primary-color);
+  color: var(--white-color);
+  font-weight: 600;
+  border-bottom: 1px solid var(--secondary-color);
+}
+
+.card-events-home .card-body{
+  color: var(--font-color);
+}
+
+.card-events-home .card-text{
+  background-color: var(--secondary-color);
+  color: var(--white-color);
+  border-top: 1px solid var(--secondary-color);
+}
+
+.card-events-home .card-title{
+  background-color: var(--secondary-color);
+  color: var(--white-color);
+  border-top: 1px solid var(--secondary-color);
+}

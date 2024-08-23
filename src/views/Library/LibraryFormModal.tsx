@@ -23,7 +23,7 @@ const LibraryFormModal: React.FC<LibraryFormModalProps> = ({
   showModal,
 }) => {
   const [title, setTitle] = useState<string>('');
-  const [description, setDescription] = useState<string>(''); // HTML Content
+  const [description, setDescription] = useState<string>('');
   const [parentNoteId, setParentNoteId] = useState<number | undefined>(undefined);
   const [visibility, setVisibility] = useState<LibraryVisibility>(LibraryVisibility.GENERAL);
   const userRole = useSelector((state: RootState) => state.auth.userData?.role);

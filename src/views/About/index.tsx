@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaEdit } from 'react-icons/fa'; // Nueva importación
+import { FaEdit } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
 import AboutModal from './AboutModal';

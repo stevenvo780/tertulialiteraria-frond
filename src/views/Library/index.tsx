@@ -6,11 +6,12 @@ import { RootState } from '../../redux/store';
 import api from '../../utils/axios';
 import { getLibraries, addLibrary, updateLibrary, deleteLibrary } from '../../redux/library';
 import { addNotification } from '../../redux/ui';
-import { Library, CreateLibraryDto, UpdateLibraryDto } from '../../utils/types';
+import { Library, CreateLibraryDto, UpdateLibraryDto, Like, LikeTarget } from '../../utils/types';
 import LibraryList from './LibraryList';
 import LibraryFormModal from './LibraryFormModal';
-import { FaArrowLeft, FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
+import { FaArrowLeft, FaPlus, FaEdit, FaTrash, FaThumbsUp, FaThumbsDown, FaShareAlt } from 'react-icons/fa';
 import { UserRole } from '../../utils/types';
+import ShareNoteModal from './ShareNoteModal';
 
 const LibraryPage: React.FC = () => {
   const { noteId } = useParams<{ noteId: string | undefined }>();
@@ -23,6 +24,9 @@ const LibraryPage: React.FC = () => {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [editingLibrary, setEditingLibrary] = useState<Library | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [likesData, setLikesData] = useState<Record<number, { likes: number; dislikes: number; userLike: Like | null }>>({});
+  const [shareModalVisible, setShareModalVisible] = useState<boolean>(false);
+  const [selectedLibrary, setSelectedLibrary] = useState<Library | null>(null);
 
   useEffect(() => {
     if (noteId) {
@@ -37,6 +41,7 @@ const LibraryPage: React.FC = () => {
       const response = await api.get<Library[]>('/library');
       dispatch(getLibraries(response.data));
       setCurrentNote(null);
+      fetchLikesDataAsync(response.data);
     } catch (error) {
       dispatch(addNotification({ message: 'Error al obtener las referencias', color: 'danger' }));
     }
@@ -46,11 +51,54 @@ const LibraryPage: React.FC = () => {
     try {
       const response = await api.get<Library>(`/library/${id}`);
       setCurrentNote(response.data);
+      fetchLikesDataAsync([response.data]); // Fetch likes for the current note
       return response.data;
     } catch (error) {
       dispatch(addNotification({ message: 'Error al obtener la nota', color: 'danger' }));
       return null;
     }
+  };
+
+  const fetchLikesDataAsync = (libraries: Library[]) => {
+    libraries.forEach(async (library) => {
+      try {
+        const [countResponse, userLikeResponse] = await Promise.all([
+          api.get(`/likes/library/${library.id}/count`),
+          api.get(`/likes/library/${library.id}/user-like`),
+        ]);
+        setLikesData(prevLikesData => ({
+          ...prevLikesData,
+          [library.id]: {
+            likes: countResponse.data.likes,
+            dislikes: countResponse.data.dislikes,
+            userLike: userLikeResponse.data || null,
+          },
+        }));
+      } catch (error) {
+        dispatch(addNotification({ message: `Error al obtener los likes de la nota ${library.id}`, color: 'danger' }));
+      }
+    });
+  };
+
+  const handleLikeToggle = async (libraryId: number, isLike: boolean) => {
+    try {
+      const currentLike = likesData[libraryId]?.userLike;
+
+      if (currentLike && currentLike.isLike === isLike) {
+        await api.delete(`/likes/${currentLike.id}`);
+      } else {
+        await api.post('/likes', { targetType: LikeTarget.LIBRARY, targetId: libraryId, isLike });
+      }
+
+      fetchLikesDataAsync([currentNote as Library]);
+    } catch (error) {
+      dispatch(addNotification({ message: 'Error al dar like o dislike', color: 'danger' }));
+    }
+  };
+
+  const handleShare = (library: Library) => {
+    setSelectedLibrary(library);
+    setShareModalVisible(true);
   };
 
   const handleNoteClick = async (note: Library) => {
@@ -163,7 +211,8 @@ const LibraryPage: React.FC = () => {
             </Form>
           </Col>
         )}
-        <Col md={currentNote ? 12 : 2} className="text-center">
+      </Row>
+      <Col md={currentNote ? 12 : 2} className="text-center">
           {currentNote ? (
             <>
               <Button variant="secondary" onClick={handleGoBack} className="mr-4" style={{ marginInline: 20 }}>
@@ -190,12 +239,45 @@ const LibraryPage: React.FC = () => {
           )
           )}
         </Col>
-      </Row>
       <br />
+      {currentNote && (
+        <>
+          <Row className="align-items-center mb-3">
+            <Col md={9}>
+              <h4 className="m-0">{currentNote.title}</h4>
+              {currentNote.author && (
+                <p className="text-muted m-0">{`Por ${currentNote.author.name} - ${currentNote.author.role}`}</p>
+              )}
+            </Col>
+            <Col md={3} className="text-right">
+              <Button
+                variant="link"
+                onClick={() => handleLikeToggle(currentNote.id, true)}
+                className={likesData[currentNote.id]?.userLike?.isLike ? 'text-primary' : ''}
+              >
+                <FaThumbsUp /> {likesData[currentNote.id]?.likes || 0}
+              </Button>
+              <Button
+                variant="link"
+                onClick={() => handleLikeToggle(currentNote.id, false)}
+                className={likesData[currentNote.id]?.userLike?.isLike === false ? 'text-danger' : ''}
+              >
+                <FaThumbsDown /> {likesData[currentNote.id]?.dislikes || 0}
+              </Button>
+              <Button
+                variant="link"
+                onClick={() => handleShare(currentNote)}
+                className="text-info"
+              >
+                <FaShareAlt /> Compartir
+              </Button>
+            </Col>
+          </Row>
+        </>
+      )}
       <Row>
         {currentNote ? (
           <>
-            <h4 className="text-center">{currentNote.title}</h4>
             <div dangerouslySetInnerHTML={{ __html: currentNote.description }} />
             {currentNote.children && currentNote.children.length > 0 ? (
               <LibraryList
@@ -203,6 +285,9 @@ const LibraryPage: React.FC = () => {
                 onEdit={permissionsEditable ? handleEdit : undefined}
                 onDelete={permissionsEditable ? handleDelete : undefined}
                 onNavigate={handleNoteClick}
+                likesData={likesData}
+                handleLikeToggle={handleLikeToggle}
+                handleShare={handleShare}
               />
             ) : (
               <p className="text-center text-muted">No hay subnotas.</p>
@@ -214,6 +299,9 @@ const LibraryPage: React.FC = () => {
             onEdit={permissionsEditable ? handleEdit : undefined}
             onDelete={permissionsEditable ? handleDelete : undefined}
             onNavigate={handleNoteClick}
+            likesData={likesData}
+            handleLikeToggle={handleLikeToggle}
+            handleShare={handleShare}
           />
         )}
 
@@ -224,6 +312,14 @@ const LibraryPage: React.FC = () => {
             onSubmit={handleCreateOrUpdate}
             editingLibrary={editingLibrary}
             showModal={showModal}
+          />
+        )}
+
+        {selectedLibrary && (
+          <ShareNoteModal
+            show={shareModalVisible}
+            onHide={() => setShareModalVisible(false)}
+            note={selectedLibrary}
           />
         )}
       </Row>

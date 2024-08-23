@@ -100,7 +100,7 @@ const EventModal: React.FC<EventModalProps> = ({
     setRepetition(Repetition.NONE);
     setShowModal(false);
     if (editorRef.current) {
-      editorRef.current.remove(); // Desmonta manualmente el editor
+      editorRef.current.remove();
     }
   }
 
