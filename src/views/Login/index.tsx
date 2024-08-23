@@ -85,10 +85,23 @@ const LoginPage: React.FC = () => {
   return (
     <Container>
       <Row>
-        <Col sm="6" className="d-flex align-items-center justify-content-center" style={{ marginTop: "10%" }}>
+        <h1 className="d-flex align-items-center justify-content-center" style={{ fontFamily: "Montaga", fontSize: "3rem", position: "relative", top: "2vw", }}>Tertulia Literaria</h1>
+        <Col sm="6" className="d-flex align-items-center justify-content-center" style={{ marginTop: "5%" }}>
+          <Image
+            src="/images/login.png"
+            alt="Banner"
+            fluid
+            style={{
+              maxHeight: '400px',
+              objectFit: 'cover',
+              borderRadius: '10px',
+              boxShadow: '0px 0px 20px 0px rgba(0, 0, 0, 0.1)',
+            }}
+          />
+        </Col>
+        <Col sm="6" className="d-flex align-items-center justify-content-center" style={{ marginTop: "5%" }}>
           <Card style={{ width: '100%', padding: '20px', boxShadow: '0px 0px 20px 0px rgba(0,0,0,0.1)', borderRadius: '5px' }}>
             <Card.Body>
-              <Card.Title className="text-center">Iniciar Sesión</Card.Title>
               <Form onSubmit={handleSubmit}>
                 <Form.Group controlId="formBasicEmail">
                   <Form.Control
@@ -108,36 +121,20 @@ const LoginPage: React.FC = () => {
                   />
                 </Form.Group>
                 <br />
-                <Button style={{ marginRight: 10 }} variant="primary" type="submit" disabled={isLoading}>
+                <Button style={{ width: "100%", marginBottom: 10 }} variant="primary" type="submit" disabled={isLoading}>
                   {isLoading ? 'Cargando...' : 'Iniciar Sesión'}
                 </Button>
-                <Button variant="secondary" onClick={handleRegister}>Registrarse</Button>
-                <br />
-                <br />
-                <Button variant="danger" onClick={signInWithGoogle} disabled={isLoading}>
-                  {isLoading ? 'Cargando...' : 'Iniciar Sesión con Google'}
-                </Button>
-                <br />
-                <br />
-                <Button size='sm' variant="secondary" onClick={() => setShowResetModal(true)}>
+                <Button style={{ backgroundColor: "white", color: "#595959", width: "100%", marginBottom: 10 }} size='sm' variant="secondary" onClick={() => setShowResetModal(true)}>
                   ¿Olvidaste tu contraseña?
                 </Button>
+                <Button style={{ width: "100%", marginBottom: 10 }} variant="secondary" onClick={handleRegister}>Registrarse</Button>
+                <Button style={{ backgroundColor: "white", color: "#595959", width: "100%", marginBottom: 10 }} variant="danger" onClick={signInWithGoogle} disabled={isLoading}>
+                  {isLoading ? 'Cargando...' : 'Iniciar Sesión con Google'}
+                </Button>
+                
               </Form>
             </Card.Body>
           </Card>
-        </Col>
-        <Col sm="6" className="d-flex align-items-center justify-content-center" style={{ marginTop: "10%" }}>
-          <Image
-            src="/images/login.png"
-            alt="Banner"
-            fluid
-            style={{
-              maxHeight: '400px',
-              objectFit: 'cover',
-              borderRadius: '10px',
-              boxShadow: '0px 0px 20px 0px rgba(0, 0, 0, 0.1)',
-            }}
-          />
         </Col>
       </Row>
 
