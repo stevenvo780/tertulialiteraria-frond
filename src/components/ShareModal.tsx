@@ -21,7 +21,8 @@ interface ShareModalProps {
 }
 
 const ShareModal: React.FC<ShareModalProps> = ({ show, onHide, publication }) => {
-  const shareUrl = `${window.location.origin}/publications/${publication.id}`;
+  // Usamos el hash (#) para el enlace de la publicación
+  const shareUrl = `${window.location.origin}/#${publication.id}`;
   const title = publication.title;
 
   return (
