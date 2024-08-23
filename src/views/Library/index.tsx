@@ -12,6 +12,7 @@ import LibraryFormModal from './LibraryFormModal';
 import { FaArrowLeft, FaPlus, FaEdit, FaTrash, FaThumbsUp, FaThumbsDown, FaShareAlt } from 'react-icons/fa';
 import { UserRole } from '../../utils/types';
 import ShareNoteModal from './ShareNoteModal';
+import { getRoleInSpanish } from '../../utils/roleTranslation';
 
 const LibraryPage: React.FC = () => {
   const { noteId } = useParams<{ noteId: string | undefined }>();
@@ -50,8 +51,9 @@ const LibraryPage: React.FC = () => {
   const fetchNoteById = async (id: number) => {
     try {
       const response = await api.get<Library>(`/library/${id}`);
+      console.log(response.data);
       setCurrentNote(response.data);
-      fetchLikesDataAsync([response.data]); // Fetch likes for the current note
+      fetchLikesDataAsync([response.data]);
       return response.data;
     } catch (error) {
       dispatch(addNotification({ message: 'Error al obtener la nota', color: 'danger' }));
@@ -61,6 +63,8 @@ const LibraryPage: React.FC = () => {
 
   const fetchLikesDataAsync = (libraries: Library[]) => {
     libraries.forEach(async (library) => {
+      console.log(library);
+      if (!library || !library.id) return;
       try {
         const [countResponse, userLikeResponse] = await Promise.all([
           api.get(`/likes/library/${library.id}/count`),
@@ -79,18 +83,18 @@ const LibraryPage: React.FC = () => {
       }
     });
   };
+  
 
-  const handleLikeToggle = async (libraryId: number, isLike: boolean) => {
+  const handleLikeToggle = async (noteId: number, isLike: boolean) => {
     try {
-      const currentLike = likesData[libraryId]?.userLike;
-
+      const currentLike = likesData[noteId]?.userLike;
       if (currentLike && currentLike.isLike === isLike) {
         await api.delete(`/likes/${currentLike.id}`);
       } else {
-        await api.post('/likes', { targetType: LikeTarget.LIBRARY, targetId: libraryId, isLike });
+        await api.post('/likes', { targetType: LikeTarget.LIBRARY, targetId: noteId, isLike });
       }
-
-      fetchLikesDataAsync([currentNote as Library]);
+      const noteById = libraries.find((note) => note.id === noteId);
+      fetchLikesDataAsync([noteById as Library]);
     } catch (error) {
       dispatch(addNotification({ message: 'Error al dar like o dislike', color: 'danger' }));
     }
@@ -211,8 +215,7 @@ const LibraryPage: React.FC = () => {
             </Form>
           </Col>
         )}
-      </Row>
-      <Col md={currentNote ? 12 : 2} className="text-center">
+        <Col md={currentNote ? 12 : 2} className="text-center">
           {currentNote ? (
             <>
               <Button variant="secondary" onClick={handleGoBack} className="mr-4" style={{ marginInline: 20 }}>
@@ -239,6 +242,7 @@ const LibraryPage: React.FC = () => {
           )
           )}
         </Col>
+      </Row>
       <br />
       {currentNote && (
         <>
@@ -246,7 +250,7 @@ const LibraryPage: React.FC = () => {
             <Col md={9}>
               <h4 className="m-0">{currentNote.title}</h4>
               {currentNote.author && (
-                <p className="text-muted m-0">{`Por ${currentNote.author.name} - ${currentNote.author.role}`}</p>
+                <p className="text-muted m-0">{`${currentNote.author.name} - ${getRoleInSpanish(currentNote.author.role)}`}</p>
               )}
             </Col>
             <Col md={3} className="text-right">

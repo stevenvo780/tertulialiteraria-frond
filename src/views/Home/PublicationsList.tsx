@@ -1,7 +1,8 @@
 import React from 'react';
 import { Card, Form, Button } from 'react-bootstrap';
-import { FaEdit, FaTrash, FaThumbsUp, FaThumbsDown, FaShareAlt, FaEye } from 'react-icons/fa';
+import { FaEdit, FaTrash, FaThumbsUp, FaThumbsDown, FaShareAlt, FaUser } from 'react-icons/fa';
 import { Publication, Like, UserRole, User } from '../../utils/types';
+import { getRoleInSpanish } from '../../utils/roleTranslation';
 
 interface PublicationsListProps {
   publications: Publication[];
@@ -71,6 +72,12 @@ const PublicationsList: React.FC<PublicationsListProps> = ({
                   </div>
                 )}
               </div>
+              {publication.author && (
+                <div className="text-muted mb-2 d-flex align-items-center">
+                  <FaUser style={{ marginRight: '8px' }} />
+                  {`${publication.author.name} - ${getRoleInSpanish(publication.author.role)}`}
+                </div>
+              )}
               <div
                 style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}
                 dangerouslySetInnerHTML={{ __html: publication.content }}

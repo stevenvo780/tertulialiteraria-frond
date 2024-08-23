@@ -1,18 +1,39 @@
 import React from 'react';
 import Header from './Header';
 import { FaDiscord } from 'react-icons/fa';
+import { useSelector } from 'react-redux';
+import { RootState } from '../redux/store';
+import RingLoader from 'react-spinners/RingLoader';
 
 type LayoutProps = {
   children: React.ReactNode;
 };
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
+  const loading = useSelector((state: RootState) => state.ui.loading);
   const discordInviteLink = 'https://discord.gg/JcEJp3uu';
 
   return (
     <>
       <Header />
-      {children}
+      {loading && (
+        <div className="loader-overlay">
+          <RingLoader
+            color={'#0a827f'}
+            loading={loading}
+            cssOverride={{
+              position: 'fixed',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)'
+            }}
+            size={100}
+            aria-label="Cargando"
+            data-testid="loader"
+          />
+        </div>
+      )}
+      <main>{children}</main>
       <a 
         href={discordInviteLink} 
         target="_blank" 
@@ -34,7 +55,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           zIndex: 1000,
         }}
       >
-        <FaDiscord size={30} color='white' />
+        <FaDiscord size={30} color="white" />
       </a>
     </>
   );

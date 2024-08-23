@@ -219,7 +219,7 @@ const HomePage: React.FC = () => {
               dataLength={publications.length}
               next={fetchPublications}
               hasMore={hasMore}
-              loader={<h4>Cargando más publicaciones...</h4>}
+              loader={<></>}
               scrollableTarget="scrollableDiv"
             >
               <div id="scrollableDiv" style={{ height: '45vw', overflowY: 'auto' }}>
