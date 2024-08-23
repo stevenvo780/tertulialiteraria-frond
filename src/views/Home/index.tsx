@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import { useParams } from 'react-router-dom';
 import api from '../../utils/axios';
 import { getPublications, addPublication, updatePublication, deletePublication } from '../../redux/publications';
 import { addNotification } from '../../redux/ui';
@@ -9,15 +10,19 @@ import { RootState } from '../../redux/store';
 import PublicationsList from './PublicationsList';
 import Sidebar from './Sidebar';
 import PublicationModal from './PublicationModal';
+import ShareModal from '../../components/ShareModal'; // Importamos el nuevo modal para compartir
 import { Publication, Events, CreatePublicationDto, Like, LikeTarget } from '../../utils/types';
 import ScrollableEvents from '../../components/ScrollableEvents';
 
 const HomePage: React.FC = () => {
   const dispatch = useDispatch();
+  const { id } = useParams<{ id: string }>(); // Obtenemos el ID de la URL
   const user = useSelector((state: RootState) => state.auth.userData);
   const publications = useSelector((state: RootState) => state.publications.publications);
   const [showModal, setShowModal] = useState<boolean>(false);
+  const [shareModalVisible, setShareModalVisible] = useState<boolean>(false); // Estado para el modal de compartir
   const [editingPublication, setEditingPublication] = useState<Publication | null>(null);
+  const [selectedPublication, setSelectedPublication] = useState<Publication | null>(null); // Publicación seleccionada para compartir
   const [title, setTitle] = useState<string>('');
   const [content, setContent] = useState<string>('');
   const [repetitiveEvents, setRepetitiveEvents] = useState<Events[]>([]);
@@ -27,9 +32,13 @@ const HomePage: React.FC = () => {
   const limit = 4; // Número de publicaciones por solicitud
 
   useEffect(() => {
-    fetchPublications();
+    if (id) {
+      fetchPublicationById(id); // Si hay un ID en la URL, cargamos esa publicación
+    } else {
+      fetchPublications(); // Si no hay ID, cargamos las publicaciones normalmente
+    }
     fetchRepetitiveEvents();
-  }, []);
+  }, [id]);
 
   const fetchPublications = async () => {
     if (!hasMore) return;
@@ -48,6 +57,16 @@ const HomePage: React.FC = () => {
       }
     } catch (error) {
       dispatch(addNotification({ message: 'Error al obtener las publicaciones', color: 'danger' }));
+    }
+  };
+
+  const fetchPublicationById = async (id: string) => {
+    try {
+      const response = await api.get<Publication>(`/publications/${id}`);
+      dispatch(addPublication(response.data)); // Añadir la publicación al store
+      setSelectedPublication(response.data); // Poner foco en la publicación cargada
+    } catch (error) {
+      dispatch(addNotification({ message: 'Error al obtener la publicación', color: 'danger' }));
     }
   };
 
@@ -148,6 +167,11 @@ const HomePage: React.FC = () => {
     }
   };
 
+  const handleShare = (publication: Publication) => {
+    setSelectedPublication(publication);
+    setShareModalVisible(true); // Mostrar modal de compartir
+  };
+
   return (
     <>
       <Container className="p-0">
@@ -174,6 +198,7 @@ const HomePage: React.FC = () => {
                   handleEdit={handleEdit}
                   handleDelete={handleDelete}
                   handleLikeToggle={handleLikeToggle}
+                  handleShare={handleShare} // Añadimos el manejador para compartir
                   likesData={likesData}
                   user={user}
                   setShowModal={setShowModal}
@@ -192,6 +217,13 @@ const HomePage: React.FC = () => {
           setContent={setContent}
           editingPublication={editingPublication}
         />
+        {selectedPublication && (
+          <ShareModal
+            show={shareModalVisible}
+            onHide={() => setShareModalVisible(false)}
+            publication={selectedPublication}
+          />
+        )}
       </Container>
     </>
   );

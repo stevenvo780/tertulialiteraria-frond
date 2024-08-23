@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, Form, Button } from 'react-bootstrap';
-import { FaEdit, FaTrash, FaThumbsUp, FaThumbsDown } from 'react-icons/fa';
+import { FaEdit, FaTrash, FaThumbsUp, FaThumbsDown, FaShareAlt } from 'react-icons/fa';
 import { Publication, Like, UserRole, User } from '../../utils/types';
 
 interface PublicationsListProps {
@@ -8,6 +8,7 @@ interface PublicationsListProps {
   handleEdit: (publication: Publication | null) => void;
   handleDelete: (id: number) => void;
   handleLikeToggle: (publicationId: number, isLike: boolean) => void;
+  handleShare: (publication: Publication) => void; // Nueva función para manejar compartir
   likesData: Record<number, { likes: number; dislikes: number; userLike: Like | null }>;
   user: User | null;
   setShowModal: (show: boolean) => void;
@@ -18,6 +19,7 @@ const PublicationsList: React.FC<PublicationsListProps> = ({
   handleEdit,
   handleDelete,
   handleLikeToggle,
+  handleShare, // Añadimos el prop para compartir
   likesData,
   user,
   setShowModal,
@@ -84,7 +86,14 @@ const PublicationsList: React.FC<PublicationsListProps> = ({
                 >
                   <FaThumbsDown /> {likeData.dislikes}
                 </Button>
-
+                {/* Botón de compartir */}
+                <Button
+                  variant="link"
+                  onClick={() => handleShare(publication)} // Llamamos a la función handleShare
+                  className="text-info"
+                >
+                  <FaShareAlt /> Compartir
+                </Button>
               </div>
             </Card.Body>
           </Card>
