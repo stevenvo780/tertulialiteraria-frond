@@ -12,6 +12,7 @@ import LibraryFormModal from './LibraryFormModal';
 import { FaArrowLeft, FaPlus, FaEdit, FaTrash, FaThumbsUp, FaThumbsDown, FaShareAlt } from 'react-icons/fa';
 import { UserRole } from '../../utils/types';
 import ShareNoteModal from './ShareNoteModal';
+import { getRoleInSpanish } from '../../utils/roleTranslation';
 
 const LibraryPage: React.FC = () => {
   const { noteId } = useParams<{ noteId: string | undefined }>();
@@ -246,7 +247,7 @@ const LibraryPage: React.FC = () => {
             <Col md={9}>
               <h4 className="m-0">{currentNote.title}</h4>
               {currentNote.author && (
-                <p className="text-muted m-0">{`Por ${currentNote.author.name} - ${currentNote.author.role}`}</p>
+                <p className="text-muted m-0">{`${currentNote.author.name} - ${getRoleInSpanish(currentNote.author.role)}`}</p>
               )}
             </Col>
             <Col md={3} className="text-right">
