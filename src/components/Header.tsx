@@ -32,7 +32,7 @@ const Header: React.FC = () => {
   const combinedRoutes = [...publicRoutes, ...roleRoutes];
 
   return (
-    <Navbar expand="lg" className="bg-transparent navbar-light" style={{ paddingBottom: '0px' }}>
+    <Navbar expand="lg" className="navbar-light" style={{ paddingBottom: '0px', backgroundColor: "#FFFFFF", borderBottom: "1px solid #E0E0E0" }}>
       <Container fluid className="pl-4 pr-4">
         <Navbar.Brand as={Link} to="/">
             <Image
@@ -41,7 +41,7 @@ const Header: React.FC = () => {
             roundedCircle
             style={{ width: '40px', height: '40px', objectFit: 'cover', marginInline: 10 }}
             />
-            <span style={{ fontFamily: "Montaga", fontSize: "1.5rem" }}  className="ml-2">Tertulia Literaria</span>
+            <span style={{ fontFamily: "Montaga", fontSize: "1.5rem", color: "#3E2723" }}  className="ml-2">Tertulia Literaria</span>
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">

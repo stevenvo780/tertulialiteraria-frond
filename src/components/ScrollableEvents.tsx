@@ -78,7 +78,7 @@ const ScrollableEvents: React.FC<ScrollableEventsProps> = ({ events }) => {
           display: 'flex',
           overflowX: 'auto',
           scrollBehavior: 'smooth',
-          paddingLeft: '60px',  // Añadimos padding en lugar de margen para asegurar que el contenido no se corta
+          paddingLeft: '60px',
           paddingRight: '60px',
           width: '100%',
           scrollbarWidth: 'none',

@@ -15,7 +15,7 @@
 
 .scrollable-container {
   overflow-y: auto;  /* Hace que el contenedor sea desplazable verticalmente */
-  height: 45vh;
+  height: 100vh;
 }
 
 @media (max-width: 768px) {

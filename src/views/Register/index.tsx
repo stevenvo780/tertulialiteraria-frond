@@ -85,7 +85,7 @@ const RegisterPage: React.FC = () => {
     <Container className="d-flex align-items-center justify-content-center min-vh-100">
       <Row className="w-100">
         <Col md={12}>
-          <h1 className="text-center mb-4">Regístrate</h1>
+          <h1 className="text-center mb-4" style={{ fontFamily: "Montaga", fontSize: "4rem"}}>Regístrate</h1>
           <Card className="shadow-lg" style={{ maxWidth: '40vw', margin: '0 auto' }}>
             <Card.Body>
               <Form onSubmit={handleSubmit}>
