@@ -217,15 +217,14 @@ const LibraryPage: React.FC = () => {
           </Col>
         )}
         {currentNote && (
-          <Col xs={2} md={9}>
+          <Col xs={4} md={9}>
             <Button variant="secondary" onClick={handleGoBack} className="p-0" >
               <FaArrowLeft size={44} />
             </Button>
           </Col>
         )}
-        <Col xs={10} md={currentNote ? 3 : 1} className="text-right">
-          {permissionsEditable && (
-            <>
+        {permissionsEditable && (
+          <Col xs={8} md={currentNote ? 3 : 1} className="text-right">
               <Button variant="link" onClick={() => setShowModal(true)} className="p-0" style={{ marginInline: 20 }}>
                 <FaPlus size={44} />
               </Button>
@@ -235,9 +234,8 @@ const LibraryPage: React.FC = () => {
                   <FaTrash onClick={() => handleDelete(currentNote)} size={44} style={{ cursor: 'pointer', marginInline: 20 }} />
                 </>
               )}
-            </>
-          )}
-        </Col>
+          </Col>
+        )}
       </Row>
       {currentNote && (
         <>
@@ -253,6 +251,7 @@ const LibraryPage: React.FC = () => {
                 variant="link"
                 onClick={() => handleLikeToggle(currentNote.id, true)}
                 className={likesData[currentNote.id]?.userLike?.isLike ? 'text-primary' : ''}
+                style={{ marginRight: '10px' }}
               >
                 <FaThumbsUp /> {likesData[currentNote.id]?.likes || 0}
               </Button>
@@ -260,6 +259,7 @@ const LibraryPage: React.FC = () => {
                 variant="link"
                 onClick={() => handleLikeToggle(currentNote.id, false)}
                 className={likesData[currentNote.id]?.userLike?.isLike === false ? 'text-danger' : ''}
+                style={{ marginRight: '10px' }}
               >
                 <FaThumbsDown /> {likesData[currentNote.id]?.dislikes || 0}
               </Button>
@@ -268,7 +268,7 @@ const LibraryPage: React.FC = () => {
                 onClick={() => handleShare(currentNote)}
                 className="text-info"
               >
-                <FaShareAlt /> Compartir
+                <FaShareAlt />
               </Button>
             </Col>
           </Row>
