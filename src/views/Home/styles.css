@@ -1,0 +1,14 @@
+/* Para navegadores WebKit (Chrome, Safari) */
+.scrollable-container::-webkit-scrollbar {
+  width: 0;  /* Oculta la barra de desplazamiento vertical */
+}
+
+/* Para Firefox */
+.scrollable-container {
+  scrollbar-width: none;  /* Oculta la barra de desplazamiento vertical */
+}
+
+/* Para IE y Edge */
+.scrollable-container {
+  -ms-overflow-style: none;  /* Oculta la barra de desplazamiento vertical */
+}

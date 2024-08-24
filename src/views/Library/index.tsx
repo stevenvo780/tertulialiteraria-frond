@@ -63,7 +63,6 @@ const LibraryPage: React.FC = () => {
 
   const fetchLikesDataAsync = (libraries: Library[]) => {
     libraries.forEach(async (library) => {
-      console.log(library);
       if (!library || !library.id) return;
       try {
         const [countResponse, userLikeResponse] = await Promise.all([
@@ -86,6 +85,10 @@ const LibraryPage: React.FC = () => {
   
 
   const handleLikeToggle = async (noteId: number, isLike: boolean) => {
+    if (!userRole) {
+      dispatch(addNotification({ message: 'Debes iniciar sesión para dar like o dislike', color: 'warning' }));
+      return;
+    }
     try {
       const currentLike = likesData[noteId]?.userLike;
       if (currentLike && currentLike.isLike === isLike) {
