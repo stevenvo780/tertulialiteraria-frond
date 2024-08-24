@@ -3,7 +3,7 @@ import Header from './Header';
 import { FaDiscord } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
-import RingLoader from 'react-spinners/RingLoader';
+import PuffLoader from 'react-spinners/PuffLoader';
 
 type LayoutProps = {
   children: React.ReactNode;
@@ -18,8 +18,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <Header />
       {loading && (
         <div className="loader-overlay">
-          <RingLoader
-            color={'#0a827f'}
+          <PuffLoader
+            color={'#8E5D1A'}
             loading={loading}
             cssOverride={{
               position: 'fixed',
