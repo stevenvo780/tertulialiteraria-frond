@@ -63,6 +63,7 @@ const LibraryCard: React.FC<LibraryCardProps> = ({
             variant="link"
             onClick={(e) => { e.stopPropagation(); handleLikeToggle(library.id, true); }}
             className={likesData.userLike?.isLike ? 'text-primary' : ''}
+            style={{ marginRight: '10px' }}
           >
             <FaThumbsUp /> {likesData.likes}
           </Button>
@@ -70,6 +71,7 @@ const LibraryCard: React.FC<LibraryCardProps> = ({
             variant="link"
             onClick={(e) => { e.stopPropagation(); handleLikeToggle(library.id, false); }}
             className={likesData.userLike && !likesData.userLike.isLike ? 'text-danger' : ''}
+            style={{ marginRight: '10px' }}
           >
             <FaThumbsDown /> {likesData.dislikes}
           </Button>

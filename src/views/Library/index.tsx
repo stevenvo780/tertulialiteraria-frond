@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Col, Container, Form, Row } from 'react-bootstrap';
+import { Button, Col, Container, Row, Form } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { RootState } from '../../redux/store';
@@ -51,7 +51,6 @@ const LibraryPage: React.FC = () => {
   const fetchNoteById = async (id: number) => {
     try {
       const response = await api.get<Library>(`/library/${id}`);
-      console.log(response.data);
       setCurrentNote(response.data);
       fetchLikesDataAsync([response.data]);
       return response.data;
@@ -82,7 +81,6 @@ const LibraryPage: React.FC = () => {
       }
     });
   };
-  
 
   const handleLikeToggle = async (noteId: number, isLike: boolean) => {
     if (!userRole) {
@@ -194,13 +192,13 @@ const LibraryPage: React.FC = () => {
 
   return (
     <Container>
-      <Row>
+      <Row className="align-items-center mb-4">
         {!currentNote && (
-          <Col md={currentNote ? 12 : 10} className="text-center">
+          <Col md={(currentNote) ? 12 : 11}>
             <Form onSubmit={handleSearch} className="mb-4">
               <Form.Group controlId="searchQuery">
                 <Row>
-                  <Col md={10} className="text-center">
+                  <Col md={10} xs={9}>
                     <Form.Control
                       type="text"
                       placeholder="Buscar por título o descripción"
@@ -208,7 +206,7 @@ const LibraryPage: React.FC = () => {
                       onChange={(e) => setSearchQuery(e.target.value)}
                     />
                   </Col>
-                  <Col md={2} className="text-center">
+                  <Col md={2} xs={2} className="text-right">
                     <Button variant="primary" type="submit">
                       Buscar
                     </Button>
@@ -218,39 +216,33 @@ const LibraryPage: React.FC = () => {
             </Form>
           </Col>
         )}
-        <Col md={currentNote ? 12 : 2} className="text-center">
-          {currentNote ? (
+        {currentNote && (
+          <Col xs={2} md={9}>
+            <Button variant="secondary" onClick={handleGoBack} className="p-0" >
+              <FaArrowLeft size={44} />
+            </Button>
+          </Col>
+        )}
+        <Col xs={10} md={currentNote ? 3 : 1} className="text-right">
+          {permissionsEditable && (
             <>
-              <Button variant="secondary" onClick={handleGoBack} className="mr-4" style={{ marginInline: 20 }}>
-                <FaArrowLeft /> Volver
+              <Button variant="link" onClick={() => setShowModal(true)} className="p-0" style={{ marginInline: 20 }}>
+                <FaPlus size={44} />
               </Button>
-              {permissionsEditable && (
+              {currentNote && (
                 <>
-                  <Button variant="primary" onClick={() => setShowModal(true)} style={{ marginInline: 20 }}>
-                    <FaPlus /> Crear Subnota
-                  </Button>
-                  <Button variant="warning" onClick={() => handleEdit(currentNote)} style={{ marginInline: 20 }}>
-                    <FaEdit /> Editar Nota
-                  </Button>
-                  <Button variant="danger" onClick={() => handleDelete(currentNote)}>
-                    <FaTrash /> Eliminar Nota
-                  </Button>
+                  <FaEdit onClick={() => handleEdit(currentNote)} size={44} style={{ cursor: 'pointer', marginInline: 20 }} />
+                  <FaTrash onClick={() => handleDelete(currentNote)} size={44} style={{ cursor: 'pointer', marginInline: 20 }} />
                 </>
               )}
             </>
-          ) : (permissionsEditable && (
-            <Button variant="primary" onClick={() => setShowModal(true)}>
-              <FaPlus /> Crear nota
-            </Button>
-          )
           )}
         </Col>
       </Row>
-      <br />
       {currentNote && (
         <>
           <Row className="align-items-center mb-3">
-            <Col md={9}>
+            <Col md={9} >
               <h4 className="m-0">{currentNote.title}</h4>
               {currentNote.author && (
                 <p className="text-muted m-0">{`${currentNote.author.name} - ${getRoleInSpanish(currentNote.author.role)}`}</p>
@@ -282,6 +274,7 @@ const LibraryPage: React.FC = () => {
           </Row>
         </>
       )}
+
       <Row>
         {currentNote ? (
           <>

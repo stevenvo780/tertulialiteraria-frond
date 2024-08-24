@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Button, Card } from 'react-bootstrap';
+import { Button, Card, Col, Row } from 'react-bootstrap';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { 
   FaBook, FaFeatherAlt, FaPenFancy, FaScroll, FaGlasses, FaUniversity, FaNewspaper 
@@ -72,42 +72,45 @@ const ScrollableEvents: React.FC<ScrollableEventsProps> = ({ events }) => {
         }}
         className="no-scrollbar"
       >
-        {events.length > 0 ? (
-          events.map((event) => {
-            const IconComponent = iconList[iconIndex % iconList.length];
-            iconIndex++;
-            return (
-              <div 
-              key={event.id} 
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer' }}
-              onClick={() => handleEventClick(event.id as number | null)}
-              >
-                <IconComponent 
-                  size={82} 
-                  style={{ 
-                    background: 'linear-gradient(135deg, #DDB932, #B1801D)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    marginBottom: '10px' 
-                  }} 
-                />
-                <Card
-                  className='card-events-home'
-                  style={{ minWidth: '260px', marginRight: '10px' }}
-                >
-                  <Card.Body className="d-flex flex-column align-items-center" style={{padding: 5}}>
-                    <Card.Title>{event.title}</Card.Title>
-                    <Card.Text style={{ fontSize: 12 }}>
-                      {new Date(event.startDate).toLocaleDateString()} - {new Date(event.startDate).toLocaleTimeString()}
-                    </Card.Text>
-                  </Card.Body>
-                </Card>
-              </div>
-            );
-          })
-        ) : (
-          <p>No hay eventos recurrentes</p>
-        )}
+        <Row style={{ flexWrap: 'nowrap' }}>
+          {events.length > 0 ? (
+            events.map((event) => {
+              const IconComponent = iconList[iconIndex % iconList.length];
+              iconIndex++;
+              return (
+                <Col key={event.id} xs={2} sm={6} md={4} lg={3} xl={2} style={{ padding: '0 10px' }}>
+                  <div 
+                    style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer' }}
+                    onClick={() => handleEventClick(event.id as number | null)}
+                  >
+                    <IconComponent 
+                      size={82} 
+                      style={{ 
+                        background: 'linear-gradient(135deg, #DDB932, #B1801D)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        marginBottom: '10px' 
+                      }} 
+                    />
+                    <Card
+                      className='card-events-home'
+                      style={{ minWidth: '100%', marginBottom: '10px' }}
+                    >
+                      <Card.Body className="d-flex flex-column align-items-center" style={{ padding: 5 }}>
+                        <Card.Title>{event.title}</Card.Title>
+                        <Card.Text style={{ fontSize: 12 }}>
+                          {new Date(event.startDate).toLocaleDateString()} - {new Date(event.startDate).toLocaleTimeString()}
+                        </Card.Text>
+                      </Card.Body>
+                    </Card>
+                  </div>
+                </Col>
+              );
+            })
+          ) : (
+            <p>No hay eventos recurrentes</p>
+          )}
+        </Row>
       </div>
       <Button variant="outline-primary" onClick={() => handleScroll('right')} style={{ borderRadius: '50%' }}>
         <FaChevronRight />

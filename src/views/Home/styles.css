@@ -12,3 +12,19 @@
 .scrollable-container {
   -ms-overflow-style: none;  /* Oculta la barra de desplazamiento vertical */
 }
+
+.scrollable-container {
+  overflow-y: auto;  /* Hace que el contenedor sea desplazable verticalmente */
+  height: 45vh;
+}
+
+@media (max-width: 768px) {
+  .scrollable-container {
+    height: 100vh;
+  }
+}
+
+.gradient-card {
+  background: linear-gradient(to bottom right, var(--primary-color), var(--secondary-color));
+  color: white; /* Para asegurar que el texto sea legible sobre el degradado */
+}

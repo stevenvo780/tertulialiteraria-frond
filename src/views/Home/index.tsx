@@ -227,7 +227,7 @@ const HomePage: React.FC = () => {
               loader={<></>}
               scrollableTarget="scrollableDiv"
             >
-              <div className='scrollable-container'  id="scrollableDiv" style={{ height: '45vw', overflowY: 'auto' }}>
+              <div className='scrollable-container'  id="scrollableDiv">
                 <PublicationsList
                   publications={publications}
                   handleEdit={handleEdit}
