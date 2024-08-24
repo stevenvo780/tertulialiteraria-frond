@@ -32,7 +32,7 @@ const StaffNormativePage: React.FC = () => {
           <FaEdit
             size={24}
             onClick={() => setShowEditModal(true)}
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: 'pointer', zIndex:100 }}
           />
         </div>
       )}

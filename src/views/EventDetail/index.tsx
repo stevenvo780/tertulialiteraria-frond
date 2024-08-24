@@ -103,7 +103,7 @@ const EventDetail: React.FC = () => {
   return (
     <Container className="mt-4 d-flex flex-column">
       {(userRole?.role === UserRole.ADMIN || userRole?.role === UserRole.SUPER_ADMIN) && (
-        <div className="edit-icon-container position-fixed" style={{ top: '100px', right: '50px' }}>
+        <div className="edit-icon-container position-fixed" style={{ top: '100px', right: '50px', zIndex:100 }}>
           <FaEdit
             size={24}
             onClick={handleEdit}
@@ -126,7 +126,7 @@ const EventDetail: React.FC = () => {
         <Col md={4} className="order-last order-md-first">
           <Card className="mb-4 gradient-card">
             <Card.Body>
-              <Card.Text className="countdown-text">{timeRemaining}</Card.Text>
+              <Card.Text className="countdown-text">{timeRemaining || "00:00:00"}</Card.Text>
             </Card.Body>
           </Card>
 
