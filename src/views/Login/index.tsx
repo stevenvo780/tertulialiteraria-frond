@@ -100,7 +100,7 @@ const LoginPage: React.FC = () => {
           />
         </Col>
         <Col sm="6" className="d-flex align-items-center justify-content-center" style={{ marginTop: "5%" }}>
-          <Card style={{ width: '100%', padding: '20px', boxShadow: '0px 0px 20px 0px rgba(0,0,0,0.1)', borderRadius: '5px' }}>
+          <Card style={{ width: '100%', padding: '20px', boxShadow: '0px 0px 20px 0px rgba(0,0,0,0.1)' }}>
             <Card.Body>
               <Form onSubmit={handleSubmit}>
                 <Form.Group controlId="formBasicEmail">
