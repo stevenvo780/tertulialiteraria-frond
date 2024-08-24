@@ -55,19 +55,32 @@ const ScrollableEvents: React.FC<ScrollableEventsProps> = ({ events }) => {
   };
 
   return (
-    <div className="d-flex align-items-center my-4">
-      <Button variant="outline-primary" onClick={() => handleScroll('left')} style={{ borderRadius: '50%' }}>
+    <div className="d-flex align-items-center my-4 position-relative">
+      {/* Botón de Scroll Izquierdo flotante */}
+      <Button 
+        variant="outline-primary" 
+        onClick={() => handleScroll('left')} 
+        style={{ 
+          borderRadius: '50%', 
+          position: 'absolute', 
+          left: '10px', 
+          zIndex: 2, // Aumentamos el z-index para asegurarnos que los botones floten sobre el contenido
+          width: '40px', 
+          height: '40px',
+        }}
+      >
         <FaChevronLeft />
       </Button>
+
       <div
         ref={scrollRef}
         style={{
           display: 'flex',
           overflowX: 'auto',
           scrollBehavior: 'smooth',
-          marginLeft: 20,
-          marginRight: 20,
-          width: '90%',
+          paddingLeft: '60px',  // Añadimos padding en lugar de margen para asegurar que el contenido no se corta
+          paddingRight: '60px',
+          width: '100%',
           scrollbarWidth: 'none',
         }}
         className="no-scrollbar"
@@ -112,7 +125,20 @@ const ScrollableEvents: React.FC<ScrollableEventsProps> = ({ events }) => {
           )}
         </Row>
       </div>
-      <Button variant="outline-primary" onClick={() => handleScroll('right')} style={{ borderRadius: '50%' }}>
+
+      {/* Botón de Scroll Derecho flotante */}
+      <Button 
+        variant="outline-primary" 
+        onClick={() => handleScroll('right')} 
+        style={{ 
+          borderRadius: '50%', 
+          position: 'absolute', 
+          right: '10px', 
+          zIndex: 2, 
+          width: '40px', 
+          height: '40px',
+        }}
+      >
         <FaChevronRight />
       </Button>
     </div>
