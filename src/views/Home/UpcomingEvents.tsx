@@ -2,6 +2,7 @@ import React from 'react';
 import { Card } from 'react-bootstrap';
 import { Events } from '../../utils/types';
 import { useNavigate } from 'react-router-dom';
+import './styles.css'; // Asegúrate de importar el archivo de estilos
 
 interface UpcomingEventsProps {
   events: Events[];
@@ -22,14 +23,14 @@ const UpcomingEvents: React.FC<UpcomingEventsProps> = ({ events }) => {
       {events.length > 0 ? (
         events.map((event) => (
           <Card
-            className="mb-3"
+            className="mb-3 gradient-card"
             key={event.id}
             onClick={() => handleEventClick(event.id || 0)}
             style={{ cursor: 'pointer' }}
           >
             <Card.Body>
-              <Card.Title>{event.title}</Card.Title>
-              <Card.Text>
+              <Card.Title style={{ color: "white" }} >{event.title}</Card.Title>
+              <Card.Text style={{ color: "white" }} >
                 {new Date(event.startDate).toLocaleDateString()} - {new Date(event.startDate).toLocaleTimeString()}
               </Card.Text>
             </Card.Body>

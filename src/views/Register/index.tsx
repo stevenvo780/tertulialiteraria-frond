@@ -3,8 +3,8 @@ import { Form, Button, Container, Row, Col, Card, InputGroup, Spinner } from 're
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { addNotification } from '../../redux/ui';
-import axios from '../../utils/axios';
-import { FaEnvelope, FaLock, FaUser } from 'react-icons/fa';
+import { auth } from '../../utils/firebase';
+import firebase from 'firebase/compat/app';
 
 const RegisterPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -49,19 +49,33 @@ const RegisterPage: React.FC = () => {
     }
 
     try {
-      const response = await axios.post('/auth/register', { email, password, name });
-      if (response.status === 201) {
+      const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+      const user = userCredential.user;
+      if (user && user.email) {
+        await user.updateProfile({ displayName: name });
         dispatch(addNotification({ message: 'Registro exitoso', color: 'success' }));
         navigate('/login');
-      } else {
-        dispatch(addNotification({ message: 'El registro ha fallado', color: 'danger' }));
       }
     } catch (error: any) {
-      if (error?.response?.status === 409) {
-        setErrors({ ...errors, email: 'El correo electrónico ya está registrado' });
-      } else {
-        dispatch(addNotification({ message: error?.response?.data?.message || 'El registro ha fallado', color: 'danger' }));
+      dispatch(addNotification({ message: error?.message || 'El registro ha fallado', color: 'danger' }));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const signInWithGoogle = async () => {
+    setIsLoading(true);
+    const provider = new firebase.auth.GoogleAuthProvider();
+
+    try {
+      const result = await auth.signInWithPopup(provider);
+      const user = result.user;
+      if (user && user.email) {
+        dispatch(addNotification({ message: 'Registro con Google exitoso', color: 'success' }));
+        navigate('/');
       }
+    } catch (error: any) {
+      dispatch(addNotification({ message: 'Error al registrarse con Google', color: 'danger' }));
     } finally {
       setIsLoading(false);
     }
@@ -71,19 +85,15 @@ const RegisterPage: React.FC = () => {
     <Container className="d-flex align-items-center justify-content-center min-vh-100">
       <Row className="w-100">
         <Col md={12}>
-          <Card className="shadow-lg" style={{ maxWidth: '60vw', margin: '0 auto' }}>
+          <h1 className="text-center mb-4" style={{ fontFamily: "Montaga", fontSize: "4rem"}}>Regístrate</h1>
+          <Card className="shadow-lg" style={{ maxWidth: '40vw', margin: '0 auto' }}>
             <Card.Body>
-              <h2 className="text-center mb-4">Registro</h2>
               <Form onSubmit={handleSubmit}>
                 <Form.Group controlId="formBasicName">
-                  <Form.Label>Nombre</Form.Label>
                   <InputGroup>
-                    <InputGroup.Text>
-                      <FaUser />
-                    </InputGroup.Text>
                     <Form.Control
                       type="text"
-                      placeholder="Introduce tu nombre"
+                      placeholder="Nombre"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       isInvalid={!!errors.name}
@@ -96,14 +106,10 @@ const RegisterPage: React.FC = () => {
                 </Form.Group>
                 <br />
                 <Form.Group controlId="formBasicEmail">
-                  <Form.Label>Correo electrónico</Form.Label>
                   <InputGroup>
-                    <InputGroup.Text>
-                      <FaEnvelope />
-                    </InputGroup.Text>
                     <Form.Control
                       type="email"
-                      placeholder="Introduce tu correo electrónico"
+                      placeholder="Correo electrónico"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       isInvalid={!!errors.email}
@@ -116,14 +122,10 @@ const RegisterPage: React.FC = () => {
                 </Form.Group>
                 <br />
                 <Form.Group controlId="formBasicPassword">
-                  <Form.Label>Contraseña</Form.Label>
                   <InputGroup>
-                    <InputGroup.Text>
-                      <FaLock />
-                    </InputGroup.Text>
                     <Form.Control
                       type="password"
-                      placeholder="Introduce tu contraseña"
+                      placeholder="Contraseña"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       isInvalid={!!errors.password}
@@ -136,11 +138,7 @@ const RegisterPage: React.FC = () => {
                 </Form.Group>
                 <br />
                 <Form.Group controlId="formBasicConfirmPassword">
-                  <Form.Label>Confirmar contraseña</Form.Label>
                   <InputGroup>
-                    <InputGroup.Text>
-                      <FaLock />
-                    </InputGroup.Text>
                     <Form.Control
                       type="password"
                       placeholder="Confirma tu contraseña"
@@ -157,6 +155,10 @@ const RegisterPage: React.FC = () => {
                 <br />
                 <Button variant="primary" type="submit" className="w-100" disabled={isLoading}>
                   {isLoading ? <Spinner animation="border" size="sm" /> : 'Registrar'}
+                </Button>
+                <br />
+                <Button variant="secondary" className="w-100 mt-2" onClick={signInWithGoogle} disabled={isLoading}>
+                  {isLoading ? <Spinner animation="border" size="sm" /> : 'Registrar con Google'}
                 </Button>
               </Form>
             </Card.Body>

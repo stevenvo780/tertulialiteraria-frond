@@ -100,7 +100,7 @@ const LoginPage: React.FC = () => {
           />
         </Col>
         <Col sm="6" className="d-flex align-items-center justify-content-center" style={{ marginTop: "5%" }}>
-          <Card style={{ width: '100%', padding: '20px', boxShadow: '0px 0px 20px 0px rgba(0,0,0,0.1)', borderRadius: '5px' }}>
+          <Card style={{ width: '100%', padding: '20px', boxShadow: '0px 0px 20px 0px rgba(0,0,0,0.1)' }}>
             <Card.Body>
               <Form onSubmit={handleSubmit}>
                 <Form.Group controlId="formBasicEmail">
@@ -124,7 +124,7 @@ const LoginPage: React.FC = () => {
                 <Button style={{ width: "100%", marginBottom: 10 }} variant="primary" type="submit" disabled={isLoading}>
                   {isLoading ? 'Cargando...' : 'Iniciar Sesión'}
                 </Button>
-                <Button style={{ backgroundColor: "white", color: "#595959", width: "100%", marginBottom: 10 }} size='sm' variant="secondary" onClick={() => setShowResetModal(true)}>
+                <Button style={{ border: 0,  backgroundColor: "white", color: "#595959", width: "100%", marginBottom: 20 }} size='sm' variant="secondary" onClick={() => setShowResetModal(true)}>
                   ¿Olvidaste tu contraseña?
                 </Button>
                 <Button style={{ width: "100%", marginBottom: 10 }} variant="secondary" onClick={handleRegister}>Registrarse</Button>

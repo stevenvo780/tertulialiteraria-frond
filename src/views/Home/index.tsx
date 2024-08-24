@@ -12,6 +12,7 @@ import PublicationModal from './PublicationModal';
 import ShareModal from './ShareModal'; 
 import { Publication, Events, CreatePublicationDto, Like, LikeTarget } from '../../utils/types';
 import ScrollableEvents from '../../components/ScrollableEvents';
+import './styles.css';
 
 const HomePage: React.FC = () => {
   const dispatch = useDispatch();
@@ -181,6 +182,10 @@ const HomePage: React.FC = () => {
   };
 
   const handleLikeToggle = async (publicationId: number, isLike: boolean) => {
+    if (!user) {
+      dispatch(addNotification({ message: 'Debes iniciar sesión para dar like o dislike', color: 'warning' }));
+      return;
+    }
     try {
       const currentLike = likesData[publicationId]?.userLike;
 
@@ -222,7 +227,7 @@ const HomePage: React.FC = () => {
               loader={<></>}
               scrollableTarget="scrollableDiv"
             >
-              <div id="scrollableDiv" style={{ height: '45vw', overflowY: 'auto' }}>
+              <div className='scrollable-container'  id="scrollableDiv">
                 <PublicationsList
                   publications={publications}
                   handleEdit={handleEdit}

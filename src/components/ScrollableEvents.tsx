@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Button, Card } from 'react-bootstrap';
+import { Button, Card, Col, Row } from 'react-bootstrap';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { 
   FaBook, FaFeatherAlt, FaPenFancy, FaScroll, FaGlasses, FaUniversity, FaNewspaper 
@@ -55,61 +55,90 @@ const ScrollableEvents: React.FC<ScrollableEventsProps> = ({ events }) => {
   };
 
   return (
-    <div className="d-flex align-items-center my-4">
-      <Button variant="outline-primary" onClick={() => handleScroll('left')} style={{ borderRadius: '50%' }}>
+    <div className="d-flex align-items-center my-4 position-relative">
+      {/* Botón de Scroll Izquierdo flotante */}
+      <Button 
+        variant="outline-primary" 
+        onClick={() => handleScroll('left')} 
+        style={{ 
+          borderRadius: '50%', 
+          position: 'absolute', 
+          left: '10px', 
+          zIndex: 2, // Aumentamos el z-index para asegurarnos que los botones floten sobre el contenido
+          width: '40px', 
+          height: '40px',
+        }}
+      >
         <FaChevronLeft />
       </Button>
+
       <div
         ref={scrollRef}
         style={{
           display: 'flex',
           overflowX: 'auto',
           scrollBehavior: 'smooth',
-          marginLeft: 20,
-          marginRight: 20,
-          width: '90%',
+          paddingLeft: '60px',
+          paddingRight: '60px',
+          width: '100%',
           scrollbarWidth: 'none',
         }}
         className="no-scrollbar"
       >
-        {events.length > 0 ? (
-          events.map((event) => {
-            const IconComponent = iconList[iconIndex % iconList.length];
-            iconIndex++;
-            return (
-              <div 
-              key={event.id} 
-              style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer' }}
-              onClick={() => handleEventClick(event.id as number | null)}
-              >
-                <IconComponent 
-                  size={82} 
-                  style={{ 
-                    background: 'linear-gradient(135deg, #DDB932, #B1801D)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    marginBottom: '10px' 
-                  }} 
-                />
-                <Card
-                  className='card-events-home'
-                  style={{ minWidth: '260px', marginRight: '10px' }}
-                >
-                  <Card.Body className="d-flex flex-column align-items-center" style={{padding: 5}}>
-                    <Card.Title>{event.title}</Card.Title>
-                    <Card.Text style={{ fontSize: 12 }}>
-                      {new Date(event.startDate).toLocaleDateString()} - {new Date(event.startDate).toLocaleTimeString()}
-                    </Card.Text>
-                  </Card.Body>
-                </Card>
-              </div>
-            );
-          })
-        ) : (
-          <p>No hay eventos recurrentes</p>
-        )}
+        <Row style={{ flexWrap: 'nowrap' }}>
+          {events.length > 0 ? (
+            events.map((event) => {
+              const IconComponent = iconList[iconIndex % iconList.length];
+              iconIndex++;
+              return (
+                <Col key={event.id} xs={2} sm={6} md={4} lg={3} xl={2} style={{ padding: '0 10px' }}>
+                  <div 
+                    style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer' }}
+                    onClick={() => handleEventClick(event.id as number | null)}
+                  >
+                    <IconComponent 
+                      size={82} 
+                      style={{ 
+                        background: 'linear-gradient(135deg, #DDB932, #B1801D)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        marginBottom: '10px' 
+                      }} 
+                    />
+                    <Card
+                      className='card-events-home'
+                      style={{ minWidth: '100%', marginBottom: '10px' }}
+                    >
+                      <Card.Body className="d-flex flex-column align-items-center" style={{ padding: 5 }}>
+                        <Card.Title>{event.title}</Card.Title>
+                        <Card.Text style={{ fontSize: 12 }}>
+                          {new Date(event.startDate).toLocaleDateString()} - {new Date(event.startDate).toLocaleTimeString()}
+                        </Card.Text>
+                      </Card.Body>
+                    </Card>
+                  </div>
+                </Col>
+              );
+            })
+          ) : (
+            <p>No hay eventos recurrentes</p>
+          )}
+        </Row>
       </div>
-      <Button variant="outline-primary" onClick={() => handleScroll('right')} style={{ borderRadius: '50%' }}>
+
+      {/* Botón de Scroll Derecho flotante */}
+      <Button 
+        variant="outline-primary" 
+        onClick={() => handleScroll('right')} 
+        style={{ 
+          borderRadius: '50%', 
+          position: 'absolute', 
+          right: '10px', 
+          zIndex: 2, 
+          width: '40px', 
+          height: '40px',
+        }}
+      >
         <FaChevronRight />
       </Button>
     </div>

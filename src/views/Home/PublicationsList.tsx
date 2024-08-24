@@ -90,6 +90,7 @@ const PublicationsList: React.FC<PublicationsListProps> = ({
                   variant="link"
                   onClick={() => handleLikeToggle(publication.id, true)}
                   className={likeData.userLike?.isLike ? 'text-primary' : ''}
+                  style={{ marginRight: '10px' }}
                 >
                   <FaThumbsUp /> {likeData.likes}
                 </Button>
@@ -97,6 +98,7 @@ const PublicationsList: React.FC<PublicationsListProps> = ({
                   variant="link"
                   onClick={() => handleLikeToggle(publication.id, false)}
                   className={likeData.userLike && !likeData.userLike.isLike ? 'text-danger' : ''}
+                  style={{ marginRight: '10px' }}
                 >
                   <FaThumbsDown /> {likeData.dislikes}
                 </Button>

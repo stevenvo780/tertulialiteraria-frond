@@ -111,17 +111,25 @@ const EventDetail: React.FC = () => {
           />
         </div>
       )}
-      <Row>
-        <Col md={4}>
-          {/* Contador de Tiempo Restante */}
-          <Card className="mb-4">
+      <Row style={{ marginBottom: '20px' }}>
+        {/* Detalles del Evento: Primero en dispositivos móviles */}
+        <Col md={8} className="order-first order-md-last mb-4">
+          <Card>
             <Card.Body>
-              <Card.Title>Tiempo Restante</Card.Title>
+              <Card.Title>{event.title}</Card.Title>
+              <Card.Text dangerouslySetInnerHTML={{ __html: event.description }} />
+            </Card.Body>
+          </Card>
+        </Col>
+
+        {/* Tarjetas: Último en dispositivos móviles */}
+        <Col md={4} className="order-last order-md-first">
+          <Card className="mb-4 gradient-card">
+            <Card.Body>
               <Card.Text className="countdown-text">{timeRemaining}</Card.Text>
             </Card.Body>
           </Card>
 
-          {/* Tarjeta de Fecha */}
           <Card className="mb-4">
             <Card.Body>
               <Card.Title>Fecha</Card.Title>
@@ -129,7 +137,6 @@ const EventDetail: React.FC = () => {
             </Card.Body>
           </Card>
 
-          {/* Tarjeta de Hora */}
           <Card className="mb-4">
             <Card.Body>
               <Card.Title>Hora</Card.Title>
@@ -137,7 +144,6 @@ const EventDetail: React.FC = () => {
             </Card.Body>
           </Card>
 
-          {/* Calendario Pequeño y Minimalista */}
           <Card className="mb-4">
             <Card.Body>
               <ReactCalendar
@@ -151,7 +157,6 @@ const EventDetail: React.FC = () => {
             </Card.Body>
           </Card>
 
-          {/* Botones de compartir en redes sociales organizados en un grid */}
           <div className="social-share-buttons d-flex flex-wrap justify-content-between mt-4">
             <FacebookShareButton url={shareUrl}>
               <FacebookIcon size={60} round />
@@ -170,18 +175,7 @@ const EventDetail: React.FC = () => {
             </TelegramShareButton>
           </div>
         </Col>
-        <Col md={8}>
-          {/* Detalles del Evento */}
-          <Card className="mb-4">
-            <Card.Body>
-              <Card.Title>{event.title}</Card.Title>
-              <Card.Text dangerouslySetInnerHTML={{ __html: event.description }} />
-            </Card.Body>
-          </Card>
-        </Col>
       </Row>
-
-      {/* Scrollable Events al final de la página */}
       {upcomingEvents.length > 0 && <ScrollableEvents events={upcomingEvents} />}
 
       {showModal && (
