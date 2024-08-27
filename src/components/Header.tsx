@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Navbar, Nav, Container, Dropdown, Image } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
@@ -6,34 +6,12 @@ import { RootState } from '../redux/store';
 import { logout } from '../redux/auth';
 import routesConfig from '../config/routesConfig.json';
 import { CgMenuGridO } from "react-icons/cg";
-import { FaUsers, FaCircle } from "react-icons/fa"; // Icons for users and online status
-import api from '../utils/axios';
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);
   const userRole = useSelector((state: RootState) => state.auth.userData?.role);
-
-  const [guildMemberCount, setGuildMemberCount] = useState<number | null>(null);
-  const [onlineMemberCount, setOnlineMemberCount] = useState<number | null>(null);
-
-  useEffect(() => {
-    const fetchMemberCounts = async () => {
-      try {
-        const [membersResponse, onlineResponse] = await Promise.all([
-          api.get(`/discord/guild/members`),
-          api.get(`/discord/guild/online`),
-        ]);
-        setGuildMemberCount(membersResponse.data);
-        setOnlineMemberCount(onlineResponse.data);
-      } catch (error) {
-        console.error('Error fetching member counts:', error);
-      }
-    };
-
-    fetchMemberCounts();
-  }, []);
 
   const handleLogout = async () => {
     dispatch(logout());
@@ -74,22 +52,6 @@ const Header: React.FC = () => {
                 <p style={{ color: "black", margin: 0 }}>{route.name}</p>
               </Nav.Link>
             ))}
-            {guildMemberCount !== null && (
-              <Nav.Item className="d-flex align-items-center" style={{ marginRight: 15 }}>
-                <div style={circleStyle('#E0E0E0')}>
-                  <FaUsers  size={14} style={{ marginRight: 5, color: "black" }} />
-                  <span style={{ color: "black" }} >{guildMemberCount}</span>
-                </div>
-              </Nav.Item>
-            )}
-            {onlineMemberCount !== null && (
-              <Nav.Item className="d-flex align-items-center">
-                <div style={circleStyle('#4CAF50')}>
-                  <FaCircle size={14} style={{ marginRight: 5, color: "black" }} />
-                  <span style={{ color: "black" }}>{onlineMemberCount}</span>
-                </div>
-              </Nav.Item>
-            )}
           </Nav>
           <Dropdown align="end">
             <Dropdown.Toggle as="span" id="dropdown-basic" className="d-flex align-items-center" style={{ cursor: 'pointer', marginInline: 10 }}>
