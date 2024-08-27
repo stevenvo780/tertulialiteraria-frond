@@ -5,15 +5,18 @@ import { addNotification } from '../../redux/ui';
 import { Events, Library } from '../../utils/types';
 import UpcomingEvents from './UpcomingEvents';
 import LatestNotes from './LatestNotes';
+import DiscordMemberCard from './DiscordMemberCard';
 
 const Sidebar: React.FC = () => {
   const dispatch = useDispatch();
   const [latestNotes, setLatestNotes] = useState<Library[]>([]);
   const [upcomingEvents, setUpcomingEvents] = useState<Events[]>([]);
+  const [guildMemberCount, setGuildMemberCount] = useState<number | null>(null);
 
   useEffect(() => {
     fetchLatestNotes();
     fetchUniqueEvents();
+    fetchGuildMemberCount();
   }, []);
 
   const fetchLatestNotes = async () => {
@@ -34,8 +37,18 @@ const Sidebar: React.FC = () => {
     }
   };
 
+  const fetchGuildMemberCount = async () => {
+    try {
+      const response = await api.get<number>('/discord/guild/members');
+      setGuildMemberCount(response.data);
+    } catch (error) {
+      dispatch(addNotification({ message: 'Error al obtener la cantidad de miembros de Discord', color: 'danger' }));
+    }
+  };
+
   return (
     <div>
+      <DiscordMemberCard guildMemberCount={guildMemberCount} />
       <UpcomingEvents events={upcomingEvents} />
       <LatestNotes notes={latestNotes} />
     </div>
