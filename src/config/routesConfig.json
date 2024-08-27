@@ -1,24 +1,24 @@
 {
   "publicRoutes": [
-    { "path": "/", "element": "Home", "name": "Inicio", "viewHeader": true },
-    { "path": "/library", "element": "Library", "name": "Biblioteca", "viewHeader": true },
-    { "path": "/library/:noteId", "element": "Library", "name": "Biblioteca con Nota", "viewHeader": false },
-    { "path": "/events", "element": "Events", "name": "Eventos", "viewHeader": true },
-    { "path": "/events/:id", "element": "EventDetail", "name": "Detalle de Evento", "viewHeader": false },
-    { "path": "/normativa", "element": "Normativa", "name": "Normativa", "viewHeader": true },
-    { "path": "/login", "element": "Login", "name": "Iniciar Sesión", "viewHeader": false },
-    { "path": "/register", "element": "Register", "name": "Registrarse", "viewHeader": false },
-    { "path": "/about", "element": "About", "name": "Acerca de", "viewHeader": true }
+    { "path": "/", "element": "Home", "name": "Inicio", "viewHeader": true, "hidden": false },
+    { "path": "/library", "element": "Library", "name": "Biblioteca", "viewHeader": true, "hidden": false },
+    { "path": "/library/:noteId", "element": "Library", "name": "Biblioteca con Nota", "viewHeader": false, "hidden": false },
+    { "path": "/events", "element": "Events", "name": "Eventos", "viewHeader": true, "hidden": false },
+    { "path": "/events/:id", "element": "EventDetail", "name": "Detalle de Evento", "viewHeader": false, "hidden": false },
+    { "path": "/normativa", "element": "Normativa", "name": "Normativa", "viewHeader": true, "hidden": false },
+    { "path": "/login", "element": "Login", "name": "Iniciar Sesión", "viewHeader": false, "hidden": false },
+    { "path": "/register", "element": "Register", "name": "Registrarse", "viewHeader": false, "hidden": false },
+    { "path": "/about", "element": "About", "name": "Acerca de", "viewHeader": true, "hidden": false }
   ],
   "roleRoutes": {
     "user": [],
     "admin": [
-      { "path": "/normativa/staff", "element": "NormativaStaff", "name": "Normativa Staff", "viewHeader": true }
+      { "path": "/normativa/staff", "element": "NormativaStaff", "name": "Normativa Staff", "viewHeader": true, "hidden": true }
     ],
     "super_admin": [
-      { "path": "/normativa/staff", "element": "NormativaStaff", "name": "Normativa Staff", "viewHeader": true },
-      { "path": "/users", "element": "Users", "name": "Usuarios", "viewHeader": true },
-      { "path": "/templates", "element": "Template", "name": "Plantillas", "viewHeader": true }
+      { "path": "/normativa/staff", "element": "NormativaStaff", "name": "Normativa Staff", "viewHeader": true, "hidden": true },
+      { "path": "/users", "element": "Users", "name": "Usuarios", "viewHeader": true, "hidden": true },
+      { "path": "/templates", "element": "Template", "name": "Plantillas", "viewHeader": true, "hidden": true }
     ]
   }
 }
