@@ -156,7 +156,7 @@ const LoginPage: React.FC = () => {
                     width: "100%",
                     marginBottom: 10
                   }}
-                  variant="danger"
+                  variant="secondary"
                   onClick={signInWithGoogle}
                   disabled={isLoading}
                 >

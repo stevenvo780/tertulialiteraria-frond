@@ -12,7 +12,7 @@
   --secondary-color: #BBB6AE;
   --secondary-hover: #a49d93;
   --secondary-border: #BBB6AE;
-  --secondary-text: #FFFFFF;
+  --secondary-text: #3A3A3A;
 
   --info-color: #0582c5;
   --info-hover: #05679f;
@@ -41,7 +41,12 @@
 
   --outline-color: var(--secondary-color);
 
-  --discord-color: #3374A7;
+  --card-color: #FFFFFF;
+  --card-hover: #F0F2F5;
+  --card-border: #d7ccc83d;
+  --card-text: #3A3A3A;
+
+  --discord-color: #5865F0;
   --discord-text: #FFFFFF;
 }
 
@@ -67,6 +72,15 @@ a:focus,
   text-decoration: none !important;
 }
 
+a:active,
+a:focus,
+.navbar .navbar-nav .nav-link:active,
+.navbar .navbar-nav .nav-link:focus {
+  color: var(--link-hover) !important;
+  outline: none;
+  box-shadow: none;
+}
+
 .btn {
   border-radius: 10px;
   color: var(--white-color);
@@ -76,6 +90,12 @@ a:focus,
   border-color: var(--border-color);
 }
 
+.btn:active,
+.btn:focus {
+  outline: none;
+  box-shadow: none;
+}
+
 .btn-primary {
   background-color: var(--primary-color);
   border-color: var(--primary-border);
@@ -83,7 +103,8 @@ a:focus,
 }
 
 .btn-primary:hover,
-.btn-primary:focus {
+.btn-primary:focus,
+.btn-primary:active {
   background-color: var(--primary-hover);
   border-color: var(--primary-hover);
   color: var(--primary-text);
@@ -96,7 +117,8 @@ a:focus,
 }
 
 .btn-secondary:hover,
-.btn-secondary:focus {
+.btn-secondary:focus,
+.btn-secondary:active {
   background-color: var(--secondary-hover);
   border-color: var(--secondary-hover);
   color: var(--secondary-text);
@@ -109,8 +131,9 @@ a:focus,
 }
 
 .btn-outline-primary:hover,
-.btn-outline-primary:focus {
-  background-color: var(--primary-color);
+.btn-outline-primary:focus,
+.btn-outline-primary:active {
+  background-color: var(--primary-hover);
   border-color: var(--primary-border);
   color: var(--primary-text);
 }
@@ -122,8 +145,9 @@ a:focus,
 }
 
 .btn-outline-secondary:hover,
-.btn-outline-secondary:focus {
-  background-color: var(--secondary-color);
+.btn-outline-secondary:focus,
+.btn-outline-secondary:active {
+  background-color: var(--secondary-hover);
   border-color: var(--secondary-border);
   color: var(--secondary-text);
 }
@@ -135,7 +159,8 @@ a:focus,
 }
 
 .btn-info:hover,
-.btn-info:focus {
+.btn-info:focus,
+.btn-info:active {
   background-color: var(--info-hover);
   border-color: var(--info-hover);
   color: var(--info-text);
@@ -148,8 +173,9 @@ a:focus,
 }
 
 .btn-outline-info:hover,
-.btn-outline-info:focus {
-  background-color: var(--info-color);
+.btn-outline-info:focus,
+.btn-outline-info:active {
+  background-color: var(--info-hover);
   border-color: var(--info-border);
   color: var(--white-color);
 }
@@ -157,11 +183,12 @@ a:focus,
 .btn-success {
   background-color: var(--success-color);
   border-color: var(--success-border);
-  color: var(--success-text);
+  color: var (--success-text);
 }
 
 .btn-success:hover,
-.btn-success:focus {
+.btn-success:focus,
+.btn-success:active {
   background-color: var(--success-hover);
   border-color: var(--success-hover);
   color: var(--success-text);
@@ -174,7 +201,8 @@ a:focus,
 }
 
 .btn-outline-success:hover,
-.btn-outline-success:focus {
+.btn-outline-success:focus,
+.btn-outline-success:active {
   background-color: var(--success-color);
   border-color: var(--success-border);
   color: var(--success-text);
@@ -187,7 +215,8 @@ a:focus,
 }
 
 .btn-warning:hover,
-.btn-warning:focus {
+.btn-warning:focus,
+.btn-warning:active {
   background-color: var(--warning-hover);
   border-color: var(--warning-hover);
   color: var(--warning-text);
@@ -200,7 +229,8 @@ a:focus,
 }
 
 .btn-outline-warning:hover,
-.btn-outline-warning:focus {
+.btn-outline-warning:focus,
+.btn-outline-warning:active {
   background-color: var(--warning-color);
   border-color: var(--warning-border);
   color: var(--white-color);
@@ -213,7 +243,8 @@ a:focus,
 }
 
 .btn-danger:hover,
-.btn-danger:focus {
+.btn-danger:focus,
+.btn-danger:active {
   background-color: var(--danger-hover);
   border-color: var(--danger-hover);
   color: var(--danger-text);
@@ -226,7 +257,8 @@ a:focus,
 }
 
 .btn-outline-danger:hover,
-.btn-outline-danger:focus {
+.btn-outline-danger:focus,
+.btn-outline-danger:active {
   background-color: var(--danger-color);
   border-color: var(--danger-border);
   color: var(--white-color);
@@ -252,9 +284,12 @@ a:focus,
 }
 
 .btn-link:hover,
-.btn-link:focus {
+.btn-link:focus,
+.btn-link:active {
   color: var(--link-hover);
   text-decoration: underline;
+  outline: none;
+  box-shadow: none;
 }
 
 .navbar .navbar-nav .nav-link {
@@ -262,27 +297,27 @@ a:focus,
 }
 
 .card {
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--card-color);
   border-radius: 12px;
-  background-color: var(--white-color);
+  background-color: var(--card-color);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .card-header {
-  background-color: var(--primary-color);
-  color: var(--primary-text);
+  background-color: var(--card-color);
+  color: var(--card-text);
   font-weight: 600;
-  border-bottom: 1px solid var(--primary-border);
+  border-bottom: 1px solid var(--card-border);
 }
 
 .card-body {
-  color: var(--font-color);
+  color: var(--card-text);
 }
 
 .card-footer {
-  background-color: var(--secondary-color);
-  color: var(--secondary-text);
-  border-top: 1px solid var(--secondary-border);
+  background-color: var(--card-color);
+  color: var(--card-text);
+  border-top: 1px solid var(--card-border);
 }
 
 input,
@@ -386,7 +421,8 @@ select:focus {
 }
 
 .pagination .page-link:hover,
-.pagination .page-link:focus {
+.pagination .page-link:focus,
+.pagination .page-link:active {
   z-index: 1;
   color: var(--white-color);
   background-color: var(--primary-hover);
@@ -408,6 +444,7 @@ select:focus {
 
 .card-events-home {
   background-color: var(--primary-color);
+  border-color: var(--primary-border);
   border-radius: 10px;
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
 }
@@ -419,16 +456,12 @@ select:focus {
   border-bottom: 1px solid var(--secondary-border);
 }
 
-.card-events-home .card-body {
-  color: var(--font-color);
-}
-
 .card-events-home .card-text {
-  color: var(--secondary-text);
+  color: var(--white-color);
 }
 
 .card-events-home .card-title {
-  color: var(--secondary-text);
+  color: var(--white-color);
 }
 
 .text-info {

@@ -34,7 +34,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       {loading && (
         <div className="loader-overlay">
           <PuffLoader
-            color={'var(--secondary-color)'}
+            color={'var(--primary-color)'}
             loading={loading}
             cssOverride={{
               position: 'fixed',

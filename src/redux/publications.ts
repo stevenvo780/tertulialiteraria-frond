@@ -14,17 +14,13 @@ const publicationsSlice = createSlice({
   initialState,
   reducers: {
     getPublications(state, action: PayloadAction<Publication[]>) {
-      const publicationsMap = new Map<number, Publication>();
-
-      state.publications.forEach(publication => {
-        publicationsMap.set(publication.id, publication);
-      });
+      const existingPublications = new Map(state.publications.map(publication => [publication.id, publication]));
 
       action.payload.forEach(publication => {
-        publicationsMap.set(publication.id, publication);
+        existingPublications.set(publication.id, publication);
       });
 
-      state.publications = Array.from(publicationsMap.values());
+      state.publications = Array.from(existingPublications.values()).sort((a, b) => b.id - a.id);
     },
     addPublication(state, action: PayloadAction<Publication>) {
       if (!state.publications.some(pub => pub.id === action.payload.id)) {

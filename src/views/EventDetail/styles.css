@@ -11,10 +11,3 @@
   text-align: center;
   color: white;
 }
-
-
-.gradient-card {
-  background: linear-gradient(to bottom right, var(--primary-color), var(--secondary-color));
-  color: white;
-}
-

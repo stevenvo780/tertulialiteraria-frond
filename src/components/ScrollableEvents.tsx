@@ -97,12 +97,7 @@ const ScrollableEvents: React.FC<ScrollableEventsProps> = ({ events }) => {
                   >
                     <IconComponent
                       size={82}
-                      style={{
-                        background: 'linear-gradient(135deg, var(--primary-color), var(--secondary-hover))',
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent',
-                        marginBottom: '10px'
-                      }}
+                      style={{ marginBottom: '10px' }}
                     />
                     <Card
                       className='card-events-home'
