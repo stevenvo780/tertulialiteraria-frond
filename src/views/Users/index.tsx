@@ -72,7 +72,7 @@ const UserListPage: React.FC = () => {
                   <td>{user.name || 'Sin nombre'}</td>
                   <td>{user.role}</td>
                   <td>
-                    <Button variant="info" size="sm" onClick={() => handleEditClick(user)}>
+                    <Button variant="secondary" size="sm" onClick={() => handleEditClick(user)}>
                       <FaEdit /> Editar Rol
                     </Button>
                   </td>

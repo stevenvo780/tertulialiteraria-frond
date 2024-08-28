@@ -1,8 +1,9 @@
 import React from 'react';
-import { Card, Form, Button } from 'react-bootstrap';
-import { FaEdit, FaTrash, FaThumbsUp, FaThumbsDown, FaShareAlt, FaUser } from 'react-icons/fa';
+import { Card, Form } from 'react-bootstrap';
+import { FaEdit, FaTrash, FaUser } from 'react-icons/fa';
 import { Publication, Like, UserRole, User } from '../../utils/types';
 import { getRoleInSpanish } from '../../utils/roleTranslation';
+import ActionButtons from '../../components/ActionButtons';
 
 interface PublicationsListProps {
   publications: Publication[];
@@ -13,7 +14,7 @@ interface PublicationsListProps {
   likesData: Record<number, { likes: number; dislikes: number; userLike: Like | null }>;
   user: User | null;
   setShowModal: (show: boolean) => void;
-  publicationRefs: React.MutableRefObject<Record<number, HTMLDivElement | null>>; // Nueva referencia
+  publicationRefs: React.MutableRefObject<Record<number, HTMLDivElement | null>>;
 }
 
 const PublicationsList: React.FC<PublicationsListProps> = ({
@@ -85,37 +86,13 @@ const PublicationsList: React.FC<PublicationsListProps> = ({
               <div className="text-muted mt-2">
                 {publication.createdAt ? new Date(publication.createdAt).toLocaleDateString() : ''}
               </div>
-              <div className="d-flex align-items-center mt-3">
-                <span
-                  style={{ cursor: 'pointer', marginInline: '10px' }}
-                  onClick={() => handleLikeToggle(publication.id, true)}
-                >
-                  <FaThumbsUp
-                    style={{ cursor: 'pointer', marginInline: '3px', color: likeData.userLike?.isLike ? '#B1801D' : '#BBBBBB' }}
-                    size={27}
-                  />
-                  {likeData.likes}
-                </span>
-                <span
-                  style={{ cursor: 'pointer', marginInline: '10px' }}
-                  onClick={() => handleLikeToggle(publication.id, false)}
-                >
-                  <FaThumbsDown
-                    style={{ cursor: 'pointer', marginInline: '3px', color: likeData.userLike && !likeData.userLike.isLike ? '#B1801D' : '#BBBBBB' }}
-                    size={27}
-                  />
-                  {likeData.dislikes}
-                </span>
-                <span
-                  style={{ cursor: 'pointer', marginInline: '10px' }}
-                  onClick={() => handleShare(publication)}
-                >
-                  <FaShareAlt
-                    style={{ cursor: 'pointer', marginInline: '10px', color: '#BBBBBB' }}
-                    size={27}
-                  />
-                </span>
-              </div>
+              <ActionButtons
+                userLike={likeData.userLike}
+                likesCount={likeData.likes}
+                dislikesCount={likeData.dislikes}
+                onLikeToggle={(isLike: boolean) => handleLikeToggle(publication.id, isLike)}
+                onShare={() => handleShare(publication)}
+              />
             </Card.Body>
           </Card>
         );

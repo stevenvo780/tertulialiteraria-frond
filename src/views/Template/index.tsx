@@ -114,13 +114,13 @@ const TemplatePage: React.FC = () => {
               <Card.Body>
                 <Card.Title>{template.name}</Card.Title>
                 <Card.Subtitle className="mb-2 text-muted">{template.type}</Card.Subtitle>
-                <Button variant="info" size="sm" onClick={() => handleEditClick(template)}>
+                <Button variant="secondary" size="sm" onClick={() => handleEditClick(template)}>
                   Editar
                 </Button>
-                <Button className="mx-2" variant="primary" size="sm" onClick={() => handlePreviewClick(template)}>
+                <Button className="mx-2" variant="secondary" size="sm" onClick={() => handlePreviewClick(template)}>
                   Previsualizar
                 </Button>
-                <Button variant="danger" size="sm" onClick={() => handleDeleteClick(template.id)}>
+                <Button variant="secondary" size="sm" onClick={() => handleDeleteClick(template.id)}>
                   Eliminar
                 </Button>
               </Card.Body>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card } from 'react-bootstrap';
-import { FaThumbsUp, FaThumbsDown, FaShareAlt } from 'react-icons/fa';
+import ActionButtons from '../../components/ActionButtons';
 import { Library, Like } from '../../utils/types';
 
 interface LibraryCardProps {
@@ -32,38 +32,13 @@ const LibraryCard: React.FC<LibraryCardProps> = ({
           }}
           dangerouslySetInnerHTML={{ __html: library.description }}
         />
-        <div className="d-flex align-items-center mt-3">
-          <span
-            style={{ cursor: 'pointer', marginInline: '10px' }}
-            onClick={(e) => { e.stopPropagation(); handleLikeToggle(library.id, true); }}
-          >
-            <FaThumbsUp
-              style={{ cursor: 'pointer', marginInline: '3px', color: likesData.userLike?.isLike ? '#B1801D' : '#BBBBBB' }}
-              size={27}
-            />
-            {likesData.likes}
-          </span>
-          <span
-            style={{ cursor: 'pointer', marginInline: '10px' }}
-            onClick={(e) => { e.stopPropagation(); handleLikeToggle(library.id, false); }}
-          >
-            <FaThumbsDown
-              style={{ cursor: 'pointer', marginInline: '3px', color: likesData.userLike && !likesData.userLike.isLike ? '#B1801D' : '#BBBBBB' }}
-              size={27}
-            />
-            {likesData.dislikes}
-          </span>
-          <span
-            style={{ cursor: 'pointer', marginInline: '10px' }}
-            onClick={(e) => { e.stopPropagation(); handleShare(library); }}
-          >
-            <FaShareAlt
-              style={{ cursor: 'pointer', marginInline: '10px', color: '#BBBBBB' }}
-              size={27}
-            />
-          </span>
-        </div>
-
+        <ActionButtons
+          userLike={likesData.userLike}
+          likesCount={likesData.likes}
+          dislikesCount={likesData.dislikes}
+          onLikeToggle={(isLike) => handleLikeToggle(library.id, isLike)}
+          onShare={() => handleShare(library)}
+        />
       </Card.Body>
     </Card>
   );

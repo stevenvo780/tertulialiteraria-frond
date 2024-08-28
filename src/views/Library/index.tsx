@@ -9,12 +9,13 @@ import { addNotification } from '../../redux/ui';
 import { Library, CreateLibraryDto, UpdateLibraryDto, Like, LikeTarget } from '../../utils/types';
 import LibraryList from './LibraryList';
 import LibraryFormModal from './LibraryFormModal';
-import { FaEdit, FaTrash, FaThumbsUp, FaThumbsDown, FaShareAlt } from 'react-icons/fa';
+import { FaEdit, FaTrash } from 'react-icons/fa';
 import { UserRole } from '../../utils/types';
 import ShareNoteModal from './ShareNoteModal';
 import { getRoleInSpanish } from '../../utils/roleTranslation';
 import { BsFileEarmarkPlusFill } from "react-icons/bs";
 import { IoIosArrowBack } from "react-icons/io";
+import ActionButtons from '../../components/ActionButtons'; 
 
 const LibraryPage: React.FC = () => {
   const { noteId } = useParams<{ noteId: string | undefined }>();
@@ -234,16 +235,40 @@ const LibraryPage: React.FC = () => {
                 display: 'inline-flex',
                 justifyContent: 'flex-end',
                 alignItems: 'center',
-                backgroundColor: 'white',
+                backgroundColor: 'var(--white-color)',
                 borderRadius: '10px',
                 boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
                 padding: '10px',
               }}>
-                <BsFileEarmarkPlusFill onClick={() => setShowModal(true)} size={27} style={{ cursor: 'pointer', marginInline: 8, color: "#BBBBBB" }} />
+                <BsFileEarmarkPlusFill
+                  onClick={() => setShowModal(true)}
+                  size={27}
+                  style={{
+                    cursor: 'pointer',
+                    marginInline: 8,
+                    color: 'var(--secondary-color)',
+                  }}
+                />
                 {currentNote && (
                   <>
-                    <FaEdit onClick={() => handleEdit(currentNote)} size={27} style={{ cursor: 'pointer', marginInline: 8, color: "#BBBBBB" }} />
-                    <FaTrash onClick={() => handleDelete(currentNote)} size={27} style={{ cursor: 'pointer', marginInline: 8, color: "#BBBBBB" }} />
+                    <FaEdit
+                      onClick={() => handleEdit(currentNote)}
+                      size={27}
+                      style={{
+                        cursor: 'pointer',
+                        marginInline: 8,
+                        color: 'var(--secondary-color)',
+                      }}
+                    />
+                    <FaTrash
+                      onClick={() => handleDelete(currentNote)}
+                      size={27}
+                      style={{
+                        cursor: 'pointer',
+                        marginInline: 8,
+                        color: 'var(--secondary-color)',
+                      }}
+                    />
                   </>
                 )}
               </div>
@@ -269,31 +294,13 @@ const LibraryPage: React.FC = () => {
                 <div dangerouslySetInnerHTML={{ __html: currentNote.description }} />
               </Col>
               <Col xs={12} md={12} className="text-left" style={{ display: 'flex', justifyContent: 'flex-init' }}>
-                <span
-                  style={{ cursor: 'pointer', marginInline: '10px' }}>
-                  <FaThumbsUp
-                    onClick={() => handleLikeToggle(currentNote.id, true)}
-                    style={{ cursor: 'pointer', marginInline: '3px', color: likesData[currentNote.id]?.userLike?.isLike ? '#B1801D' : '#BBBBBB' }}
-                    size={27}
-                  />
-                  {likesData[currentNote.id]?.likes || 0}
-                </span>
-                <span
-                  style={{ cursor: 'pointer', marginInline: '10px' }} >
-                  <FaThumbsDown
-                    onClick={() => handleLikeToggle(currentNote.id, false)}
-                    style={{ marginInline: '3px', color: likesData[currentNote.id]?.userLike?.isLike === false ? '#B1801D' : '#BBBBBB' }}
-                    size={27}
-                  />
-                  {likesData[currentNote.id]?.dislikes || 0}
-                </span>
-                <span>
-                  <FaShareAlt
-                    onClick={() => handleShare(currentNote)}
-                    style={{ cursor: 'pointer', marginInline: '10px', color: "#BBBBBB" }}
-                    size={27}
-                  />
-                </span>
+              <ActionButtons
+                  userLike={likesData[currentNote.id]?.userLike}
+                  likesCount={likesData[currentNote.id]?.likes || 0}
+                  dislikesCount={likesData[currentNote.id]?.dislikes || 0}
+                  onLikeToggle={(isLike) => handleLikeToggle(currentNote.id, isLike)}
+                  onShare={() => handleShare(currentNote)}
+                />
               </Col>
             </Row>
           )}

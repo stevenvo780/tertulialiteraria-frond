@@ -1,31 +1,18 @@
-import React, { useRef } from 'react';
-import { Button, Card, Col, Row } from 'react-bootstrap';
-import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
-import { 
-  FaBook, FaFeatherAlt, FaPenFancy, FaScroll, FaGlasses, FaUniversity, FaNewspaper 
-} from 'react-icons/fa';
-import { 
-  GiBookshelf, GiBookmark, GiQuillInk, GiOpenBook, GiScrollUnfurled, GiBrain, GiSpellBook 
-} from 'react-icons/gi';
-import { 
-  MdLibraryBooks, MdMenuBook, MdOutlineAutoStories, MdOutlineClass, MdOutlineSchool 
-} from 'react-icons/md';
-import { 
-  IoBookSharp, IoSchoolSharp, IoJournal, IoNewspaperSharp 
-} from 'react-icons/io5';
-import { 
-  BsBookHalf, BsBook, BsJournalBookmark, BsPen 
-} from 'react-icons/bs';
-import { 
-  RiBookOpenLine, RiBookLine, RiArticleLine, RiPencilLine 
-} from 'react-icons/ri';
+import React from 'react';
+import Slider from 'react-slick';
+import { Card, Col } from 'react-bootstrap';
+import { FaBook, FaFeatherAlt, FaGlasses, FaNewspaper, FaPenFancy, FaScroll, FaUniversity, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { Events } from '../utils/types';
 import { useNavigate } from 'react-router-dom';
+import { BsBookHalf, BsBook, BsJournalBookmark, BsPen } from 'react-icons/bs';
+import { GiBookshelf, GiBookmark, GiQuillInk, GiOpenBook, GiScrollUnfurled, GiBrain, GiSpellBook } from 'react-icons/gi';
+import { MdLibraryBooks, MdMenuBook, MdOutlineAutoStories, MdOutlineClass, MdOutlineSchool } from 'react-icons/md';
+import { IoBookSharp, IoSchoolSharp, IoJournal, IoNewspaperSharp } from 'react-icons/io5';
+import { RiArticleLine, RiBookLine, RiBookOpenLine, RiPencilLine } from 'react-icons/ri';
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
-interface ScrollableEventsProps {
-  events: Events[];
-}
-
+// Lista de iconos
 const iconList = [
   FaBook, FaFeatherAlt, FaPenFancy, FaScroll, FaGlasses, FaUniversity, FaNewspaper,
   GiBookshelf, GiBookmark, GiQuillInk, GiOpenBook, GiScrollUnfurled, GiBrain, GiSpellBook,
@@ -35,17 +22,68 @@ const iconList = [
   RiBookOpenLine, RiBookLine, RiArticleLine, RiPencilLine
 ];
 
+// Componentes personalizados para las flechas
+const CustomPrevArrow = (props: any) => {
+  const { className, style, onClick } = props;
+  return (
+    <FaChevronLeft
+      className={className}
+      style={{ ...style, display: "block", fontSize: "40px", color: "var(--primary-color)" }} // Cambiar tamaño y color
+      onClick={onClick}
+    />
+  );
+};
+
+const CustomNextArrow = (props: any) => {
+  const { className, style, onClick } = props;
+  return (
+    <FaChevronRight
+      className={className}
+      style={{ ...style, display: "block", fontSize: "40px", color: "var(--primary-color)" }} // Cambiar tamaño y color
+      onClick={onClick}
+    />
+  );
+};
+
+interface ScrollableEventsProps {
+  events: Events[];
+}
+
 const ScrollableEvents: React.FC<ScrollableEventsProps> = ({ events }) => {
-  const scrollRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   let iconIndex = 0;
 
-  const handleScroll = (direction: 'left' | 'right') => {
-    if (scrollRef.current) {
-      const { scrollLeft, clientWidth } = scrollRef.current;
-      const scrollAmount = direction === 'left' ? -clientWidth : clientWidth;
-      scrollRef.current.scrollTo({ left: scrollLeft + scrollAmount, behavior: 'smooth' });
-    }
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 4,
+    slidesToScroll: 1,
+    nextArrow: <CustomNextArrow />,
+    prevArrow: <CustomPrevArrow />,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+        },
+      },
+    ],
   };
 
   const handleEventClick = (eventId: number | null) => {
@@ -55,90 +93,39 @@ const ScrollableEvents: React.FC<ScrollableEventsProps> = ({ events }) => {
   };
 
   return (
-    <div className="d-flex align-items-center my-4 position-relative">
-      <Button 
-        variant="outline-primary" 
-        onClick={() => handleScroll('left')} 
-        style={{ 
-          borderRadius: '50%', 
-          position: 'absolute', 
-          left: '10px', 
-          zIndex: 2,
-          width: '40px', 
-          height: '40px',
-        }}
-      >
-        <FaChevronLeft />
-      </Button>
-
-      <div
-        ref={scrollRef}
-        style={{
-          display: 'flex',
-          overflowX: 'auto',
-          scrollBehavior: 'smooth',
-          paddingLeft: '60px',
-          paddingRight: '60px',
-          width: '100%',
-          scrollbarWidth: 'none',
-        }}
-        className="no-scrollbar"
-      >
-        <Row style={{ flexWrap: 'nowrap' }}>
-          {events.length > 0 ? (
-            events.map((event) => {
-              const IconComponent = iconList[iconIndex % iconList.length];
-              iconIndex++;
-              return (
-                <Col key={event.id} xs={4} md={3} style={{ padding: '0 10px' }}>
-                  <div 
-                    style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer' }}
-                    onClick={() => handleEventClick(event.id as number | null)}
+    <Slider {...settings}>
+      {events.length > 0 ? (
+        events.map((event) => {
+          const IconComponent = iconList[iconIndex % iconList.length];
+          iconIndex++;
+          return (
+            <div key={event.id}>
+              <Col style={{ padding: 15 }}>
+                <div
+                  style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer' }}
+                  onClick={() => handleEventClick(event.id as number | null)}
+                >
+                  <IconComponent size={82} style={{ marginBottom: '10px' }} />
+                  <Card
+                    className='card-events-home'
+                    style={{ minWidth: '100%', marginBottom: '10px' }}
                   >
-                    <IconComponent 
-                      size={82} 
-                      style={{ 
-                        background: 'linear-gradient(135deg, #DDB932, #B1801D)',
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent',
-                        marginBottom: '10px' 
-                      }} 
-                    />
-                    <Card
-                      className='card-events-home'
-                      style={{ minWidth: '100%', marginBottom: '10px' }}
-                    >
-                      <Card.Body className="d-flex flex-column align-items-center" style={{ padding: 5 }}>
-                        <Card.Title>{event.title}</Card.Title>
-                        <Card.Text style={{ fontSize: 12 }}>
-                          {new Date(event.startDate).toLocaleDateString()} - {new Date(event.startDate).toLocaleTimeString()}
-                        </Card.Text>
-                      </Card.Body>
-                    </Card>
-                  </div>
-                </Col>
-              );
-            })
-          ) : (
-            <p>No hay eventos recurrentes</p>
-          )}
-        </Row>
-      </div>
-      <Button 
-        variant="outline-primary" 
-        onClick={() => handleScroll('right')} 
-        style={{ 
-          borderRadius: '50%', 
-          position: 'absolute', 
-          right: '10px', 
-          zIndex: 2, 
-          width: '40px', 
-          height: '40px',
-        }}
-      >
-        <FaChevronRight />
-      </Button>
-    </div>
+                    <Card.Body className="d-flex flex-column align-items-center" style={{ padding: 5 }}>
+                      <Card.Title>{event.title}</Card.Title>
+                      <Card.Text>
+                        {new Date(event.startDate).toLocaleDateString()} - {new Date(event.startDate).toLocaleTimeString()}
+                      </Card.Text>
+                    </Card.Body>
+                  </Card>
+                </div>
+              </Col>
+            </div>
+          );
+        })
+      ) : (
+        <p>No hay eventos recurrentes</p>
+      )}
+    </Slider>
   );
 };
 
