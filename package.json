@@ -2,6 +2,14 @@
   "name": "tertulialiteraria-frond",
   "version": "0.1.0",
   "private": true,
+  "author": {
+    "name": "Steven Vallejo Ortiz",
+    "email": "stevenvallejo780@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/stevenvo780/tertulialiteraria-frond.git"
+  },
   "dependencies": {
     "@fullcalendar/daygrid": "^6.1.15",
     "@fullcalendar/interaction": "^6.1.15",
