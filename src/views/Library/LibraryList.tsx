@@ -37,8 +37,6 @@ const LibraryList: React.FC<LibraryListProps> = ({
         <Col key={library.id} md={colSize}>
           <LibraryCard
             library={library}
-            onEdit={onEdit}
-            onDelete={onDelete}
             onClick={() => onNavigate(library)}
             likesData={likesData[library.id] || { likes: 0, dislikes: 0, userLike: null }}
             handleLikeToggle={handleLikeToggle}
