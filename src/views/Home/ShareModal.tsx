@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal, Button } from 'react-bootstrap';
-import SocialShareButtons from '../../components/SocialShareButtons'; // Importa el nuevo componente
+import SocialShareButtons from '../../components/SocialShareButtons';
 import { Publication } from '../../utils/types';
 
 interface ShareModalProps {

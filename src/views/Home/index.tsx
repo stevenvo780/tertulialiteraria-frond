@@ -30,7 +30,7 @@ const HomePage: React.FC = () => {
   const [hasMore, setHasMore] = useState<boolean>(true);
   const limit = 4; 
 
-  const publicationRefs = useRef<Record<number, HTMLDivElement | null>>({}); // Referencia para las publicaciones
+  const publicationRefs = useRef<Record<number, HTMLDivElement | null>>({});
 
   useEffect(() => {
     window.addEventListener('hashchange', handleHashChange);
@@ -124,7 +124,6 @@ const HomePage: React.FC = () => {
   const scrollToPublication = (publicationId: number) => {
     const publicationElement = publicationRefs.current[publicationId];
     if (publicationElement) {
-      // Delay the scroll to ensure the element is rendered
       setTimeout(() => {
         publicationElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }, 100);
