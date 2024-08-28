@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Col, Container, Row, Form } from 'react-bootstrap';
+import { Button, Col, Container, Row, Form, Card } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { RootState } from '../../redux/store';
@@ -9,10 +9,12 @@ import { addNotification } from '../../redux/ui';
 import { Library, CreateLibraryDto, UpdateLibraryDto, Like, LikeTarget } from '../../utils/types';
 import LibraryList from './LibraryList';
 import LibraryFormModal from './LibraryFormModal';
-import { FaArrowLeft, FaPlus, FaEdit, FaTrash, FaThumbsUp, FaThumbsDown, FaShareAlt } from 'react-icons/fa';
+import { FaArrowLeft, FaEdit, FaTrash, FaThumbsUp, FaThumbsDown, FaShareAlt } from 'react-icons/fa';
 import { UserRole } from '../../utils/types';
 import ShareNoteModal from './ShareNoteModal';
 import { getRoleInSpanish } from '../../utils/roleTranslation';
+import { BsFileEarmarkPlusFill } from "react-icons/bs";
+import { IoIosArrowBack } from "react-icons/io";
 
 const LibraryPage: React.FC = () => {
   const { noteId } = useParams<{ noteId: string | undefined }>();
@@ -217,65 +219,85 @@ const LibraryPage: React.FC = () => {
           </Col>
         )}
         {currentNote && (
-          <Col xs={4} md={9}>
+          <Col xs={4} md={10}>
             <Button variant="secondary" onClick={handleGoBack} className="p-0" >
-              <FaArrowLeft size={44} />
+              <IoIosArrowBack size={30} />
             </Button>
           </Col>
         )}
         {permissionsEditable && (
-          <Col xs={8} md={currentNote ? 3 : 1} className="text-right">
-              <Button variant="link" onClick={() => setShowModal(true)} className="p-0" style={{ marginInline: 20 }}>
-                <FaPlus size={44} />
-              </Button>
+          <Col xs={8} md={currentNote ? 2 : 1} className="text-right" style={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+          }}>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+              backgroundColor: 'white',
+              borderRadius: '10px',
+              boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+              width: '70%',
+              padding: '8px',
+            }}>
+              <BsFileEarmarkPlusFill onClick={() => setShowModal(true)} size={27} style={{ cursor: 'pointer', marginInline: 5, color: "#BBBBBB" }} />
               {currentNote && (
                 <>
-                  <FaEdit onClick={() => handleEdit(currentNote)} size={44} style={{ cursor: 'pointer', marginInline: 20 }} />
-                  <FaTrash onClick={() => handleDelete(currentNote)} size={44} style={{ cursor: 'pointer', marginInline: 20 }} />
+                  <FaEdit onClick={() => handleEdit(currentNote)} size={27} style={{ cursor: 'pointer', marginInline: 5, color: "#BBBBBB" }} />
+                  <FaTrash onClick={() => handleDelete(currentNote)} size={27} style={{ cursor: 'pointer', marginInline: 5, color: "#BBBBBB" }} />
                 </>
               )}
+            </div>
           </Col>
         )}
       </Row>
-      {currentNote && (
-        <>
-          <Row className="align-items-center mb-3">
-            <Col md={9} >
-              <h4 className="m-0">{currentNote.title}</h4>
-              {currentNote.author && (
-                <p className="text-muted m-0">{`${currentNote.author.name} - ${getRoleInSpanish(currentNote.author.role)}`}</p>
-              )}
-            </Col>
-            <Col md={3} className="text-right">
-              <Button
-                variant="link"
-                onClick={() => handleLikeToggle(currentNote.id, true)}
-                className={likesData[currentNote.id]?.userLike?.isLike ? 'text-primary' : ''}
-                style={{ marginRight: '10px' }}
-              >
-                <FaThumbsUp /> {likesData[currentNote.id]?.likes || 0}
-              </Button>
-              <Button
-                variant="link"
-                onClick={() => handleLikeToggle(currentNote.id, false)}
-                className={likesData[currentNote.id]?.userLike?.isLike === false ? 'text-danger' : ''}
-                style={{ marginRight: '10px' }}
-              >
-                <FaThumbsDown /> {likesData[currentNote.id]?.dislikes || 0}
-              </Button>
-              <Button
-                variant="link"
-                onClick={() => handleShare(currentNote)}
-                className="text-info"
-              >
-                <FaShareAlt />
-              </Button>
-            </Col>
-          </Row>
-        </>
-      )}
 
-      <Row>
+      <Row style={currentNote ? {
+        display: 'flex',
+        justifyContent: 'flex-end',
+        backgroundColor: 'white',
+        borderRadius: '10px',
+        boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+        padding: '8px',
+      } : {}} >
+        {currentNote && (
+          <>
+            <Row className="align-items-center mb-3" style={{ marginTop: 10 }}>
+              <Col md={9}>
+                <h4 className="m-0">{currentNote.title}</h4>
+                {currentNote.author && (
+                  <p className="text-muted m-0">{`${currentNote.author.name} - ${getRoleInSpanish(currentNote.author.role)}`}</p>
+                )}
+              </Col>
+              <Col md={3} className="text-right" style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <span
+                  style={{ cursor: 'pointer', marginInline: '10px' }} >
+                  <FaThumbsUp
+                    onClick={() => handleLikeToggle(currentNote.id, true)}
+                    style={{ cursor: 'pointer', marginInline: '3px', color: likesData[currentNote.id]?.userLike?.isLike ? '#B1801D' : '#BBBBBB' }}
+                    size={27}
+                  />
+                  {likesData[currentNote.id]?.likes || 0}
+                </span>
+                <span
+                  style={{ cursor: 'pointer', marginInline: '10px' }} >
+                  <FaThumbsDown
+                    onClick={() => handleLikeToggle(currentNote.id, false)}
+                    style={{ marginInline: '3px', color: likesData[currentNote.id]?.userLike?.isLike === false ? '#B1801D' : '#BBBBBB' }}
+                    size={27}
+                  />
+                  {likesData[currentNote.id]?.dislikes || 0}
+                </span>
+                <span>
+                  <FaShareAlt
+                    onClick={() => handleShare(currentNote)}
+                    style={{ cursor: 'pointer', marginInline: '10px', color: "#BBBBBB" }}
+                    size={27}
+                  />
+                </span>
+              </Col>
+            </Row>
+          </>
+        )}
         {currentNote ? (
           <>
             <div dangerouslySetInnerHTML={{ __html: currentNote.description }} />

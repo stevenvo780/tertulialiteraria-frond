@@ -28,28 +28,6 @@ const LibraryCard: React.FC<LibraryCardProps> = ({
       <Card.Body>
         <div className="d-flex justify-content-between">
           <Card.Title>{library.title}</Card.Title>
-          <div>
-            {onEdit && (
-              <FaEdit
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onEdit(library);
-                }}
-                style={{ cursor: 'pointer', marginRight: '10px' }}
-                size={20}
-              />
-            )}
-            {onDelete && (
-              <FaTrash
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDelete(library);
-                }}
-                style={{ cursor: 'pointer' }}
-                size={20}
-              />
-            )}
-          </div>
         </div>
         <div
           style={{

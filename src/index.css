@@ -412,3 +412,7 @@ input:focus, textarea:focus, select:focus {
 .card-events-home .card-title {
   color: var(--secondary-text);
 }
+
+.text-info {
+  color: var(--info-color);
+}
