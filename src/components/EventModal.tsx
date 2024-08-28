@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Modal, Button, Form } from 'react-bootstrap';
+import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
 import { Events, Repetition } from '../utils/types';
 import api from '../utils/axios';
 import { useDispatch } from 'react-redux';
@@ -36,14 +36,37 @@ const EventModal: React.FC<EventModalProps> = ({
     if (selectedEvent) {
       setTitle(selectedEvent.title);
       setDescription(selectedEvent.description);
-      setStartDate(new Date(selectedEvent.startDate));
-      setEndDate(new Date(selectedEvent.endDate));
+      const start = new Date(selectedEvent.startDate);
+      const end = selectedEvent.endDate ? new Date(selectedEvent.endDate) : new Date(start.getTime() + 3 * 60 * 60 * 1000);
+      setStartDate(start);
+      setEndDate(end);
       setRepetition(selectedEvent.repetition || Repetition.NONE);
     }
   }, [selectedEvent]);
 
+  useEffect(() => {
+    if (startDate) {
+      setEndDate(new Date(startDate.getTime() + 3 * 60 * 60 * 1000)); // 3 hours after startDate
+    }
+  }, [startDate]);
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    
+    const currentDate = new Date();
+
+    // Validación para evitar fechas anteriores a la actual
+    if (startDate && startDate < currentDate) {
+      dispatch(addNotification({ message: 'La fecha de inicio no puede ser anterior a la fecha actual', color: 'danger' }));
+      return;
+    }
+
+    // Validación para fechas incoherentes
+    if (endDate && startDate && endDate < startDate) {
+      dispatch(addNotification({ message: 'La fecha de fin no puede ser anterior a la fecha de inicio', color: 'danger' }));
+      return;
+    }
+
     try {
       if (isEditing && selectedEvent && selectedEvent.id !== null) {
         const updatedEvent = {
@@ -90,8 +113,6 @@ const EventModal: React.FC<EventModalProps> = ({
     }
   };
 
-
-
   const handleClose = () => {
     setTitle('');
     setDescription('');
@@ -102,7 +123,7 @@ const EventModal: React.FC<EventModalProps> = ({
     if (editorRef.current) {
       editorRef.current.remove();
     }
-  }
+  };
 
   return (
     <Modal show={showModal} onHide={handleClose} size="xl">
@@ -111,47 +132,59 @@ const EventModal: React.FC<EventModalProps> = ({
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={handleSubmit}>
-          <Form.Group controlId="formEventTitle">
-            <Form.Label>Título</Form.Label>
-            <Form.Control
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-            />
-          </Form.Group>
-          <Form.Group controlId="formEventStartDate">
-            <Form.Label>Fecha y Hora de Inicio</Form.Label>
-            <Form.Control
-              type="datetime-local"
-              value={startDate ? moment(startDate).format('YYYY-MM-DDTHH:mm') : ''}
-              onChange={(e) => setStartDate(new Date(e.target.value))}
-              required
-            />
-          </Form.Group>
-          <Form.Group controlId="formEventEndDate">
-            <Form.Label>Fecha y Hora de Fin</Form.Label>
-            <Form.Control
-              type="datetime-local"
-              value={endDate ? moment(endDate).format('YYYY-MM-DDTHH:mm') : ''}
-              onChange={(e) => setEndDate(new Date(e.target.value))}
-              required
-            />
-          </Form.Group>
-          <Form.Group controlId="formEventRepetition">
-            <Form.Label>Repetir Evento</Form.Label>
-            <Form.Control
-              as="select"
-              value={repetition}
-              onChange={(e) => setRepetition(e.target.value as Repetition)}
-            >
-              <option value={Repetition.NONE}>No repetir</option>
-              <option value={Repetition.DAILY}>Diariamente</option>
-              <option value={Repetition.WEEKLY}>Semanalmente</option>
-              <option value={Repetition.MONTHLY}>Mensualmente</option>
-              <option value={Repetition.YEARLY}>Anualmente</option>
-            </Form.Control>
-          </Form.Group>
+          <Row>
+            <Col md={8}>
+              <Form.Group controlId="formEventTitle">
+                <Form.Label>Título</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  required
+                />
+              </Form.Group>
+            </Col>
+            <Col md={4}>
+              <Form.Group controlId="formEventRepetition">
+                <Form.Label>Repetir Evento</Form.Label>
+                <Form.Control
+                  as="select"
+                  value={repetition}
+                  onChange={(e) => setRepetition(e.target.value as Repetition)}
+                >
+                  <option value={Repetition.NONE}>No repetir</option>
+                  <option value={Repetition.DAILY}>Diariamente</option>
+                  <option value={Repetition.WEEKLY}>Semanalmente</option>
+                  <option value={Repetition.MONTHLY}>Mensualmente</option>
+                  <option value={Repetition.YEARLY}>Anualmente</option>
+                </Form.Control>
+              </Form.Group>
+            </Col>
+          </Row>
+          <Row>
+            <Col md={6}>
+              <Form.Group controlId="formEventStartDate">
+                <Form.Label>Fecha y Hora de Inicio</Form.Label>
+                <Form.Control
+                  type="datetime-local"
+                  value={startDate ? moment(startDate).format('YYYY-MM-DDTHH:mm') : ''}
+                  onChange={(e) => setStartDate(new Date(e.target.value))}
+                  required
+                />
+              </Form.Group>
+            </Col>
+            <Col md={6}>
+              <Form.Group controlId="formEventEndDate">
+                <Form.Label>Fecha y Hora de Fin</Form.Label>
+                <Form.Control
+                  type="datetime-local"
+                  value={endDate ? moment(endDate).format('YYYY-MM-DDTHH:mm') : ''}
+                  onChange={(e) => setEndDate(new Date(e.target.value))}
+                  required
+                />
+              </Form.Group>
+            </Col>
+          </Row>
           <Form.Group controlId="formEventDescription">
             <Form.Label>Descripción</Form.Label>
             <CustomEditor
@@ -161,7 +194,7 @@ const EventModal: React.FC<EventModalProps> = ({
             />
           </Form.Group>
           <br />
-          <Button variant="primary" type="submit" style={{ marginInline: 10}}>
+          <Button variant="primary" type="submit" style={{ marginInline: 10 }}>
             {isEditing ? 'Actualizar' : 'Crear'}
           </Button>
           {isEditing && selectedEvent && selectedEvent.id !== null && (
