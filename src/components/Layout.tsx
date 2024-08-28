@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Header from './Header';
-import { FaDiscord, FaUsers } from 'react-icons/fa';
+import { FaDiscord, FaCircle } from 'react-icons/fa'; // Cambiamos FaUsers por FaCircle
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import PuffLoader from 'react-spinners/PuffLoader';
@@ -64,7 +64,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          color: 'var(--white-color)',
+          color: 'var(--discord-text)',
           boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
           cursor: 'pointer',
           zIndex: 1000,
@@ -72,10 +72,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           padding: '10px',
         }}
       >
-        <FaDiscord size={48} color="var(--white-color)" />
+        <FaDiscord size={48} color="var(--discord-text)" />
         {onlineMemberCount !== null && (
-          <span style={{ color: 'var(--white-color)', fontSize: '18px'}}>
-            {onlineMemberCount} <FaUsers size={20} color="var(--white-color)" style={{ marginInline: 1 }} />
+          <span style={{ color: 'var(--discord-text)', fontSize: '18px'}}>
+            {onlineMemberCount} <FaCircle size={15} color="var(--success-color)" style={{ marginInline: 1 }} />
           </span>
         )}
       </a>

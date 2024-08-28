@@ -8,15 +8,15 @@
     { "path": "/normativa", "element": "Normativa", "name": "Normativa", "viewHeader": true, "hidden": false },
     { "path": "/login", "element": "Login", "name": "Iniciar Sesión", "viewHeader": false, "hidden": false },
     { "path": "/register", "element": "Register", "name": "Registrarse", "viewHeader": false, "hidden": false },
-    { "path": "/about", "element": "About", "name": "Acerca de", "viewHeader": true, "hidden": false }
+    { "path": "/about", "element": "About", "name": "Nosotros", "viewHeader": true, "hidden": false }
   ],
   "roleRoutes": {
     "user": [],
     "admin": [
-      { "path": "/normativa/staff", "element": "NormativaStaff", "name": "Normativa Staff", "viewHeader": true, "hidden": true }
+      { "path": "/normativa/staff", "element": "NormativaStaff", "name": "Normativa Staff", "viewHeader": true, "hidden": false }
     ],
     "super_admin": [
-      { "path": "/normativa/staff", "element": "NormativaStaff", "name": "Normativa Staff", "viewHeader": true, "hidden": true },
+      { "path": "/normativa/staff", "element": "NormativaStaff", "name": "Normativa Staff", "viewHeader": true, "hidden": false },
       { "path": "/users", "element": "Users", "name": "Usuarios", "viewHeader": true, "hidden": true },
       { "path": "/templates", "element": "Template", "name": "Plantillas", "viewHeader": true, "hidden": true }
     ]
