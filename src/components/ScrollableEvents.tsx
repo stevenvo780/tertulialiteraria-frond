@@ -12,7 +12,6 @@ import { RiArticleLine, RiBookLine, RiBookOpenLine, RiPencilLine } from 'react-i
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
-// Lista de iconos
 const iconList = [
   FaBook, FaFeatherAlt, FaPenFancy, FaScroll, FaGlasses, FaUniversity, FaNewspaper,
   GiBookshelf, GiBookmark, GiQuillInk, GiOpenBook, GiScrollUnfurled, GiBrain, GiSpellBook,
@@ -22,13 +21,12 @@ const iconList = [
   RiBookOpenLine, RiBookLine, RiArticleLine, RiPencilLine
 ];
 
-// Componentes personalizados para las flechas
 const CustomPrevArrow = (props: any) => {
   const { className, style, onClick } = props;
   return (
     <FaChevronLeft
       className={className}
-      style={{ ...style, display: "block", fontSize: "40px", color: "var(--primary-color)" }} // Cambiar tamaño y color
+      style={{ ...style, display: "block", fontSize: "40px", color: "var(--primary-color)" }}
       onClick={onClick}
     />
   );
@@ -39,7 +37,7 @@ const CustomNextArrow = (props: any) => {
   return (
     <FaChevronRight
       className={className}
-      style={{ ...style, display: "block", fontSize: "40px", color: "var(--primary-color)" }} // Cambiar tamaño y color
+      style={{ ...style, display: "block", fontSize: "40px", color: "var(--primary-color)" }}
       onClick={onClick}
     />
   );

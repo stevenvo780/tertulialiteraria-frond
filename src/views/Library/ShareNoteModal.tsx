@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal, Button } from 'react-bootstrap';
-import SocialShareButtons from '../../components/SocialShareButtons'; // Importa el nuevo componente
+import SocialShareButtons from '../../components/SocialShareButtons';
 import { Library } from '../../utils/types';
 
 interface ShareNoteModalProps {
@@ -12,7 +12,7 @@ interface ShareNoteModalProps {
 const ShareNoteModal: React.FC<ShareNoteModalProps> = ({ show, onHide, note }) => {
   const shareUrl = `${window.location.origin}/library/${note.id}`;
   const title = note.title;
-  const summary = note.description; // Opcional para plataformas que lo necesiten
+  const summary = note.description;
 
   return (
     <Modal show={show} onHide={onHide} centered>

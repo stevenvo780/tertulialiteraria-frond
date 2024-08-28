@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Header from './Header';
-import { FaDiscord, FaCircle } from 'react-icons/fa'; // Cambiamos FaUsers por FaCircle
+import { FaDiscord, FaCircle } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import PuffLoader from 'react-spinners/PuffLoader';

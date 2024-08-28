@@ -15,7 +15,7 @@ import {
 interface SocialShareButtonsProps {
   shareUrl: string;
   title: string;
-  summary?: string; // Opcional para plataformas como LinkedIn
+  summary?: string;
 }
 
 const SocialShareButtons: React.FC<SocialShareButtonsProps> = ({ shareUrl, title, summary }) => {

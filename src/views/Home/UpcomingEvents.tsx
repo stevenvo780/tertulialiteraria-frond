@@ -2,7 +2,7 @@ import React from 'react';
 import { Card } from 'react-bootstrap';
 import { Events } from '../../utils/types';
 import { useNavigate } from 'react-router-dom';
-import './styles.css'; // Asegúrate de importar el archivo de estilos
+import './styles.css';
 
 interface UpcomingEventsProps {
   events: Events[];
