@@ -2,7 +2,12 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Editor } from '@tinymce/tinymce-react';
 import { storage } from '../utils/firebase';
 import axios from '../utils/axios';
-import { Button, Carousel, Container } from 'react-bootstrap';
+import { Container, Col, Card } from 'react-bootstrap';
+import Slider from 'react-slick';
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+
 
 interface CustomEditorProps {
   content: string;
@@ -15,6 +20,28 @@ interface CustomEditorProps {
   contentCss?: string;
   templateType?: string;
 }
+
+const CustomPrevArrow = (props: any) => {
+  const { className, style, onClick } = props;
+  return (
+    <FaChevronLeft
+      className={className}
+      style={{ ...style, display: "block", fontSize: "40px", color: "var(--primary-color)" }}
+      onClick={onClick}
+    />
+  );
+};
+
+const CustomNextArrow = (props: any) => {
+  const { className, style, onClick } = props;
+  return (
+    <FaChevronRight
+      className={className}
+      style={{ ...style, display: "block", fontSize: "40px", color: "var(--primary-color)" }}
+      onClick={onClick}
+    />
+  );
+};
 
 const CustomEditor: React.FC<CustomEditorProps> = ({
   content,
@@ -33,12 +60,7 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
   useEffect(() => {
     const fetchTemplates = async () => {
       try {
-        let response = null;
-        if (templateType) {
-          response = await axios.get(`/template?type=${templateType}`);
-        } else {
-          response = await axios.get('/template');
-        }
+        const response = await axios.get(`/template?type=${templateType || ''}`);
         if (response.data) {
           setTemplates(response.data);
         } else {
@@ -71,7 +93,6 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
     setContent(templateContent);
   };
 
-
   useEffect(() => {
     return () => {
       if (editorRef.current) {
@@ -80,6 +101,32 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
       }
     };
   }, []);
+
+  const sliderSettings = {
+    dots: templates.length > 1,
+    infinite: templates.length > 1,
+    speed: 500,
+    slidesToShow: Math.min(templates.length, 3),
+    slidesToScroll: 1,
+    nextArrow: <CustomNextArrow />,
+    prevArrow: <CustomPrevArrow />,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: Math.min(templates.length, 2),
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+        },
+      },
+    ],
+  };
 
   return (
     <>
@@ -102,17 +149,32 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
       />
       <Container className="mt-4">
         <h5>Selecciona una plantilla haciendo clic:</h5>
-        <Carousel>
-          {templates.map((template) => (
-            <Carousel.Item key={template.id}>
-              <div className="d-flex justify-content-center align-items-center" style={{ height: '150px' }}>
-                <Button variant="primary" onClick={() => handleTemplateClick(template.content)}>
-                  {template.name}
-                </Button>
+        {templates.length > 0 ? (
+          <Slider {...sliderSettings}>
+            {templates.map((template) => (
+              <div key={template.id}>
+                <Col>
+                  <div
+                    style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer' }}
+                    onClick={() => handleTemplateClick(template.content)}
+                  >
+                    <Card
+                      color='primary'
+                      className='card-templates'
+                      style={{ minWidth: '100%', marginBottom: '10px' }}
+                    >
+                      <Card.Body className="d-flex flex-column align-items-center" style={{ padding: 10 }}>
+                        <Card.Title>{template.name}</Card.Title>
+                      </Card.Body>
+                    </Card>
+                  </div>
+                </Col>
               </div>
-            </Carousel.Item>
-          ))}
-        </Carousel>
+            ))}
+          </Slider>
+        ) : (
+          <p>No hay plantillas disponibles</p>
+        )}
       </Container>
     </>
   );
