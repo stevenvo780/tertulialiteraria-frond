@@ -72,7 +72,7 @@ const ScrollableEvents: React.FC<ScrollableEventsProps> = ({ events }) => {
       {
         breakpoint: 600,
         settings: {
-          slidesToShow: 2,
+          slidesToShow: 1,
           slidesToScroll: 1,
         },
       },

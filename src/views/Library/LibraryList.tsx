@@ -5,8 +5,6 @@ import LibraryCard from './LibraryCard';
 
 interface LibraryListProps {
   libraries: Library[];
-  onEdit?: (library: Library) => void;
-  onDelete?: (library: Library) => void;
   onNavigate: (library: Library) => void;
   likesData: Record<number, { likes: number; dislikes: number; userLike: Like | null }>;
   handleLikeToggle: (libraryId: number, isLike: boolean) => void;
@@ -22,8 +20,6 @@ const calculateColSize = (totalLibraries: number) => {
 
 const LibraryList: React.FC<LibraryListProps> = ({
   libraries,
-  onEdit,
-  onDelete,
   onNavigate,
   likesData,
   handleLikeToggle,
