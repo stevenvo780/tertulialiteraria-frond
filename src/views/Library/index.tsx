@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Col, Container, Row, Form, Card } from 'react-bootstrap';
+import { Button, Col, Container, Row, Form } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { RootState } from '../../redux/store';
@@ -9,7 +9,7 @@ import { addNotification } from '../../redux/ui';
 import { Library, CreateLibraryDto, UpdateLibraryDto, Like, LikeTarget } from '../../utils/types';
 import LibraryList from './LibraryList';
 import LibraryFormModal from './LibraryFormModal';
-import { FaArrowLeft, FaEdit, FaTrash, FaThumbsUp, FaThumbsDown, FaShareAlt } from 'react-icons/fa';
+import { FaEdit, FaTrash, FaThumbsUp, FaThumbsDown, FaShareAlt } from 'react-icons/fa';
 import { UserRole } from '../../utils/types';
 import ShareNoteModal from './ShareNoteModal';
 import { getRoleInSpanish } from '../../utils/roleTranslation';
@@ -193,159 +193,161 @@ const LibraryPage: React.FC = () => {
   const permissionsEditable = (userRole === UserRole.ADMIN || userRole === UserRole.SUPER_ADMIN || userRole === UserRole.EDITOR);
 
   return (
-    <Container>
-      <Row className="align-items-center mb-4">
-        {!currentNote && (
-          <Col xs={7} md={10}>
-            <Form onSubmit={handleSearch} className="mb-4">
-              <Form.Group controlId="searchQuery">
-                <Row>
-                  <Col md={10} xs={10}>
-                    <Form.Control
-                      type="text"
-                      placeholder="Buscar por título o descripción"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                  </Col>
-                  <Col md={2} xs={2} className="text-right">
-                    <Button variant="primary" type="submit">
-                      Buscar
-                    </Button>
-                  </Col>
-                </Row>
-              </Form.Group>
-            </Form>
-          </Col>
-        )}
-        {currentNote && (
-          <Col xs={4} md={10}>
-            <Button variant="secondary" onClick={handleGoBack} className="p-0" >
-              <IoIosArrowBack size={30} />
-            </Button>
-          </Col>
-        )}
-        {permissionsEditable && (
-          <Col xs={currentNote ? 8 : 5} md={currentNote ? 2 : 1} className="text-right" style={{
-            display: 'flex',
-            justifyContent: 'flex-end',
-          }}>
-            <div style={{
-              display: 'inline-flex',
+    <>
+      <Container>
+        <Row className="align-items-center mb-4">
+          {!currentNote && (
+            <Col xs={7} md={10}>
+              <Form onSubmit={handleSearch} className="mb-4">
+                <Form.Group controlId="searchQuery">
+                  <Row>
+                    <Col md={10} xs={10}>
+                      <Form.Control
+                        type="text"
+                        placeholder="Buscar por título o descripción"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                      />
+                    </Col>
+                    <Col md={2} xs={2} className="text-right">
+                      <Button variant="primary" type="submit">
+                        Buscar
+                      </Button>
+                    </Col>
+                  </Row>
+                </Form.Group>
+              </Form>
+            </Col>
+          )}
+          {currentNote && (
+            <Col xs={4} md={10}>
+              <Button variant="secondary" onClick={handleGoBack} className="p-0" >
+                <IoIosArrowBack size={30} />
+              </Button>
+            </Col>
+          )}
+          {permissionsEditable && (
+            <Col xs={currentNote ? 8 : 5} md={currentNote ? 2 : 1} className="text-right" style={{
+              display: 'flex',
               justifyContent: 'flex-end',
-              alignItems: 'center',
-              backgroundColor: 'white',
-              borderRadius: '10px',
-              boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
-              padding: '10px',
             }}>
-              <BsFileEarmarkPlusFill onClick={() => setShowModal(true)} size={27} style={{ cursor: 'pointer', marginInline: 8, color: "#BBBBBB" }} />
-              {currentNote && (
-                <>
-                  <FaEdit onClick={() => handleEdit(currentNote)} size={27} style={{ cursor: 'pointer', marginInline: 8, color: "#BBBBBB" }} />
-                  <FaTrash onClick={() => handleDelete(currentNote)} size={27} style={{ cursor: 'pointer', marginInline: 8, color: "#BBBBBB" }} />
-                </>
-              )}
-            </div>
-          </Col>
-        )}
-      </Row>
-
-      <Row style={currentNote ? {
-        display: 'flex',
-        justifyContent: 'flex-end',
-        backgroundColor: 'white',
-        borderRadius: '10px',
-        boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
-        padding: '8px',
-      } : {}} >
-        {currentNote && (
-          <>
-            <Row className="align-items-center mb-3" style={{ marginTop: 10 }}>
-              <Col md={9}>
-                <h4 className="m-0">{currentNote.title}</h4>
-                {currentNote.author && (
-                  <p className="text-muted m-0">{`${currentNote.author.name} - ${getRoleInSpanish(currentNote.author.role)}`}</p>
+              <div style={{
+                display: 'inline-flex',
+                justifyContent: 'flex-end',
+                alignItems: 'center',
+                backgroundColor: 'white',
+                borderRadius: '10px',
+                boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+                padding: '10px',
+              }}>
+                <BsFileEarmarkPlusFill onClick={() => setShowModal(true)} size={27} style={{ cursor: 'pointer', marginInline: 8, color: "#BBBBBB" }} />
+                {currentNote && (
+                  <>
+                    <FaEdit onClick={() => handleEdit(currentNote)} size={27} style={{ cursor: 'pointer', marginInline: 8, color: "#BBBBBB" }} />
+                    <FaTrash onClick={() => handleDelete(currentNote)} size={27} style={{ cursor: 'pointer', marginInline: 8, color: "#BBBBBB" }} />
+                  </>
                 )}
-              </Col>
-              <Col md={3} className="text-right" style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <span
-                  style={{ cursor: 'pointer', marginInline: '10px' }} >
-                  <FaThumbsUp
-                    onClick={() => handleLikeToggle(currentNote.id, true)}
-                    style={{ cursor: 'pointer', marginInline: '3px', color: likesData[currentNote.id]?.userLike?.isLike ? '#B1801D' : '#BBBBBB' }}
-                    size={27}
-                  />
-                  {likesData[currentNote.id]?.likes || 0}
-                </span>
-                <span
-                  style={{ cursor: 'pointer', marginInline: '10px' }} >
-                  <FaThumbsDown
-                    onClick={() => handleLikeToggle(currentNote.id, false)}
-                    style={{ marginInline: '3px', color: likesData[currentNote.id]?.userLike?.isLike === false ? '#B1801D' : '#BBBBBB' }}
-                    size={27}
-                  />
-                  {likesData[currentNote.id]?.dislikes || 0}
-                </span>
-                <span>
-                  <FaShareAlt
-                    onClick={() => handleShare(currentNote)}
-                    style={{ cursor: 'pointer', marginInline: '10px', color: "#BBBBBB" }}
-                    size={27}
-                  />
-                </span>
-              </Col>
-            </Row>
-          </>
-        )}
-        {currentNote ? (
-          <>
+              </div>
+            </Col>
+          )}
+        </Row>
+
+        <Row style={currentNote ? {
+          display: 'flex',
+          justifyContent: 'flex-end',
+          backgroundColor: 'white',
+          borderRadius: '10px',
+          boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+          padding: '8px',
+        } : {}} >
+          {currentNote && (
+            <>
+              <Row className="align-items-center mb-3" style={{ marginTop: 10 }}>
+                <Col xs={12} md={9}>
+                  <h4 className="m-0">{currentNote.title}</h4>
+                  {currentNote.author && (
+                    <p className="text-muted m-0">{`${currentNote.author.name} - ${getRoleInSpanish(currentNote.author.role)}`}</p>
+                  )}
+                </Col>
+                <Col xs={12} md={3} className="text-right" style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <span
+                    style={{ cursor: 'pointer', marginInline: '10px' }} >
+                    <FaThumbsUp
+                      onClick={() => handleLikeToggle(currentNote.id, true)}
+                      style={{ cursor: 'pointer', marginInline: '3px', color: likesData[currentNote.id]?.userLike?.isLike ? '#B1801D' : '#BBBBBB' }}
+                      size={27}
+                    />
+                    {likesData[currentNote.id]?.likes || 0}
+                  </span>
+                  <span
+                    style={{ cursor: 'pointer', marginInline: '10px' }} >
+                    <FaThumbsDown
+                      onClick={() => handleLikeToggle(currentNote.id, false)}
+                      style={{ marginInline: '3px', color: likesData[currentNote.id]?.userLike?.isLike === false ? '#B1801D' : '#BBBBBB' }}
+                      size={27}
+                    />
+                    {likesData[currentNote.id]?.dislikes || 0}
+                  </span>
+                  <span>
+                    <FaShareAlt
+                      onClick={() => handleShare(currentNote)}
+                      style={{ cursor: 'pointer', marginInline: '10px', color: "#BBBBBB" }}
+                      size={27}
+                    />
+                  </span>
+                </Col>
+              </Row>
+            </>
+          )}
+          {currentNote && (
             <div dangerouslySetInnerHTML={{ __html: currentNote.description }} />
-            {currentNote.children && currentNote.children.length > 0 ? (
-              <LibraryList
-                libraries={currentNote.children}
-                onEdit={permissionsEditable ? handleEdit : undefined}
-                onDelete={permissionsEditable ? handleDelete : undefined}
-                onNavigate={handleNoteClick}
-                likesData={likesData}
-                handleLikeToggle={handleLikeToggle}
-                handleShare={handleShare}
-              />
-            ) : (
-              <p className="text-center text-muted">No hay subnotas.</p>
-            )}
-          </>
-        ) : (
-          <LibraryList
-            libraries={libraries}
-            onEdit={permissionsEditable ? handleEdit : undefined}
-            onDelete={permissionsEditable ? handleDelete : undefined}
-            onNavigate={handleNoteClick}
-            likesData={likesData}
-            handleLikeToggle={handleLikeToggle}
-            handleShare={handleShare}
-          />
-        )}
+          )}
+        </Row>
+        <br />
+        <Row>
+          {!currentNote ? (
+            <LibraryList
+              libraries={libraries}
+              onEdit={permissionsEditable ? handleEdit : undefined}
+              onDelete={permissionsEditable ? handleDelete : undefined}
+              onNavigate={handleNoteClick}
+              likesData={likesData}
+              handleLikeToggle={handleLikeToggle}
+              handleShare={handleShare}
+            />
+          ) : currentNote.children && currentNote.children.length > 0 ? (
+            <LibraryList
+              libraries={currentNote.children}
+              onEdit={permissionsEditable ? handleEdit : undefined}
+              onDelete={permissionsEditable ? handleDelete : undefined}
+              onNavigate={handleNoteClick}
+              likesData={likesData}
+              handleLikeToggle={handleLikeToggle}
+              handleShare={handleShare}
+            />
+          ) : (
+            <p className="text-center text-muted">No hay subnotas.</p>
+          )}
+        </Row>
+      </Container>
+      {permissionsEditable && (
+        <LibraryFormModal
+          show={showModal}
+          onHide={() => setShowModal(false)}
+          onSubmit={handleCreateOrUpdate}
+          editingLibrary={editingLibrary}
+          showModal={showModal}
+        />
+      )}
 
-        {permissionsEditable && (
-          <LibraryFormModal
-            show={showModal}
-            onHide={() => setShowModal(false)}
-            onSubmit={handleCreateOrUpdate}
-            editingLibrary={editingLibrary}
-            showModal={showModal}
-          />
-        )}
-
-        {selectedLibrary && (
-          <ShareNoteModal
-            show={shareModalVisible}
-            onHide={() => setShareModalVisible(false)}
-            note={selectedLibrary}
-          />
-        )}
-      </Row>
-    </Container>
+      {selectedLibrary && (
+        <ShareNoteModal
+          show={shareModalVisible}
+          onHide={() => setShareModalVisible(false)}
+          note={selectedLibrary}
+        />
+      )}
+    </>
   );
 };
 

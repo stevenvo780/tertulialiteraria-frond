@@ -1,12 +1,10 @@
-import React, { useState } from 'react';
-import { Card, Button } from 'react-bootstrap';
-import { FaEdit, FaTrash, FaThumbsUp, FaThumbsDown, FaShareAlt } from 'react-icons/fa';
+import React from 'react';
+import { Card } from 'react-bootstrap';
+import { FaThumbsUp, FaThumbsDown, FaShareAlt } from 'react-icons/fa';
 import { Library, Like } from '../../utils/types';
 
 interface LibraryCardProps {
   library: Library;
-  onEdit?: (library: Library) => void;
-  onDelete?: (library: Library) => void;
   onClick: () => void;
   likesData: { likes: number; dislikes: number; userLike: Like | null };
   handleLikeToggle: (libraryId: number, isLike: boolean) => void;
@@ -15,8 +13,6 @@ interface LibraryCardProps {
 
 const LibraryCard: React.FC<LibraryCardProps> = ({
   library,
-  onEdit,
-  onDelete,
   onClick,
   likesData,
   handleLikeToggle,
