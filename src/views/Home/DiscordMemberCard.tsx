@@ -17,7 +17,7 @@ const DiscordMemberCard: React.FC<DiscordMemberCardProps> = ({ guildMemberCount 
         cursor: 'pointer',
       }}
     >
-      <Card style={{ marginBlock: 10, textAlign: 'center', backgroundColor: 'var(--discord-color)' }}>
+      <Card style={{ marginBlock: 10, textAlign: 'center', backgroundColor: 'var(--discord-color)', borderColor: 'var(--discord-color)' }}>
         <Card.Body style={{ padding: 7, margin: 5, paddingTop: 5 }}>
           <Card.Text style={{ fontSize: '1.5rem', color: 'var(--discord-text)' }}>
             <h4 style={{ padding: 0, margin: 0 }} >¡YA SOMOS!</h4>
