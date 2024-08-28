@@ -38,7 +38,7 @@ const iconList = [
 const ScrollableEvents: React.FC<ScrollableEventsProps> = ({ events }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  let iconIndex = 0; // Index to track the current icon
+  let iconIndex = 0;
 
   const handleScroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
@@ -56,7 +56,6 @@ const ScrollableEvents: React.FC<ScrollableEventsProps> = ({ events }) => {
 
   return (
     <div className="d-flex align-items-center my-4 position-relative">
-      {/* Botón de Scroll Izquierdo flotante */}
       <Button 
         variant="outline-primary" 
         onClick={() => handleScroll('left')} 
@@ -64,7 +63,7 @@ const ScrollableEvents: React.FC<ScrollableEventsProps> = ({ events }) => {
           borderRadius: '50%', 
           position: 'absolute', 
           left: '10px', 
-          zIndex: 2, // Aumentamos el z-index para asegurarnos que los botones floten sobre el contenido
+          zIndex: 2,
           width: '40px', 
           height: '40px',
         }}
@@ -125,8 +124,6 @@ const ScrollableEvents: React.FC<ScrollableEventsProps> = ({ events }) => {
           )}
         </Row>
       </div>
-
-      {/* Botón de Scroll Derecho flotante */}
       <Button 
         variant="outline-primary" 
         onClick={() => handleScroll('right')} 

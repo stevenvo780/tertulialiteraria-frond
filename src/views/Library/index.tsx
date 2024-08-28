@@ -196,11 +196,11 @@ const LibraryPage: React.FC = () => {
     <Container>
       <Row className="align-items-center mb-4">
         {!currentNote && (
-          <Col md={(currentNote) ? 12 : 11}>
+          <Col xs={7} md={10}>
             <Form onSubmit={handleSearch} className="mb-4">
               <Form.Group controlId="searchQuery">
                 <Row>
-                  <Col md={10} xs={9}>
+                  <Col md={10} xs={10}>
                     <Form.Control
                       type="text"
                       placeholder="Buscar por título o descripción"
@@ -226,24 +226,24 @@ const LibraryPage: React.FC = () => {
           </Col>
         )}
         {permissionsEditable && (
-          <Col xs={8} md={currentNote ? 2 : 1} className="text-right" style={{
+          <Col xs={currentNote ? 8 : 5} md={currentNote ? 2 : 1} className="text-right" style={{
             display: 'flex',
             justifyContent: 'flex-end',
           }}>
             <div style={{
-              display: 'flex',
+              display: 'inline-flex',
               justifyContent: 'flex-end',
+              alignItems: 'center',
               backgroundColor: 'white',
               borderRadius: '10px',
               boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
-              width: '70%',
-              padding: '8px',
+              padding: '10px',
             }}>
-              <BsFileEarmarkPlusFill onClick={() => setShowModal(true)} size={27} style={{ cursor: 'pointer', marginInline: 5, color: "#BBBBBB" }} />
+              <BsFileEarmarkPlusFill onClick={() => setShowModal(true)} size={27} style={{ cursor: 'pointer', marginInline: 8, color: "#BBBBBB" }} />
               {currentNote && (
                 <>
-                  <FaEdit onClick={() => handleEdit(currentNote)} size={27} style={{ cursor: 'pointer', marginInline: 5, color: "#BBBBBB" }} />
-                  <FaTrash onClick={() => handleDelete(currentNote)} size={27} style={{ cursor: 'pointer', marginInline: 5, color: "#BBBBBB" }} />
+                  <FaEdit onClick={() => handleEdit(currentNote)} size={27} style={{ cursor: 'pointer', marginInline: 8, color: "#BBBBBB" }} />
+                  <FaTrash onClick={() => handleDelete(currentNote)} size={27} style={{ cursor: 'pointer', marginInline: 8, color: "#BBBBBB" }} />
                 </>
               )}
             </div>
