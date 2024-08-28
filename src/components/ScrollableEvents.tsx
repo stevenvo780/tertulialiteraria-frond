@@ -1,7 +1,7 @@
 import React from 'react';
 import Slider from 'react-slick';
 import { Card, Col } from 'react-bootstrap';
-import { FaBook, FaFeatherAlt, FaGlasses, FaNewspaper, FaPenFancy, FaScroll, FaUniversity } from 'react-icons/fa';
+import { FaBook, FaFeatherAlt, FaGlasses, FaNewspaper, FaPenFancy, FaScroll, FaUniversity, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { Events } from '../utils/types';
 import { useNavigate } from 'react-router-dom';
 import { BsBookHalf, BsBook, BsJournalBookmark, BsPen } from 'react-icons/bs';
@@ -12,6 +12,7 @@ import { RiArticleLine, RiBookLine, RiBookOpenLine, RiPencilLine } from 'react-i
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
+// Lista de iconos
 const iconList = [
   FaBook, FaFeatherAlt, FaPenFancy, FaScroll, FaGlasses, FaUniversity, FaNewspaper,
   GiBookshelf, GiBookmark, GiQuillInk, GiOpenBook, GiScrollUnfurled, GiBrain, GiSpellBook,
@@ -20,6 +21,29 @@ const iconList = [
   BsBookHalf, BsBook, BsJournalBookmark, BsPen,
   RiBookOpenLine, RiBookLine, RiArticleLine, RiPencilLine
 ];
+
+// Componentes personalizados para las flechas
+const CustomPrevArrow = (props: any) => {
+  const { className, style, onClick } = props;
+  return (
+    <FaChevronLeft
+      className={className}
+      style={{ ...style, display: "block", fontSize: "40px", color: "var(--primary-color)" }} // Cambiar tamaño y color
+      onClick={onClick}
+    />
+  );
+};
+
+const CustomNextArrow = (props: any) => {
+  const { className, style, onClick } = props;
+  return (
+    <FaChevronRight
+      className={className}
+      style={{ ...style, display: "block", fontSize: "40px", color: "var(--primary-color)" }} // Cambiar tamaño y color
+      onClick={onClick}
+    />
+  );
+};
 
 interface ScrollableEventsProps {
   events: Events[];
@@ -35,6 +59,8 @@ const ScrollableEvents: React.FC<ScrollableEventsProps> = ({ events }) => {
     speed: 500,
     slidesToShow: 4,
     slidesToScroll: 1,
+    nextArrow: <CustomNextArrow />,
+    prevArrow: <CustomPrevArrow />,
     responsive: [
       {
         breakpoint: 1024,
@@ -74,7 +100,7 @@ const ScrollableEvents: React.FC<ScrollableEventsProps> = ({ events }) => {
           iconIndex++;
           return (
             <div key={event.id}>
-              <Col style={{ padding: '0 10px' }}>
+              <Col style={{ padding: 15 }}>
                 <div
                   style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer' }}
                   onClick={() => handleEventClick(event.id as number | null)}
@@ -86,7 +112,7 @@ const ScrollableEvents: React.FC<ScrollableEventsProps> = ({ events }) => {
                   >
                     <Card.Body className="d-flex flex-column align-items-center" style={{ padding: 5 }}>
                       <Card.Title>{event.title}</Card.Title>
-                      <Card.Text style={{ fontSize: 12 }}>
+                      <Card.Text>
                         {new Date(event.startDate).toLocaleDateString()} - {new Date(event.startDate).toLocaleTimeString()}
                       </Card.Text>
                     </Card.Body>
