@@ -103,7 +103,7 @@ const LibraryPage: React.FC = () => {
       } else {
         await api.post('/likes', { targetType: LikeTarget.LIBRARY, targetId: noteId, isLike });
       }
-      fetchNoteById(noteId);
+      fetchLikesDataAsync([{ id: noteId } as Library]);
     } catch (error) {
       dispatch(addNotification({ message: 'Error al dar like o dislike', color: 'danger' }));
     }
