@@ -1,30 +1,15 @@
-import React, { useRef } from 'react';
-import { Button, Card, Col, Row } from 'react-bootstrap';
-import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
-import {
-  FaBook, FaFeatherAlt, FaPenFancy, FaScroll, FaGlasses, FaUniversity, FaNewspaper
-} from 'react-icons/fa';
-import {
-  GiBookshelf, GiBookmark, GiQuillInk, GiOpenBook, GiScrollUnfurled, GiBrain, GiSpellBook
-} from 'react-icons/gi';
-import {
-  MdLibraryBooks, MdMenuBook, MdOutlineAutoStories, MdOutlineClass, MdOutlineSchool
-} from 'react-icons/md';
-import {
-  IoBookSharp, IoSchoolSharp, IoJournal, IoNewspaperSharp
-} from 'react-icons/io5';
-import {
-  BsBookHalf, BsBook, BsJournalBookmark, BsPen
-} from 'react-icons/bs';
-import {
-  RiBookOpenLine, RiBookLine, RiArticleLine, RiPencilLine
-} from 'react-icons/ri';
+import React from 'react';
+import { Card, Col, Row } from 'react-bootstrap';
+import { FaBook, FaFeatherAlt, FaGlasses, FaNewspaper, FaPenFancy, FaScroll, FaUniversity } from 'react-icons/fa';
+import PerfectScrollbar from 'react-perfect-scrollbar';
+import 'react-perfect-scrollbar/dist/css/styles.css'; 
 import { Events } from '../utils/types';
 import { useNavigate } from 'react-router-dom';
-
-interface ScrollableEventsProps {
-  events: Events[];
-}
+import { BsBookHalf, BsBook, BsJournalBookmark, BsPen } from 'react-icons/bs';
+import { GiBookshelf, GiBookmark, GiQuillInk, GiOpenBook, GiScrollUnfurled, GiBrain, GiSpellBook } from 'react-icons/gi';
+import { MdLibraryBooks, MdMenuBook, MdOutlineAutoStories, MdOutlineClass, MdOutlineSchool } from 'react-icons/md';
+import { IoBookSharp, IoSchoolSharp, IoJournal, IoNewspaperSharp } from 'react-icons/io5';
+import { RiArticleLine, RiBookLine, RiBookOpenLine, RiPencilLine } from 'react-icons/ri';
 
 const iconList = [
   FaBook, FaFeatherAlt, FaPenFancy, FaScroll, FaGlasses, FaUniversity, FaNewspaper,
@@ -35,18 +20,13 @@ const iconList = [
   RiBookOpenLine, RiBookLine, RiArticleLine, RiPencilLine
 ];
 
+interface ScrollableEventsProps {
+  events: Events[];
+}
+
 const ScrollableEvents: React.FC<ScrollableEventsProps> = ({ events }) => {
-  const scrollRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   let iconIndex = 0;
-
-  const handleScroll = (direction: 'left' | 'right') => {
-    if (scrollRef.current) {
-      const { scrollLeft, clientWidth } = scrollRef.current;
-      const scrollAmount = direction === 'left' ? -clientWidth : clientWidth;
-      scrollRef.current.scrollTo({ left: scrollLeft + scrollAmount, behavior: 'smooth' });
-    }
-  };
 
   const handleEventClick = (eventId: number | null) => {
     if (eventId !== null) {
@@ -56,33 +36,14 @@ const ScrollableEvents: React.FC<ScrollableEventsProps> = ({ events }) => {
 
   return (
     <div className="d-flex align-items-center my-4 position-relative">
-      <Button
-        variant="outline-primary"
-        onClick={() => handleScroll('left')}
-        style={{
-          borderRadius: '50%',
-          position: 'absolute',
-          left: '10px',
-          zIndex: 2,
-          width: '40px',
-          height: '40px',
-        }}
-      >
-        <FaChevronLeft />
-      </Button>
-
-      <div
-        ref={scrollRef}
+      <PerfectScrollbar
         style={{
           display: 'flex',
           overflowX: 'auto',
-          scrollBehavior: 'smooth',
           paddingLeft: '60px',
           paddingRight: '60px',
           width: '100%',
-          scrollbarWidth: 'none',
         }}
-        className="no-scrollbar"
       >
         <Row style={{ flexWrap: 'nowrap' }}>
           {events.length > 0 ? (
@@ -95,10 +56,7 @@ const ScrollableEvents: React.FC<ScrollableEventsProps> = ({ events }) => {
                     style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer' }}
                     onClick={() => handleEventClick(event.id as number | null)}
                   >
-                    <IconComponent
-                      size={82}
-                      style={{ marginBottom: '10px' }}
-                    />
+                    <IconComponent size={82} style={{ marginBottom: '10px' }} />
                     <Card
                       className='card-events-home'
                       style={{ minWidth: '100%', marginBottom: '10px' }}
@@ -118,21 +76,7 @@ const ScrollableEvents: React.FC<ScrollableEventsProps> = ({ events }) => {
             <p>No hay eventos recurrentes</p>
           )}
         </Row>
-      </div>
-      <Button
-        variant="outline-primary"
-        onClick={() => handleScroll('right')}
-        style={{
-          borderRadius: '50%',
-          position: 'absolute',
-          right: '10px',
-          zIndex: 2,
-          width: '40px',
-          height: '40px',
-        }}
-      >
-        <FaChevronRight />
-      </Button>
+      </PerfectScrollbar>
     </div>
   );
 };
