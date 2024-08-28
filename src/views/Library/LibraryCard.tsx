@@ -18,20 +18,31 @@ const LibraryCard: React.FC<LibraryCardProps> = ({
   handleLikeToggle,
   handleShare,
 }) => {
-
   return (
-    <Card className="mb-4" key={library.id} onClick={onClick} style={{ cursor: 'pointer' }}>
-      <Card.Body>
+    <Card className="mb-4" key={library.id} style={{ height: '200px', display: 'flex', flexDirection: 'column' }}>
+      <Card.Body 
+        onClick={onClick} 
+        style={{ 
+          cursor: 'pointer',
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          flex: 1
+        }}
+      >
         <div className="d-flex justify-content-between">
           <Card.Title>{library.title}</Card.Title>
         </div>
         <div
           style={{
-            maxHeight: '150px',
             overflow: 'hidden',
+            flex: 1
           }}
-          dangerouslySetInnerHTML={{ __html: library.description }}
-        />
+        >
+          <div dangerouslySetInnerHTML={{ __html: library.description }} />
+        </div>
+      </Card.Body>
+      <Card.Footer>
         <ActionButtons
           userLike={likesData.userLike}
           likesCount={likesData.likes}
@@ -39,7 +50,7 @@ const LibraryCard: React.FC<LibraryCardProps> = ({
           onLikeToggle={(isLike) => handleLikeToggle(library.id, isLike)}
           onShare={() => handleShare(library)}
         />
-      </Card.Body>
+      </Card.Footer>
     </Card>
   );
 };

@@ -16,6 +16,7 @@ import { getRoleInSpanish } from '../../utils/roleTranslation';
 import { BsFileEarmarkPlusFill } from "react-icons/bs";
 import { IoIosArrowBack } from "react-icons/io";
 import ActionButtons from '../../components/ActionButtons'; 
+import Pagination from 'react-bootstrap/Pagination';
 
 const LibraryPage: React.FC = () => {
   const { noteId } = useParams<{ noteId: string | undefined }>();
@@ -31,6 +32,9 @@ const LibraryPage: React.FC = () => {
   const [likesData, setLikesData] = useState<Record<number, { likes: number; dislikes: number; userLike: Like | null }>>({});
   const [shareModalVisible, setShareModalVisible] = useState<boolean>(false);
   const [selectedLibrary, setSelectedLibrary] = useState<Library | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const itemsPerPage = 50;
 
   useEffect(() => {
     if (noteId) {
@@ -40,12 +44,14 @@ const LibraryPage: React.FC = () => {
     }
   }, [noteId]);
 
-  const fetchLibraries = async () => {
+  const fetchLibraries = async (page = 1, limit = itemsPerPage) => {
     try {
-      const response = await api.get<Library[]>('/library');
-      dispatch(getLibraries(response.data));
+      const response = await api.get(`/library`, { params: { page, limit } });
+      dispatch(getLibraries(response.data.data));
+      setTotalItems(response.data.total);
+      setCurrentPage(response.data.currentPage);
       setCurrentNote(null);
-      fetchLikesDataAsync(response.data);
+      fetchLikesDataAsync(response.data.data);
     } catch (error) {
       dispatch(addNotification({ message: 'Error al obtener las referencias', color: 'danger' }));
     }
@@ -190,6 +196,11 @@ const LibraryPage: React.FC = () => {
     }
   };
 
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+    fetchLibraries(pageNumber, itemsPerPage);
+  };
+
   const permissionsEditable = (userRole === UserRole.ADMIN || userRole === UserRole.SUPER_ADMIN || userRole === UserRole.EDITOR);
 
   return (
@@ -310,8 +321,6 @@ const LibraryPage: React.FC = () => {
           {!currentNote ? (
             <LibraryList
               libraries={libraries}
-              onEdit={permissionsEditable ? handleEdit : undefined}
-              onDelete={permissionsEditable ? handleDelete : undefined}
               onNavigate={handleNoteClick}
               likesData={likesData}
               handleLikeToggle={handleLikeToggle}
@@ -320,8 +329,6 @@ const LibraryPage: React.FC = () => {
           ) : currentNote.children && currentNote.children.length > 0 ? (
             <LibraryList
               libraries={currentNote.children}
-              onEdit={permissionsEditable ? handleEdit : undefined}
-              onDelete={permissionsEditable ? handleDelete : undefined}
               onNavigate={handleNoteClick}
               likesData={likesData}
               handleLikeToggle={handleLikeToggle}
@@ -331,6 +338,18 @@ const LibraryPage: React.FC = () => {
             <p className="text-center text-muted">No hay subnotas.</p>
           )}
         </Row>
+        <Pagination>
+          {Array.from({ length: Math.ceil(totalItems / itemsPerPage) }, (_, idx) => (
+            <Pagination.Item
+              key={idx + 1}
+              active={idx + 1 === currentPage}
+              onClick={() => handlePageChange(idx + 1)}
+              style={{ cursor: 'pointer', margin: '0 5px' }}
+            >
+              {idx + 1}
+            </Pagination.Item>
+          ))}
+        </Pagination>
       </Container>
       {permissionsEditable && (
         <LibraryFormModal
