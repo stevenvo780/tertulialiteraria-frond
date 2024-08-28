@@ -96,8 +96,7 @@ const LibraryPage: React.FC = () => {
       } else {
         await api.post('/likes', { targetType: LikeTarget.LIBRARY, targetId: noteId, isLike });
       }
-      const noteById = libraries.find((note) => note.id === noteId);
-      fetchLikesDataAsync([noteById as Library]);
+      fetchNoteById(noteId);
     } catch (error) {
       dispatch(addNotification({ message: 'Error al dar like o dislike', color: 'danger' }));
     }
@@ -271,7 +270,7 @@ const LibraryPage: React.FC = () => {
               </Col>
               <Col xs={12} md={12} className="text-left" style={{ display: 'flex', justifyContent: 'flex-init' }}>
                 <span
-                  style={{ cursor: 'pointer', marginInline: '10px' }} >
+                  style={{ cursor: 'pointer', marginInline: '10px' }}>
                   <FaThumbsUp
                     onClick={() => handleLikeToggle(currentNote.id, true)}
                     style={{ cursor: 'pointer', marginInline: '3px', color: likesData[currentNote.id]?.userLike?.isLike ? '#B1801D' : '#BBBBBB' }}
