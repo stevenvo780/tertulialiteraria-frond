@@ -25,6 +25,7 @@ import './styles.css';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
 import { UserRole } from '../../utils/types';
+import SocialShareButtons from '../../components/SocialShareButtons';
 
 const EventDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -157,23 +158,7 @@ const EventDetail: React.FC = () => {
             </Card.Body>
           </Card>
 
-          <div className="social-share-buttons d-flex flex-wrap justify-content-between mt-4">
-            <FacebookShareButton url={shareUrl}>
-              <FacebookIcon size={60} round />
-            </FacebookShareButton>
-            <TwitterShareButton url={shareUrl} title={title}>
-              <TwitterIcon size={60} round />
-            </TwitterShareButton>
-            <WhatsappShareButton url={shareUrl} title={title}>
-              <WhatsappIcon size={60} round />
-            </WhatsappShareButton>
-            <LinkedinShareButton url={shareUrl} title={title}>
-              <LinkedinIcon size={60} round />
-            </LinkedinShareButton>
-            <TelegramShareButton url={shareUrl} title={title}>
-              <TelegramIcon size={60} round />
-            </TelegramShareButton>
-          </div>
+          <SocialShareButtons size={50} shareUrl={shareUrl} title={title} />
         </Col>
       </Row>
       {upcomingEvents.length > 0 && <ScrollableEvents events={upcomingEvents} />}
