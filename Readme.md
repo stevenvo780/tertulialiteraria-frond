@@ -27,7 +27,7 @@ Este proyecto es una plataforma web de código abierto construida con [Next.js](
 1. Clona el repositorio:
 
     ```bash
-    git clone https://github.com/yourusername/tertulia-literaria.git
+    git clone https://github.com/stevenvo780/tertulialiteraria-frond.git
     cd tertulia-literaria
     ```
 
@@ -128,7 +128,3 @@ Este proyecto está licenciado bajo la Licencia MIT. Consulta el archivo [LICENS
 ## Contacto
 
 Para preguntas, comentarios o contribuciones, no dudes en ponerte en contacto con el equipo de Tertulia Literaria.
-
----
-
-Ahora el README incluye la versión correcta de Node.js que usaste en tu Dockerfile y la sección correspondiente a Docker.
