@@ -37,30 +37,37 @@ const LibraryCard: React.FC<LibraryCardProps> = ({
           dangerouslySetInnerHTML={{ __html: library.description }}
         />
         <div className="d-flex align-items-center mt-3">
-          <Button
-            variant="link"
+          <span
+            style={{ cursor: 'pointer', marginInline: '10px' }}
             onClick={(e) => { e.stopPropagation(); handleLikeToggle(library.id, true); }}
-            className={likesData.userLike?.isLike ? 'text-primary' : ''}
-            style={{ marginRight: '10px' }}
           >
-            <FaThumbsUp /> {likesData.likes}
-          </Button>
-          <Button
-            variant="link"
+            <FaThumbsUp
+              style={{ cursor: 'pointer', marginInline: '3px', color: likesData.userLike?.isLike ? '#B1801D' : '#BBBBBB' }}
+              size={27}
+            />
+            {likesData.likes}
+          </span>
+          <span
+            style={{ cursor: 'pointer', marginInline: '10px' }}
             onClick={(e) => { e.stopPropagation(); handleLikeToggle(library.id, false); }}
-            className={likesData.userLike && !likesData.userLike.isLike ? 'text-danger' : ''}
-            style={{ marginRight: '10px' }}
           >
-            <FaThumbsDown /> {likesData.dislikes}
-          </Button>
-          <Button
-            variant="link"
+            <FaThumbsDown
+              style={{ cursor: 'pointer', marginInline: '3px', color: likesData.userLike && !likesData.userLike.isLike ? '#B1801D' : '#BBBBBB' }}
+              size={27}
+            />
+            {likesData.dislikes}
+          </span>
+          <span
+            style={{ cursor: 'pointer', marginInline: '10px' }}
             onClick={(e) => { e.stopPropagation(); handleShare(library); }}
-            className="text-info"
           >
-            <FaShareAlt />
-          </Button>
+            <FaShareAlt
+              style={{ cursor: 'pointer', marginInline: '10px', color: '#BBBBBB' }}
+              size={27}
+            />
+          </span>
         </div>
+
       </Card.Body>
     </Card>
   );

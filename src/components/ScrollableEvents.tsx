@@ -91,7 +91,7 @@ const ScrollableEvents: React.FC<ScrollableEventsProps> = ({ events }) => {
               const IconComponent = iconList[iconIndex % iconList.length];
               iconIndex++;
               return (
-                <Col key={event.id} xs={3} md={4} style={{ padding: '0 10px' }}>
+                <Col key={event.id} xs={4} md={3} style={{ padding: '0 10px' }}>
                   <div 
                     style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer' }}
                     onClick={() => handleEventClick(event.id as number | null)}
