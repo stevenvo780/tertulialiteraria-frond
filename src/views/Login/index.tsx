@@ -124,14 +124,44 @@ const LoginPage: React.FC = () => {
                 <Button style={{ width: "100%", marginBottom: 10 }} variant="primary" type="submit" disabled={isLoading}>
                   {isLoading ? 'Cargando...' : 'Iniciar Sesión'}
                 </Button>
-                <Button style={{ border: 0,  backgroundColor: "white", color: "#595959", width: "100%", marginBottom: 20 }} size='sm' variant="secondary" onClick={() => setShowResetModal(true)}>
+                <Button
+                  style={{
+                    border: 0,
+                    backgroundColor: "var(--white-color)",
+                    color: "var(--font-color)",
+                    width: "100%",
+                    marginBottom: 20
+                  }}
+                  size='sm'
+                  variant="secondary"
+                  onClick={() => setShowResetModal(true)}
+                >
                   ¿Olvidaste tu contraseña?
                 </Button>
-                <Button style={{ width: "100%", marginBottom: 10 }} variant="secondary" onClick={handleRegister}>Registrarse</Button>
-                <Button style={{ backgroundColor: "white", color: "#595959", width: "100%", marginBottom: 10 }} variant="danger" onClick={signInWithGoogle} disabled={isLoading}>
+                <Button
+                  style={{
+                    width: "100%",
+                    marginBottom: 10
+                  }}
+                  variant="secondary"
+                  onClick={handleRegister}
+                >
+                  Registrarse
+                </Button>
+
+                <Button
+                  style={{
+                    backgroundColor: "var(--white-color)",
+                    color: "var(--font-color)",
+                    width: "100%",
+                    marginBottom: 10
+                  }}
+                  variant="danger"
+                  onClick={signInWithGoogle}
+                  disabled={isLoading}
+                >
                   {isLoading ? 'Cargando...' : 'Iniciar Sesión con Google'}
                 </Button>
-                
               </Form>
             </Card.Body>
           </Card>

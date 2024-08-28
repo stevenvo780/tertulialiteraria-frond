@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import Header from './Header';
-import { FaDiscord } from 'react-icons/fa';
+import { FaDiscord, FaUsers } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import PuffLoader from 'react-spinners/PuffLoader';
 import api from '../utils/axios';
-import { FaUsers } from 'react-icons/fa';
 
 type LayoutProps = {
   children: React.ReactNode;
@@ -13,8 +12,7 @@ type LayoutProps = {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const loading = useSelector((state: RootState) => state.ui.loading);
-  const discordInviteLink = 'https://discord.gg/JcEJp3uu';
-  
+  const discordInviteLink = process.env.REACT_APP_DISCORD_TL_INVITE as string;
   const [onlineMemberCount, setOnlineMemberCount] = useState<number | null>(null);
 
   useEffect(() => {
@@ -36,7 +34,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       {loading && (
         <div className="loader-overlay">
           <PuffLoader
-            color={'#8E5D1A'}
+            color={'var(--secondary-color)'}
             loading={loading}
             cssOverride={{
               position: 'fixed',
@@ -59,14 +57,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           position: 'fixed',
           bottom: '20px',
           right: '20px',
-          backgroundColor: '#7289DA',
+          backgroundColor: 'var(--discord-color)',
           borderRadius: '50%',
           width: '76px',
           height: '76px',
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          color: '#fff',
+          color: 'var(--white-color)',
           boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
           cursor: 'pointer',
           zIndex: 1000,
@@ -74,10 +72,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           padding: '10px',
         }}
       >
-        <FaDiscord size={48} color="white" />
+        <FaDiscord size={48} color="var(--white-color)" />
         {onlineMemberCount !== null && (
-          <span style={{ color: 'white', fontSize: '18px'}}>
-            {onlineMemberCount} <FaUsers size={20} color="white" style={{ marginInline: 1 }} />
+          <span style={{ color: 'var(--white-color)', fontSize: '18px'}}>
+            {onlineMemberCount} <FaUsers size={20} color="var(--white-color)" style={{ marginInline: 1 }} />
           </span>
         )}
       </a>

@@ -1,23 +1,23 @@
 import React, { useRef } from 'react';
 import { Button, Card, Col, Row } from 'react-bootstrap';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
-import { 
-  FaBook, FaFeatherAlt, FaPenFancy, FaScroll, FaGlasses, FaUniversity, FaNewspaper 
+import {
+  FaBook, FaFeatherAlt, FaPenFancy, FaScroll, FaGlasses, FaUniversity, FaNewspaper
 } from 'react-icons/fa';
-import { 
-  GiBookshelf, GiBookmark, GiQuillInk, GiOpenBook, GiScrollUnfurled, GiBrain, GiSpellBook 
+import {
+  GiBookshelf, GiBookmark, GiQuillInk, GiOpenBook, GiScrollUnfurled, GiBrain, GiSpellBook
 } from 'react-icons/gi';
-import { 
-  MdLibraryBooks, MdMenuBook, MdOutlineAutoStories, MdOutlineClass, MdOutlineSchool 
+import {
+  MdLibraryBooks, MdMenuBook, MdOutlineAutoStories, MdOutlineClass, MdOutlineSchool
 } from 'react-icons/md';
-import { 
-  IoBookSharp, IoSchoolSharp, IoJournal, IoNewspaperSharp 
+import {
+  IoBookSharp, IoSchoolSharp, IoJournal, IoNewspaperSharp
 } from 'react-icons/io5';
-import { 
-  BsBookHalf, BsBook, BsJournalBookmark, BsPen 
+import {
+  BsBookHalf, BsBook, BsJournalBookmark, BsPen
 } from 'react-icons/bs';
-import { 
-  RiBookOpenLine, RiBookLine, RiArticleLine, RiPencilLine 
+import {
+  RiBookOpenLine, RiBookLine, RiArticleLine, RiPencilLine
 } from 'react-icons/ri';
 import { Events } from '../utils/types';
 import { useNavigate } from 'react-router-dom';
@@ -56,15 +56,15 @@ const ScrollableEvents: React.FC<ScrollableEventsProps> = ({ events }) => {
 
   return (
     <div className="d-flex align-items-center my-4 position-relative">
-      <Button 
-        variant="outline-primary" 
-        onClick={() => handleScroll('left')} 
-        style={{ 
-          borderRadius: '50%', 
-          position: 'absolute', 
-          left: '10px', 
+      <Button
+        variant="outline-primary"
+        onClick={() => handleScroll('left')}
+        style={{
+          borderRadius: '50%',
+          position: 'absolute',
+          left: '10px',
           zIndex: 2,
-          width: '40px', 
+          width: '40px',
           height: '40px',
         }}
       >
@@ -91,18 +91,18 @@ const ScrollableEvents: React.FC<ScrollableEventsProps> = ({ events }) => {
               iconIndex++;
               return (
                 <Col key={event.id} xs={4} md={3} style={{ padding: '0 10px' }}>
-                  <div 
+                  <div
                     style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer' }}
                     onClick={() => handleEventClick(event.id as number | null)}
                   >
-                    <IconComponent 
-                      size={82} 
-                      style={{ 
-                        background: 'linear-gradient(135deg, #DDB932, #B1801D)',
+                    <IconComponent
+                      size={82}
+                      style={{
+                        background: 'linear-gradient(135deg, var(--primary-color), var(--secondary-hover))',
                         WebkitBackgroundClip: 'text',
                         WebkitTextFillColor: 'transparent',
-                        marginBottom: '10px' 
-                      }} 
+                        marginBottom: '10px'
+                      }}
                     />
                     <Card
                       className='card-events-home'
@@ -124,15 +124,15 @@ const ScrollableEvents: React.FC<ScrollableEventsProps> = ({ events }) => {
           )}
         </Row>
       </div>
-      <Button 
-        variant="outline-primary" 
-        onClick={() => handleScroll('right')} 
-        style={{ 
-          borderRadius: '50%', 
-          position: 'absolute', 
-          right: '10px', 
-          zIndex: 2, 
-          width: '40px', 
+      <Button
+        variant="outline-primary"
+        onClick={() => handleScroll('right')}
+        style={{
+          borderRadius: '50%',
+          position: 'absolute',
+          right: '10px',
+          zIndex: 2,
+          width: '40px',
           height: '40px',
         }}
       >

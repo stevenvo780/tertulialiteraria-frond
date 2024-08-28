@@ -7,7 +7,7 @@ type DiscordMemberCardProps = {
 };
 
 const DiscordMemberCard: React.FC<DiscordMemberCardProps> = ({ guildMemberCount }) => {
-  const discordInviteLink = 'https://discord.gg/JcEJp3uu';
+  const discordInviteLink = process.env.REACT_APP_DISCORD_TL_INVITE as string;
   return (
     <a
       href={discordInviteLink}
@@ -17,12 +17,12 @@ const DiscordMemberCard: React.FC<DiscordMemberCardProps> = ({ guildMemberCount 
         cursor: 'pointer',
       }}
     >
-      <Card style={{ marginBlock: 10, textAlign: 'center', backgroundColor: "#3374A7" }}>
+      <Card style={{ marginBlock: 10, textAlign: 'center', backgroundColor: 'var(--discord-color)' }}>
         <Card.Body style={{ padding: 7, margin: 5, paddingTop: 5 }}>
-          <Card.Text style={{ fontSize: '1.5rem', color: "white" }}>
+          <Card.Text style={{ fontSize: '1.5rem', color: 'var(--discord-text)' }}>
             <h4 style={{ padding: 0, margin: 0 }} >¡YA SOMOS!</h4>
             <p style={{ padding: 0, margin: 0 }} >
-              <FaUsers size={30} color="white" style={{ marginInline: 5 }} />  {guildMemberCount !== null ? guildMemberCount : 'Cargando...'}
+              <FaUsers size={30} color="var(--discord-text)" style={{ marginInline: 5 }} />  {guildMemberCount !== null ? guildMemberCount : 'Cargando...'}
             </p>
           </Card.Text>
         </Card.Body>
