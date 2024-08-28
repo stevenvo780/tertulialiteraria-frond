@@ -261,46 +261,42 @@ const LibraryPage: React.FC = () => {
           padding: '8px',
         } : {}} >
           {currentNote && (
-            <>
-              <Row className="align-items-center mb-3" style={{ marginTop: 10 }}>
-                <Col xs={12} md={9}>
-                  <h4 className="m-0">{currentNote.title}</h4>
-                  {currentNote.author && (
-                    <p className="text-muted m-0">{`${currentNote.author.name} - ${getRoleInSpanish(currentNote.author.role)}`}</p>
-                  )}
-                </Col>
-                <Col xs={12} md={3} className="text-right" style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                  <span
-                    style={{ cursor: 'pointer', marginInline: '10px' }} >
-                    <FaThumbsUp
-                      onClick={() => handleLikeToggle(currentNote.id, true)}
-                      style={{ cursor: 'pointer', marginInline: '3px', color: likesData[currentNote.id]?.userLike?.isLike ? '#B1801D' : '#BBBBBB' }}
-                      size={27}
-                    />
-                    {likesData[currentNote.id]?.likes || 0}
-                  </span>
-                  <span
-                    style={{ cursor: 'pointer', marginInline: '10px' }} >
-                    <FaThumbsDown
-                      onClick={() => handleLikeToggle(currentNote.id, false)}
-                      style={{ marginInline: '3px', color: likesData[currentNote.id]?.userLike?.isLike === false ? '#B1801D' : '#BBBBBB' }}
-                      size={27}
-                    />
-                    {likesData[currentNote.id]?.dislikes || 0}
-                  </span>
-                  <span>
-                    <FaShareAlt
-                      onClick={() => handleShare(currentNote)}
-                      style={{ cursor: 'pointer', marginInline: '10px', color: "#BBBBBB" }}
-                      size={27}
-                    />
-                  </span>
-                </Col>
-              </Row>
-            </>
-          )}
-          {currentNote && (
-            <div dangerouslySetInnerHTML={{ __html: currentNote.description }} />
+            <Row className="align-items-center mb-3" style={{ marginTop: 10 }}>
+              <Col xs={12} md={12}>
+                <h4 className="m-0">{currentNote.title}</h4>
+                {currentNote.author && (
+                  <p className="text-muted m-0">{`${currentNote.author.name} - ${getRoleInSpanish(currentNote.author.role)}`}</p>
+                )}
+                <div dangerouslySetInnerHTML={{ __html: currentNote.description }} />
+              </Col>
+              <Col xs={12} md={12} className="text-left" style={{ display: 'flex', justifyContent: 'flex-init' }}>
+                <span
+                  style={{ cursor: 'pointer', marginInline: '10px' }} >
+                  <FaThumbsUp
+                    onClick={() => handleLikeToggle(currentNote.id, true)}
+                    style={{ cursor: 'pointer', marginInline: '3px', color: likesData[currentNote.id]?.userLike?.isLike ? '#B1801D' : '#BBBBBB' }}
+                    size={27}
+                  />
+                  {likesData[currentNote.id]?.likes || 0}
+                </span>
+                <span
+                  style={{ cursor: 'pointer', marginInline: '10px' }} >
+                  <FaThumbsDown
+                    onClick={() => handleLikeToggle(currentNote.id, false)}
+                    style={{ marginInline: '3px', color: likesData[currentNote.id]?.userLike?.isLike === false ? '#B1801D' : '#BBBBBB' }}
+                    size={27}
+                  />
+                  {likesData[currentNote.id]?.dislikes || 0}
+                </span>
+                <span>
+                  <FaShareAlt
+                    onClick={() => handleShare(currentNote)}
+                    style={{ cursor: 'pointer', marginInline: '10px', color: "#BBBBBB" }}
+                    size={27}
+                  />
+                </span>
+              </Col>
+            </Row>
           )}
         </Row>
         <br />
