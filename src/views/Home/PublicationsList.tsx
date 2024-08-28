@@ -25,7 +25,7 @@ const PublicationsList: React.FC<PublicationsListProps> = ({
   likesData,
   user,
   setShowModal,
-  publicationRefs, 
+  publicationRefs,
 }) => {
   return (
     <>
@@ -52,7 +52,7 @@ const PublicationsList: React.FC<PublicationsListProps> = ({
             className="mb-4"
             key={publication.id}
             style={{ overflow: 'hidden' }}
-            ref={(el: HTMLDivElement | null) => (publicationRefs.current[publication.id] = el)} 
+            ref={(el: HTMLDivElement | null) => (publicationRefs.current[publication.id] = el)}
           >
             <Card.Body>
               <div className="d-flex justify-content-between">
@@ -86,29 +86,35 @@ const PublicationsList: React.FC<PublicationsListProps> = ({
                 {publication.createdAt ? new Date(publication.createdAt).toLocaleDateString() : ''}
               </div>
               <div className="d-flex align-items-center mt-3">
-                <Button
-                  variant="link"
+                <span
+                  style={{ cursor: 'pointer', marginInline: '10px' }}
                   onClick={() => handleLikeToggle(publication.id, true)}
-                  className={likeData.userLike?.isLike ? 'text-primary' : ''}
-                  style={{ marginRight: '10px' }}
                 >
-                  <FaThumbsUp /> {likeData.likes}
-                </Button>
-                <Button
-                  variant="link"
+                  <FaThumbsUp
+                    style={{ cursor: 'pointer', marginInline: '3px', color: likeData.userLike?.isLike ? '#B1801D' : '#BBBBBB' }}
+                    size={27}
+                  />
+                  {likeData.likes}
+                </span>
+                <span
+                  style={{ cursor: 'pointer', marginInline: '10px' }}
                   onClick={() => handleLikeToggle(publication.id, false)}
-                  className={likeData.userLike && !likeData.userLike.isLike ? 'text-danger' : ''}
-                  style={{ marginRight: '10px' }}
                 >
-                  <FaThumbsDown /> {likeData.dislikes}
-                </Button>
-                <Button
-                  variant="link"
-                  onClick={() => handleShare(publication)} 
-                  className="text-info"
+                  <FaThumbsDown
+                    style={{ cursor: 'pointer', marginInline: '3px', color: likeData.userLike && !likeData.userLike.isLike ? '#B1801D' : '#BBBBBB' }}
+                    size={27}
+                  />
+                  {likeData.dislikes}
+                </span>
+                <span
+                  style={{ cursor: 'pointer', marginInline: '10px' }}
+                  onClick={() => handleShare(publication)}
                 >
-                  <FaShareAlt />
-                </Button>
+                  <FaShareAlt
+                    style={{ cursor: 'pointer', marginInline: '10px', color: '#BBBBBB' }}
+                    size={27}
+                  />
+                </span>
               </div>
             </Card.Body>
           </Card>
