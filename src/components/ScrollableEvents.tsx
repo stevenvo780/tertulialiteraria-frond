@@ -1,7 +1,7 @@
 import React from 'react';
 import Slider from 'react-slick';
 import { Card, Col } from 'react-bootstrap';
-import { FaBook, FaFeatherAlt, FaGlasses, FaNewspaper, FaPenFancy, FaScroll, FaUniversity, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { FaBook, FaFeatherAlt, FaPenFancy, FaScroll, FaGlasses, FaUniversity, FaNewspaper, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { Events } from '../utils/types';
 import { useNavigate } from 'react-router-dom';
 import { BsBookHalf, BsBook, BsJournalBookmark, BsPen } from 'react-icons/bs';
