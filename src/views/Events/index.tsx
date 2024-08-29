@@ -14,6 +14,7 @@ import api from '../../utils/axios';
 import { Events, Repetition, UserRole } from '../../utils/types';
 import EventModal from '../../components/EventModal';
 import { convertToBackendEvent, generateRecurringEvents } from './EventUtils';
+import "./styles.css";
 
 const EventsCalendar: React.FC = () => {
   const dispatch = useDispatch();
@@ -85,9 +86,12 @@ const EventsCalendar: React.FC = () => {
         editable={true}
         locale="es"
         headerToolbar={{
-          left: 'prev,next today',
+          left: 'prev,next',
           center: 'title',
-          right: 'dayGridMonth,timeGridWeek,timeGridDay'
+          right: 'today',
+        }}
+        footerToolbar={{
+          left: 'dayGridMonth,timeGridWeek,timeGridDay',
         }}
         buttonText={{
           today: 'Hoy',

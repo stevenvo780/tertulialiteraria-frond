@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import InfiniteScroll from 'react-infinite-scroll-component';
+
 import api from '../../utils/axios';
 import { getPublications, addPublication, updatePublication, deletePublication } from '../../redux/publications';
 import { addNotification } from '../../redux/ui';
@@ -9,7 +9,7 @@ import { RootState } from '../../redux/store';
 import PublicationsList from './PublicationsList';
 import Sidebar from './Sidebar';
 import PublicationModal from './PublicationModal';
-import ShareModal from './ShareModal'; 
+import ShareModal from './ShareModal';
 import { Publication, Events, CreatePublicationDto, Like, LikeTarget } from '../../utils/types';
 import ScrollableEvents from '../../components/ScrollableEvents';
 import './styles.css';
@@ -19,22 +19,22 @@ const HomePage: React.FC = () => {
   const user = useSelector((state: RootState) => state.auth.userData);
   const publications = useSelector((state: RootState) => state.publications.publications);
   const [showModal, setShowModal] = useState<boolean>(false);
-  const [shareModalVisible, setShareModalVisible] = useState<boolean>(false); 
+  const [shareModalVisible, setShareModalVisible] = useState<boolean>(false);
   const [editingPublication, setEditingPublication] = useState<Publication | null>(null);
-  const [selectedPublication, setSelectedPublication] = useState<Publication | null>(null); 
+  const [selectedPublication, setSelectedPublication] = useState<Publication | null>(null);
   const [title, setTitle] = useState<string>('');
   const [content, setContent] = useState<string>('');
   const [repetitiveEvents, setRepetitiveEvents] = useState<Events[]>([]);
   const [likesData, setLikesData] = useState<Record<number, { likes: number; dislikes: number; userLike: Like | null }>>({});
   const [offset, setOffset] = useState<number>(0);
   const [hasMore, setHasMore] = useState<boolean>(true);
-  const limit = 4; 
+  const limit = 4;
 
   const publicationRefs = useRef<Record<number, HTMLDivElement | null>>({});
 
   useEffect(() => {
     window.addEventListener('hashchange', handleHashChange);
-    
+
     const publicationId = window.location.hash.replace('#', '');
     if (publicationId) {
       fetchPublicationById(publicationId);
@@ -62,9 +62,9 @@ const HomePage: React.FC = () => {
       });
 
       if (response.data.length === 0) {
-        setHasMore(false); 
+        setHasMore(false);
       } else {
-        dispatch(getPublications(response.data)); 
+        dispatch(getPublications(response.data));
         fetchLikesDataAsync(response.data);
         setOffset(offset + limit);
       }
@@ -76,14 +76,14 @@ const HomePage: React.FC = () => {
   const fetchPublicationById = async (id: string) => {
     try {
       const response = await api.get<Publication>(`/publications/${id}`);
-      
+
       const existingPublication = publications.find(p => p.id === parseInt(id));
-      
+
       if (!existingPublication) {
         dispatch(addPublication(response.data));
       }
 
-      setSelectedPublication(response.data); 
+      setSelectedPublication(response.data);
       scrollToPublication(response.data.id);
     } catch (error) {
       dispatch(addNotification({ message: 'Error al obtener la publicación', color: 'danger' }));
@@ -202,7 +202,7 @@ const HomePage: React.FC = () => {
 
   const handleShare = (publication: Publication) => {
     setSelectedPublication(publication);
-    setShareModalVisible(true); 
+    setShareModalVisible(true);
   };
 
 
@@ -219,27 +219,19 @@ const HomePage: React.FC = () => {
             <Sidebar />
           </Col>
           <Col md={9} style={{ marginTop: 40 }}>
-            <InfiniteScroll
-              dataLength={publications.length}
-              next={fetchPublications}
+            <PublicationsList
+              publications={publications}
+              handleEdit={handleEdit}
+              handleDelete={handleDelete}
+              handleLikeToggle={handleLikeToggle}
+              handleShare={handleShare}
+              likesData={likesData}
+              user={user}
+              setShowModal={setShowModal}
+              publicationRefs={publicationRefs}
               hasMore={hasMore}
-              loader={<></>}
-              scrollableTarget="scrollableDiv"
-            >
-              <div className='scrollable-container'  id="scrollableDiv">
-                <PublicationsList
-                  publications={publications}
-                  handleEdit={handleEdit}
-                  handleDelete={handleDelete}
-                  handleLikeToggle={handleLikeToggle}
-                  handleShare={handleShare} 
-                  likesData={likesData}
-                  user={user}
-                  setShowModal={setShowModal}
-                  publicationRefs={publicationRefs} 
-                />
-              </div>
-            </InfiniteScroll>
+              fetchPublications={fetchPublications}
+            />
           </Col>
         </Row>
         <PublicationModal
