@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -7,24 +6,26 @@ import interactionPlugin from '@fullcalendar/interaction';
 import rrulePlugin from '@fullcalendar/rrule';
 import { Container } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { addNotification } from '../../redux/ui';
 import { RootState } from '../../redux/store';
 import { getEvents } from '../../redux/events';
 import api from '../../utils/axios';
-import { Events, Repetition, UserRole } from '../../utils/types';
+import { Events, UserRole, Repetition } from '../../utils/types';
 import EventModal from '../../components/EventModal';
-import { convertToBackendEvent, generateRecurringEvents } from './EventUtils';
+import { generateRecurringEvents } from './EventUtils';
 import "./styles.css";
+import { EventInput } from '@fullcalendar/core';
 
 const EventsCalendar: React.FC = () => {
   const dispatch = useDispatch();
-  const eventsFromStore = useSelector((state: RootState) =>
-    state.events.events.flatMap(generateRecurringEvents)
-  );
+  const navigate = useNavigate();
+  const eventsFromStore = useSelector((state: RootState) => state.events.events);
   const userRole = useSelector((state: RootState) => state.auth.userData);
   const [showModal, setShowModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<Events | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [calendarEvents, setCalendarEvents] = useState<EventInput[]>([]);
 
   useEffect(() => {
     fetchEvents();
@@ -33,6 +34,11 @@ const EventsCalendar: React.FC = () => {
   useEffect(() => {
     fetchEvents();
   }, [showModal]);
+
+  useEffect(() => {
+    const generatedEvents = eventsFromStore.flatMap(generateRecurringEvents);
+    setCalendarEvents(generatedEvents);
+  }, [eventsFromStore]);
 
   const fetchEvents = async () => {
     try {
@@ -62,17 +68,9 @@ const EventsCalendar: React.FC = () => {
   };
 
   const handleEventClick = (info: any) => {
-    if (userRole?.role === UserRole.ADMIN || userRole?.role === UserRole.SUPER_ADMIN) {
-      const clickedEvent = eventsFromStore.find(event => event.id === info.event.id);
-      if (clickedEvent) {
-        setSelectedEvent(convertToBackendEvent(clickedEvent));
-        setIsEditing(true);
-        setShowModal(true);
-      }
-    } else {
-      dispatch(addNotification({ message: 'No tienes permiso para editar eventos', color: 'warning' }));
-    }
-  };
+    const eventId = info.event.id.includes('-') ? info.event.id.split('-')[0] : info.event.id;
+    navigate(`/events/${eventId}`);
+  };  
 
   return (
     <Container>
@@ -80,7 +78,7 @@ const EventsCalendar: React.FC = () => {
       <FullCalendar
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, rrulePlugin]}
         initialView="dayGridMonth"
-        events={eventsFromStore}
+        events={calendarEvents}
         dateClick={handleDateClick}
         eventClick={handleEventClick}
         editable={true}

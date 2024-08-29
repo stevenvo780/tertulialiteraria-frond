@@ -1,5 +1,5 @@
 import { Events } from '../../utils/types';
-import { add, eachWeekOfInterval, eachMonthOfInterval, eachYearOfInterval, differenceInHours, isAfter } from 'date-fns';
+import { add, eachWeekOfInterval, eachMonthOfInterval, eachYearOfInterval, differenceInHours, isAfter, isBefore } from 'date-fns';
 import { EventInput } from '@fullcalendar/core';
 
 const COLORS = ['#FF5733', '#33FF57', '#3357FF', '#F333FF', '#FF33A6'];
@@ -39,43 +39,43 @@ export const generateRecurringEvents = (event: Events): EventInput[] => {
   const events: EventInput[] = [];
   const startDate = new Date(event.startDate);
   const endDate = new Date(event.endDate);
+
   if (!event.repetition) {
     return [convertToCalendarEvent(event)];
   }
 
-  const interval = { start: startDate, end: add(startDate, { years: 1 }) };
+  let currentDate = startDate;
+  let occurrenceIndex = 0; 
 
-  switch (event.repetition) {
-    case 'weekly':
-      eachWeekOfInterval(interval).forEach(date => {
-        events.push({
-          ...convertToCalendarEvent(event),
-          start: date.toISOString(),
-          end: add(date, { hours: differenceInHours(endDate, startDate) }).toISOString(),
-        });
-      });
-      break;
-    case 'monthly':
-      eachMonthOfInterval(interval).forEach(date => {
-        events.push({
-          ...convertToCalendarEvent(event),
-          start: date.toISOString(),
-          end: add(date, { hours: differenceInHours(endDate, startDate) }).toISOString(),
-        });
-      });
-      break;
-    case 'yearly':
-      eachYearOfInterval(interval).forEach(date => {
-        events.push({
-          ...convertToCalendarEvent(event),
-          start: date.toISOString(),
-          end: add(date, { hours: differenceInHours(endDate, startDate) }).toISOString(),
-        });
-      });
-      break;
-    default:
-      events.push(convertToCalendarEvent(event));
-      break;
+  while (isBefore(currentDate, add(startDate, { years: 1 }))) {
+    events.push({
+      id: event.id ? `${event.id}-${occurrenceIndex}` : undefined,
+      title: event.title,
+      start: currentDate.toISOString(),
+      end: add(currentDate, { hours: differenceInHours(endDate, startDate) }).toISOString(),
+      backgroundColor: getColorForTitle(event.title),
+      extendedProps: {
+        description: event.description,
+        repetition: event.repetition,
+        author: event.author,
+      },
+    });
+
+    switch (event.repetition) {
+      case 'weekly':
+        currentDate = add(currentDate, { weeks: 1 });
+        break;
+      case 'monthly':
+        currentDate = add(currentDate, { months: 1 });
+        break;
+      case 'yearly':
+        currentDate = add(currentDate, { years: 1 });
+        break;
+      default:
+        currentDate = add(currentDate, { years: 1 });
+    }
+
+    occurrenceIndex += 1;
   }
 
   return events;
