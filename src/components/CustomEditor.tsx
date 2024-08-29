@@ -148,26 +148,27 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
         onEditorChange={(newContent: string) => setContent(newContent)}
       />
       <Container className="mt-4">
-        <h5>Selecciona una plantilla haciendo clic:</h5>
+        <h5>Selecciona una plantilla</h5>
         {templates.length > 0 ? (
           <Slider {...sliderSettings}>
             {templates.map((template) => (
               <div key={template.id}>
-                <Col>
-                  <div
-                    style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer' }}
-                    onClick={() => handleTemplateClick(template.content)}
-                  >
-                    <Card
-                      color='primary'
-                      className='card-templates'
-                      style={{ minWidth: '100%', marginBottom: '10px' }}
-                    >
-                      <Card.Body className="d-flex flex-column align-items-center" style={{ padding: 10 }}>
-                        <Card.Title>{template.name}</Card.Title>
-                      </Card.Body>
-                    </Card>
-                  </div>
+                <Col
+                  style={{
+                    cursor: 'pointer',
+                    padding: 15,
+                  }}
+                  onClick={() => handleTemplateClick(template.content)}
+                >
+                  <Card style={{
+                    minWidth: '100%',
+                    marginBottom: '10px',
+                    backgroundColor: 'var(--primary-color)',
+                  }}>
+                    <Card.Body className="d-flex flex-column align-items-center" style={{ padding: 10 }}>
+                      <Card.Title style={{ color: 'var(--primary-text)', }} >{template.name}</Card.Title>
+                    </Card.Body>
+                  </Card>
                 </Col>
               </div>
             ))}
