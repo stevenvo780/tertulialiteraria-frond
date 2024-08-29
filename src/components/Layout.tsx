@@ -75,7 +75,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <FaDiscord size={48} color="var(--discord-text)" />
         {onlineMemberCount !== null && (
           <span style={{ color: 'var(--discord-text)', fontSize: '18px'}}>
-            {onlineMemberCount} <FaCircle size={15} color="var(--success-color)" style={{ marginInline: 1 }} />
+            {onlineMemberCount} <FaCircle size={15} color="var(--online-color)" style={{ marginInline: 1 }} />
           </span>
         )}
       </a>

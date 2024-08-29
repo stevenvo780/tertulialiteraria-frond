@@ -58,8 +58,9 @@ const StaffNormativeModal: React.FC<StaffNormativeModalProps> = ({
               setContent={setNormative}
             />
           </Form.Group>
+          <br />
           <Button variant="primary" type="submit">
-            Guardar Cambios
+            Guardar
           </Button>
         </Form>
       </Modal.Body>
