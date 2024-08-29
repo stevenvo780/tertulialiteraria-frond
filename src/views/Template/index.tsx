@@ -11,6 +11,7 @@ import { TemplateType } from '../../utils/types';
 const TemplatePage: React.FC = () => {
   const [selectedTemplate, setSelectedTemplate] = useState<any>(null);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showPreviewModal, setShowPreviewModal] = useState(false); // Estado para el modal de previsualización
   const [isEditing, setIsEditing] = useState(false);
   const [content, setContent] = useState('');
   const [title, setTitle] = useState('');
@@ -96,6 +97,7 @@ const TemplatePage: React.FC = () => {
 
   const handlePreviewClick = (template: any) => {
     setSelectedTemplate(template);
+    setShowPreviewModal(true); // Muestra el modal de previsualización
   };
 
   return (
@@ -108,8 +110,8 @@ const TemplatePage: React.FC = () => {
         </Col>
       </Row>
       <Row>
-        <Col md={4}>
-          {templates.map((template) => (
+        {templates.map((template) => (
+          <Col md={4}>
             <Card key={template.id} className="mb-3">
               <Card.Body>
                 <Card.Title>{template.name}</Card.Title>
@@ -125,18 +127,8 @@ const TemplatePage: React.FC = () => {
                 </Button>
               </Card.Body>
             </Card>
-          ))}
-        </Col>
-        <Col md={8}>
-          {selectedTemplate && (
-            <Card>
-              <Card.Header>Previsualización de Plantilla</Card.Header>
-              <Card.Body>
-                <div dangerouslySetInnerHTML={{ __html: selectedTemplate.content }} />
-              </Card.Body>
-            </Card>
-          )}
-        </Col>
+          </Col>
+        ))}
       </Row>
 
       <TemplateEditModal
@@ -152,6 +144,22 @@ const TemplatePage: React.FC = () => {
         type={type}
         setType={setType}
       />
+
+      <Modal show={showPreviewModal} onHide={() => setShowPreviewModal(false)} size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>Previsualización de Plantilla</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedTemplate && (
+            <div dangerouslySetInnerHTML={{ __html: selectedTemplate.content }} />
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowPreviewModal(false)}>
+            Cerrar
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 };
