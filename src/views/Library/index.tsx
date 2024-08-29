@@ -223,7 +223,7 @@ const LibraryPage: React.FC = () => {
           handleSearch={handleSearch}
           permissionsEditable={permissionsEditable}
         />
-        {currentNote  && <br/>}
+        {currentNote && <br />}
         <Row style={currentNote ? {
           display: 'flex',
           justifyContent: 'flex-end',
@@ -253,28 +253,26 @@ const LibraryPage: React.FC = () => {
             </>
           )}
         </Row>
-        {currentNote  && <br/>}
-        <Row>
-          {!currentNote ? (
-            <LibraryList
-              libraries={libraries}
-              onNavigate={handleNoteClick}
-              likesData={likesData}
-              handleLikeToggle={handleLikeToggle}
-              handleShare={handleShare}
-            />
-          ) : currentNote.children && currentNote.children.length > 0 ? (
-            <LibraryList
-              libraries={currentNote.children}
-              onNavigate={handleNoteClick}
-              likesData={likesData}
-              handleLikeToggle={handleLikeToggle}
-              handleShare={handleShare}
-            />
-          ) : (
-            <p className="text-center text-muted">No hay subnotas.</p>
-          )}
-        </Row>
+        {currentNote && <br />}
+        {!currentNote ? (
+          <LibraryList
+            libraries={libraries}
+            onNavigate={handleNoteClick}
+            likesData={likesData}
+            handleLikeToggle={handleLikeToggle}
+            handleShare={handleShare}
+          />
+        ) : currentNote.children && currentNote.children.length > 0 ? (
+          <LibraryList
+            libraries={currentNote.children}
+            onNavigate={handleNoteClick}
+            likesData={likesData}
+            handleLikeToggle={handleLikeToggle}
+            handleShare={handleShare}
+          />
+        ) : (
+          <p className="text-center text-muted">No hay subnotas.</p>
+        )}
         <Pagination>
           {Array.from({ length: Math.ceil(totalItems / itemsPerPage) }, (_, idx) => (
             <Pagination.Item

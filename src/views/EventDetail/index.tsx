@@ -8,18 +8,6 @@ import 'react-calendar/dist/Calendar.css';
 import EventModal from '../../components/EventModal';
 import ScrollableEvents from '../../components/ScrollableEvents';
 import { FaEdit } from 'react-icons/fa';
-import {
-  FacebookShareButton,
-  TwitterShareButton,
-  WhatsappShareButton,
-  FacebookIcon,
-  TwitterIcon,
-  WhatsappIcon,
-  LinkedinShareButton,
-  LinkedinIcon,
-  TelegramShareButton,
-  TelegramIcon,
-} from 'react-share';
 import { getNextOccurrence } from '../Events/EventUtils';
 import './styles.css';
 import { useSelector } from 'react-redux';
