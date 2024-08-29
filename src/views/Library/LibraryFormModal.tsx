@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Modal, Button, Form } from 'react-bootstrap';
+import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
 import { TemplateType } from '../../utils/types';
 import { Library, CreateLibraryDto, UpdateLibraryDto, LibraryVisibility } from '../../utils/types';
 import CustomEditor from '../../components/CustomEditor';
@@ -80,15 +80,37 @@ const LibraryFormModal: React.FC<LibraryFormModalProps> = ({
               handleSubmit(e);
               handleClose();
             }}>
-              <Form.Group controlId="formLibraryTitle">
-                <Form.Label>Título</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  required
-                />
-              </Form.Group>
+              <Row>
+                <Col md={userRole === UserRole.ADMIN || userRole === UserRole.SUPER_ADMIN ? 6 : 12}>
+                  <Form.Group controlId="formLibraryTitle">
+                    <Form.Label>Título</Form.Label>
+                    <Form.Control
+                      type="text"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      required
+                    />
+                  </Form.Group>
+                </Col>
+                {(userRole === UserRole.ADMIN || userRole === UserRole.SUPER_ADMIN) && (
+                  <Col md={6}>
+                    <Form.Group controlId="formLibraryVisibility">
+                      <Form.Label>Visibilidad</Form.Label>
+                      <Form.Control
+                        as="select"
+                        value={visibility}
+                        onChange={(e) => setVisibility(e.target.value as LibraryVisibility)}
+                        required
+                      >
+                        <option value={LibraryVisibility.GENERAL}>General</option>
+                        <option value={LibraryVisibility.USERS}>Usuarios</option>
+                        <option value={LibraryVisibility.ADMIN}>Admin</option>
+                      </Form.Control>
+                    </Form.Group>
+                  </Col>
+                )}
+              </Row>
+              <br />
               <Form.Group controlId="formLibraryDescription">
                 <Form.Label>Descripción</Form.Label>
                 <CustomEditor
@@ -97,21 +119,6 @@ const LibraryFormModal: React.FC<LibraryFormModalProps> = ({
                   templateType={TemplateType.NOTES}
                 />
               </Form.Group>
-              {(userRole === UserRole.ADMIN || userRole === UserRole.SUPER_ADMIN) && (
-                <Form.Group controlId="formLibraryVisibility">
-                  <Form.Label>Visibilidad</Form.Label>
-                  <Form.Control
-                    as="select"
-                    value={visibility}
-                    onChange={(e) => setVisibility(e.target.value as LibraryVisibility)}
-                    required
-                  >
-                    <option value={LibraryVisibility.GENERAL}>General</option>
-                    <option value={LibraryVisibility.USERS}>Usuarios</option>
-                    <option value={LibraryVisibility.ADMIN}>Admin</option>
-                  </Form.Control>
-                </Form.Group>
-              )}
               <br />
               <Button variant="primary" type="submit">
                 {editingLibrary ? 'Actualizar' : 'Crear'}

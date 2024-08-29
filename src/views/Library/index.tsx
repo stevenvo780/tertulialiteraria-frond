@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Col, Container, Row, Form } from 'react-bootstrap';
+import { Col, Container, Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { RootState } from '../../redux/store';
@@ -9,21 +9,18 @@ import { addNotification } from '../../redux/ui';
 import { Library, CreateLibraryDto, UpdateLibraryDto, Like, LikeTarget } from '../../utils/types';
 import LibraryList from './LibraryList';
 import LibraryFormModal from './LibraryFormModal';
-import { FaEdit, FaTrash } from 'react-icons/fa';
-import { UserRole } from '../../utils/types';
 import ShareNoteModal from './ShareNoteModal';
-import { getRoleInSpanish } from '../../utils/roleTranslation';
-import { BsFileEarmarkPlusFill } from "react-icons/bs";
-import { IoIosArrowBack } from "react-icons/io";
-import ActionButtons from '../../components/ActionButtons'; 
+import ActionButtons from '../../components/ActionButtons';
 import Pagination from 'react-bootstrap/Pagination';
+import LibraryHeader from './LibraryHeader';
+import { UserRole } from '../../utils/types';
+import { getRoleInSpanish } from '../../utils/roleTranslation';
 
 const LibraryPage: React.FC = () => {
   const { noteId } = useParams<{ noteId: string | undefined }>();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const libraries = useSelector((state: RootState) => state.library.libraries);
-  const userRole = useSelector((state: RootState) => state.auth.userData?.role);
   const [currentNote, setCurrentNote] = useState<Library | null>(null);
   const [navigationStack, setNavigationStack] = useState<Library[]>([]);
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -35,6 +32,8 @@ const LibraryPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const itemsPerPage = 50;
+  const userRole = useSelector((state: RootState) => state.auth.userData?.role);
+  const permissionsEditable = (userRole === UserRole.ADMIN || userRole === UserRole.SUPER_ADMIN || userRole === UserRole.EDITOR);
 
   useEffect(() => {
     if (noteId) {
@@ -141,8 +140,10 @@ const LibraryPage: React.FC = () => {
   const handleCreateOrUpdate = async (libraryData: CreateLibraryDto | UpdateLibraryDto) => {
     try {
       if (editingLibrary) {
-        await api.patch(`/library/${editingLibrary.id}`, libraryData as UpdateLibraryDto);
-        dispatch(updateLibrary({ ...editingLibrary, ...libraryData } as Library));
+        const response = await api.patch(`/library/${editingLibrary.id}`, libraryData as UpdateLibraryDto);
+        dispatch(updateLibrary({ ...editingLibrary, ...response.data } as Library));
+        setCurrentNote(response.data);
+        fetchLikesDataAsync([response.data]);
         dispatch(addNotification({ message: 'Referencia actualizada correctamente', color: 'success' }));
       } else {
         const response = await api.post<Library>('/library', {
@@ -150,6 +151,7 @@ const LibraryPage: React.FC = () => {
           parentNoteId: currentNote?.id || undefined,
         } as CreateLibraryDto);
         dispatch(addLibrary(response.data));
+        handleNoteClick(response.data);
         dispatch(addNotification({ message: 'Referencia creada correctamente', color: 'success' }));
 
         currentNote ? fetchNoteById(currentNote.id) : fetchLibraries();
@@ -166,6 +168,10 @@ const LibraryPage: React.FC = () => {
   };
 
   const handleDelete = async (library: Library) => {
+    if (library.children && library.children.length > 0) {
+      dispatch(addNotification({ message: 'No puedes eliminar una referencia que tiene subnotas', color: 'warning' }));
+      return;
+    }
     if (window.confirm('¿Estás seguro de que deseas eliminar esta referencia?')) {
       try {
         await api.delete(`/library/${library.id}`);
@@ -179,8 +185,7 @@ const LibraryPage: React.FC = () => {
     }
   };
 
-  const handleSearch = async (event: React.FormEvent) => {
-    event.preventDefault();
+  const handleSearch = async () => {
     try {
       if (searchQuery && searchQuery.length > 3) {
         const response = await api.get<Library[]>('/library/view/search', {
@@ -201,92 +206,24 @@ const LibraryPage: React.FC = () => {
     fetchLibraries(pageNumber, itemsPerPage);
   };
 
-  const permissionsEditable = (userRole === UserRole.ADMIN || userRole === UserRole.SUPER_ADMIN || userRole === UserRole.EDITOR);
-
   return (
     <>
       <Container>
-        <Row className="align-items-center mb-4">
-          {!currentNote && (
-            <Col xs={7} md={10}>
-              <Form onSubmit={handleSearch} className="mb-4">
-                <Form.Group controlId="searchQuery">
-                  <Row>
-                    <Col md={10} xs={10}>
-                      <Form.Control
-                        type="text"
-                        placeholder="Buscar por título o descripción"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                      />
-                    </Col>
-                    <Col md={2} xs={2} className="text-right">
-                      <Button variant="primary" type="submit">
-                        Buscar
-                      </Button>
-                    </Col>
-                  </Row>
-                </Form.Group>
-              </Form>
-            </Col>
-          )}
-          {currentNote && (
-            <Col xs={4} md={10}>
-              <Button variant="secondary" onClick={handleGoBack} className="p-0" >
-                <IoIosArrowBack size={30} />
-              </Button>
-            </Col>
-          )}
-          {permissionsEditable && (
-            <Col xs={currentNote ? 8 : 5} md={currentNote ? 2 : 1} className="text-right" style={{
-              display: 'flex',
-              justifyContent: 'flex-end',
-            }}>
-              <div style={{
-                display: 'inline-flex',
-                justifyContent: 'flex-end',
-                alignItems: 'center',
-                backgroundColor: 'var(--white-color)',
-                borderRadius: '10px',
-                boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
-                padding: '10px',
-              }}>
-                <BsFileEarmarkPlusFill
-                  onClick={() => setShowModal(true)}
-                  size={27}
-                  style={{
-                    cursor: 'pointer',
-                    marginInline: 8,
-                    color: 'var(--secondary-color)',
-                  }}
-                />
-                {currentNote && (
-                  <>
-                    <FaEdit
-                      onClick={() => handleEdit(currentNote)}
-                      size={27}
-                      style={{
-                        cursor: 'pointer',
-                        marginInline: 8,
-                        color: 'var(--secondary-color)',
-                      }}
-                    />
-                    <FaTrash
-                      onClick={() => handleDelete(currentNote)}
-                      size={27}
-                      style={{
-                        cursor: 'pointer',
-                        marginInline: 8,
-                        color: 'var(--secondary-color)',
-                      }}
-                    />
-                  </>
-                )}
-              </div>
-            </Col>
-          )}
-        </Row>
-
+        <LibraryHeader
+          currentNote={currentNote}
+          onGoBack={handleGoBack}
+          onEdit={() => currentNote && handleEdit(currentNote)}
+          onDelete={() => currentNote && handleDelete(currentNote)}
+          onCreate={() => {
+            setEditingLibrary(null);
+            setShowModal(true);
+          }}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          handleSearch={handleSearch}
+          permissionsEditable={permissionsEditable}
+        />
+        {currentNote  && <br/>}
         <Row style={currentNote ? {
           display: 'flex',
           justifyContent: 'flex-end',
@@ -296,7 +233,7 @@ const LibraryPage: React.FC = () => {
           padding: '8px',
         } : {}} >
           {currentNote && (
-            <Row className="align-items-center mb-3" style={{ marginTop: 10 }}>
+            <>
               <Col xs={12} md={12}>
                 <h4 className="m-0">{currentNote.title}</h4>
                 {currentNote.author && (
@@ -305,7 +242,7 @@ const LibraryPage: React.FC = () => {
                 <div dangerouslySetInnerHTML={{ __html: currentNote.description }} />
               </Col>
               <Col xs={12} md={12} className="text-left" style={{ display: 'flex', justifyContent: 'flex-init' }}>
-              <ActionButtons
+                <ActionButtons
                   userLike={likesData[currentNote.id]?.userLike}
                   likesCount={likesData[currentNote.id]?.likes || 0}
                   dislikesCount={likesData[currentNote.id]?.dislikes || 0}
@@ -313,10 +250,10 @@ const LibraryPage: React.FC = () => {
                   onShare={() => handleShare(currentNote)}
                 />
               </Col>
-            </Row>
+            </>
           )}
         </Row>
-        <br />
+        {currentNote  && <br/>}
         <Row>
           {!currentNote ? (
             <LibraryList
@@ -360,7 +297,6 @@ const LibraryPage: React.FC = () => {
           showModal={showModal}
         />
       )}
-
       {selectedLibrary && (
         <ShareNoteModal
           show={shareModalVisible}

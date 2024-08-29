@@ -5,32 +5,32 @@ import { useDispatch } from 'react-redux';
 import { addNotification } from '../../redux/ui';
 import CustomEditor from '../../components/CustomEditor';
 
-interface AboutModalProps {
+interface PrivacyPoliciesModalProps {
   showModal: boolean;
   setShowModal: (show: boolean) => void;
-  currentInfo: string;
-  setProjectInfo: (info: string) => void;
+  currentPolicies: string;
+  setPrivacyPolicies: (policies: string) => void;
 }
 
-const AboutModal: React.FC<AboutModalProps> = ({
+const PrivacyPoliciesModal: React.FC<PrivacyPoliciesModalProps> = ({
   showModal,
   setShowModal,
-  currentInfo,
-  setProjectInfo,
+  currentPolicies,
+  setPrivacyPolicies,
 }) => {
-  const [projectInfo, setInfo] = useState(currentInfo);
+  const [policies, setPolicies] = useState(currentPolicies);
   const editorRef = useRef<any>(null);
   const dispatch = useDispatch();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      const response = await api.patch('/config', { projectInfo });
-      setProjectInfo(response.data.projectInfo);
+      const response = await api.patch('/config', { privacyPolicies: policies });
+      setPrivacyPolicies(response.data.privacyPolicies);
       setShowModal(false);
-      dispatch(addNotification({ message: 'Información del proyecto actualizada correctamente', color: 'success' }));
+      dispatch(addNotification({ message: 'Políticas de privacidad actualizadas correctamente', color: 'success' }));
     } catch (error) {
-      dispatch(addNotification({ message: 'Error al actualizar la información del proyecto', color: 'danger' }));
+      dispatch(addNotification({ message: 'Error al actualizar las políticas de privacidad', color: 'danger' }));
     }
   };
 
@@ -47,15 +47,15 @@ const AboutModal: React.FC<AboutModalProps> = ({
   return (
     <Modal show={showModal} onHide={handleClose} size="xl">
       <Modal.Header closeButton>
-        <Modal.Title>Editar Información del Proyecto</Modal.Title>
+        <Modal.Title>Editar Políticas de Privacidad</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={handleSubmit}>
-          <Form.Group controlId="formProjectInfo">
-            <Form.Label>Información del Proyecto</Form.Label>
+          <Form.Group controlId="formPrivacyPolicies">
+            <Form.Label>Políticas de Privacidad</Form.Label>
             <CustomEditor
-              content={projectInfo}
-              setContent={setInfo}
+              content={policies}
+              setContent={setPolicies}
             />
           </Form.Group>
           <br />
@@ -68,4 +68,4 @@ const AboutModal: React.FC<AboutModalProps> = ({
   );
 };
 
-export default AboutModal;
+export default PrivacyPoliciesModal;

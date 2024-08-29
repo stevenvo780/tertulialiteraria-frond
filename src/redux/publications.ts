@@ -24,7 +24,7 @@ const publicationsSlice = createSlice({
     },
     addPublication(state, action: PayloadAction<Publication>) {
       if (!state.publications.some(pub => pub.id === action.payload.id)) {
-        state.publications.push(action.payload);
+        state.publications.unshift(action.payload);
       }
     },
     updatePublication(state, action: PayloadAction<Publication>) {

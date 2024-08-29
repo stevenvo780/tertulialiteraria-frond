@@ -20,7 +20,9 @@ const librarySlice = createSlice({
       state.libraries.push(action.payload);
     },
     updateLibrary(state, action: PayloadAction<Library>) {
+      console.log(action.payload);
       const index = state.libraries.findIndex(library => library.id === action.payload.id);
+      console.log(index);
       if (index !== -1) {
         state.libraries[index] = action.payload;
       }
