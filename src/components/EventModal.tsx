@@ -55,13 +55,11 @@ const EventModal: React.FC<EventModalProps> = ({
     
     const currentDate = new Date();
 
-    // Validación para evitar fechas anteriores a la actual
     if (startDate && startDate < currentDate) {
       dispatch(addNotification({ message: 'La fecha de inicio no puede ser anterior a la fecha actual', color: 'danger' }));
       return;
     }
 
-    // Validación para fechas incoherentes
     if (endDate && startDate && endDate < startDate) {
       dispatch(addNotification({ message: 'La fecha de fin no puede ser anterior a la fecha de inicio', color: 'danger' }));
       return;
