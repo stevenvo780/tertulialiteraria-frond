@@ -45,16 +45,7 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
 
   return (
     <>
-      <div className="d-flex justify-content-between mb-3">
-        <Button variant="primary" onClick={() => setViewMode(viewMode === 'editor' ? 'html' : 'editor')} size='sm'>
-          {viewMode === 'editor' ? 'Ver HTML' : 'Ver Editor'}
-        </Button>
-        {viewMode === 'html' && (
-          <Button variant="success" onClick={handleApplyChanges} size='sm'>
-            Aplicar Cambios
-          </Button>
-        )}
-      </div>
+
 
       {viewMode === 'editor' ? (
         <Editor
@@ -98,6 +89,17 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
           }}
         />
       )}
+      <br />
+      <div className="d-flex justify-content-between mb-3">
+        <Button variant="primary" onClick={() => setViewMode(viewMode === 'editor' ? 'html' : 'editor')} size='sm'>
+          {viewMode === 'editor' ? 'Ver HTML' : 'Ver Editor'}
+        </Button>
+        {viewMode === 'html' && (
+          <Button variant="success" onClick={handleApplyChanges} size='sm'>
+            Aplicar Cambios
+          </Button>
+        )}
+      </div>
       <TemplateSlider
         templateType={templateType || ''}
         onTemplateClick={(templateContent: string) => {

@@ -50,7 +50,7 @@ const CustomImageUpload: React.FC<CustomImageUploadProps> = ({ editorState, onEd
   };
 
   return (
-    <div style={{ marginBlock: 5 }}>
+    <div style={{ margin: 5 }}>
       <FaImage onClick={handleShow} style={{ cursor: 'pointer', fontSize: '18px', marginRight: '8px' }} />
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
