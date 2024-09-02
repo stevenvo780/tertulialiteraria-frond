@@ -65,22 +65,19 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
           onEditorStateChange={setEditorState}
           toolbarCustomButtons={[<CustomImageUpload editorState={editorState} onEditorStateChange={setEditorState} />]}
           toolbar={{
-            options: ['inline', 'blockType', 'fontSize', 'fontFamily', 'list', 'textAlign', 'link', 'image', 'emoji', 'history'],
+            options: [
+              'inline',
+              'blockType',
+              'fontSize',
+              'fontFamily',
+              'list',
+              'textAlign',
+              'colorPicker',
+              'link',
+              'emoji',
+              'history',
+            ],
             inline: { inDropdown: true },
-            list: { inDropdown: true },
-            textAlign: { inDropdown: true },
-            link: { inDropdown: true },
-            image: {
-              urlEnabled: false,
-              uploadEnabled: false,
-              alignmentEnabled: true,
-              inputAccept: 'image/gif,image/jpeg,image/jpg,image/png,image/svg',
-              alt: { present: true, mandatory: false },
-              defaultSize: {
-                height: 'auto',
-                width: 'auto',
-              },
-            },
           }}
           editorStyle={{ height: `${height}px`, border: "1px solid #F1F1F1", padding: "10px" }}
         />
@@ -101,13 +98,13 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
           }}
         />
       )}
-      <TemplateSlider 
-        templateType={templateType || ''} 
+      <TemplateSlider
+        templateType={templateType || ''}
         onTemplateClick={(templateContent: string) => {
           const contentBlock = htmlToDraft(templateContent);
           const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks, contentBlock.entityMap);
           setEditorState(EditorState.createWithContent(contentState));
-        }} 
+        }}
       />
     </>
   );

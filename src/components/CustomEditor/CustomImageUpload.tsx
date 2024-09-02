@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import { storage } from '../../utils/firebase';
 import { EditorState, AtomicBlockUtils } from 'draft-js';
+import { FaImage } from 'react-icons/fa'; // Importar el icono de imagen
 
 interface CustomImageUploadProps {
   editorState: EditorState;
@@ -49,11 +50,8 @@ const CustomImageUpload: React.FC<CustomImageUploadProps> = ({ editorState, onEd
   };
 
   return (
-    <>
-      <Button variant="light" onClick={handleShow} style={{ marginRight: 5 }}>
-        Subir Imagen
-      </Button>
-
+    <div style={{ marginBlock: 5 }}>
+      <FaImage onClick={handleShow} style={{ cursor: 'pointer', fontSize: '18px', marginRight: '8px' }} />
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Subir Imagen</Modal.Title>
@@ -75,7 +73,7 @@ const CustomImageUpload: React.FC<CustomImageUploadProps> = ({ editorState, onEd
           </Button>
         </Modal.Footer>
       </Modal>
-    </>
+    </div>
   );
 };
 
