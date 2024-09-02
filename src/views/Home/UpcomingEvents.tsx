@@ -19,7 +19,7 @@ const UpcomingEvents: React.FC<UpcomingEventsProps> = ({ events }) => {
 
   return (
     <div>
-      <h4>Próximos Eventos</h4>
+      <h4>Eventos importantes</h4>
       {events.length > 0 ? (
         events.map((event) => (
           <Card
