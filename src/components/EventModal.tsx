@@ -153,6 +153,7 @@ const EventModal: React.FC<EventModalProps> = ({
                   <option value={Repetition.NONE}>No repetir</option>
                   <option value={Repetition.DAILY}>Diariamente</option>
                   <option value={Repetition.WEEKLY}>Semanalmente</option>
+                  <option value={Repetition.FIFTEEN_DAYS}>Cada 15 días</option>
                   <option value={Repetition.MONTHLY}>Mensualmente</option>
                   <option value={Repetition.YEARLY}>Anualmente</option>
                 </Form.Control>
