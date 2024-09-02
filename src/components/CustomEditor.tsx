@@ -1,5 +1,9 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { Editor } from '@tinymce/tinymce-react';
+import React, { useEffect, useState } from 'react';
+import { EditorState, convertToRaw, ContentState } from 'draft-js';
+import { Editor } from 'react-draft-wysiwyg';
+import draftToHtml from 'draftjs-to-html';
+import htmlToDraft from 'html-to-draftjs';
+import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import { storage } from '../utils/firebase';
 import axios from '../utils/axios';
 import { Container, Col, Card } from 'react-bootstrap';
@@ -7,18 +11,13 @@ import Slider from 'react-slick';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 interface CustomEditorProps {
   content: string;
   setContent: (content: string) => void;
-  height?: number;
-  menubar?: boolean;
-  toolbar?: string;
-  plugins?: string;
-  apiKey?: string;
-  contentCss?: string;
   templateType?: string;
+  height?: number;
 }
 
 const CustomPrevArrow = (props: any) => {
@@ -46,15 +45,12 @@ const CustomNextArrow = (props: any) => {
 const CustomEditor: React.FC<CustomEditorProps> = ({
   content,
   setContent,
-  height = 500,
-  menubar = false,
-  toolbar = "undo redo fullscreen spellcheckdialog formatpainter | blocks fontfamily fontsize | bold italic underline forecolor backcolor | link image | alignleft aligncenter alignright alignjustify | code",
-  plugins = 'fullscreen powerpaste casechange searchreplace autolink directionality visualblocks visualchars image link media mediaembed codesample table charmap pagebreak nonbreaking anchor tableofcontents insertdatetime advlist lists checklist wordcount editimage help formatpainter permanentpen charmap linkchecker emoticons advtable export autosave advcode fullscreen',
-  apiKey = 'ide9bzali9973f0fmbzusywuxlpp3mxmigqoa07eddfltlrj',
-  contentCss = 'https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css',
   templateType = null,
+  height = 500,
 }) => {
-  const editorRef = useRef<any>(null);
+  const [editorState, setEditorState] = useState(() =>
+    EditorState.createEmpty()
+  );
   const [templates, setTemplates] = useState<any[]>([]);
 
   useEffect(() => {
@@ -74,9 +70,8 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
     fetchTemplates();
   }, [templateType]);
 
-  const uploadImage = async (blobInfo: any): Promise<string> => {
+  const uploadImage = async (file: File): Promise<string> => {
     try {
-      const file = blobInfo.blob();
       const storageRef = storage.ref();
       const fileRef = storageRef.child(`images/${file.name}`);
 
@@ -90,17 +85,16 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
   };
 
   const handleTemplateClick = (templateContent: string) => {
-    setContent(templateContent);
+    const contentBlock = htmlToDraft(templateContent);
+    const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks, contentBlock.entityMap);
+    setEditorState(EditorState.createWithContent(contentState));
   };
 
   useEffect(() => {
-    return () => {
-      if (editorRef.current) {
-        editorRef.current.destroy();
-        editorRef.current = null;
-      }
-    };
-  }, []);
+    const rawContentState = convertToRaw(editorState.getCurrentContent());
+    const htmlContent = draftToHtml(rawContentState);
+    setContent(htmlContent);
+  }, [editorState, setContent]);
 
   const sliderSettings = {
     dots: templates.length > 1,
@@ -131,21 +125,18 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
   return (
     <>
       <Editor
-        apiKey={apiKey}
-        value={content || ''}
-        onInit={(evt, editor) => {
-          editorRef.current = editor;
+        editorState={editorState}
+        toolbarClassName="toolbarClassName"
+        wrapperClassName="wrapperClassName"
+        editorClassName="editorClassName"
+        onEditorStateChange={setEditorState}
+        toolbar={{
+          image: {
+            uploadCallback: uploadImage,
+            alt: { present: true, mandatory: false },
+          },
         }}
-        init={{
-          height: height,
-          menubar: menubar,
-          plugins: plugins,
-          toolbar: toolbar,
-          images_upload_handler: uploadImage,
-          content_css: contentCss,
-          advcode_inline: true,
-        }}
-        onEditorChange={(newContent: string) => setContent(newContent)}
+        editorStyle={{ height: `${height}px`, border: "1px solid #F1F1F1", padding: "10px" }}
       />
       <Container className="mt-4">
         <h5>Selecciona una plantilla</h5>
@@ -166,7 +157,7 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
                     backgroundColor: 'var(--primary-color)',
                   }}>
                     <Card.Body className="d-flex flex-column align-items-center" style={{ padding: 10 }}>
-                      <Card.Title style={{ color: 'var(--primary-text)', }} >{template.name}</Card.Title>
+                      <Card.Title style={{ color: 'var(--primary-text)' }}>{template.name}</Card.Title>
                     </Card.Body>
                   </Card>
                 </Col>
