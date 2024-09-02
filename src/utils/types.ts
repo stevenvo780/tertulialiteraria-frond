@@ -27,6 +27,7 @@ export enum Repetition {
   NONE = 'none',
   DAILY = 'daily',
   WEEKLY = 'weekly',
+  FIFTEEN_DAYS = 'fifteen_days',
   MONTHLY = 'monthly',
   YEARLY = 'yearly',
 }
