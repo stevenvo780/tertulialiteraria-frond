@@ -6,7 +6,7 @@ import htmlToDraft from 'html-to-draftjs';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import { storage } from '../utils/firebase';
 import axios from '../utils/axios';
-import { Container, Col, Card } from 'react-bootstrap';
+import { Container, Col, Card, Button, Form } from 'react-bootstrap';
 import Slider from 'react-slick';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import "slick-carousel/slick/slick.css";
@@ -52,6 +52,8 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
     EditorState.createEmpty()
   );
   const [templates, setTemplates] = useState<any[]>([]);
+  const [viewMode, setViewMode] = useState<'editor' | 'html'>('editor');
+  const [htmlContent, setHtmlContent] = useState(content);
 
   useEffect(() => {
     const fetchTemplates = async () => {
@@ -93,8 +95,15 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
   useEffect(() => {
     const rawContentState = convertToRaw(editorState.getCurrentContent());
     const htmlContent = draftToHtml(rawContentState);
+    setHtmlContent(htmlContent);
     setContent(htmlContent);
   }, [editorState, setContent]);
+
+  const handleApplyChanges = () => {
+    const contentBlock = htmlToDraft(htmlContent);
+    const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks, contentBlock.entityMap);
+    setEditorState(EditorState.createWithContent(contentState));
+  };
 
   const sliderSettings = {
     dots: templates.length > 1,
@@ -124,20 +133,41 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
 
   return (
     <>
-      <Editor
-        editorState={editorState}
-        toolbarClassName="toolbarClassName"
-        wrapperClassName="wrapperClassName"
-        editorClassName="editorClassName"
-        onEditorStateChange={setEditorState}
-        toolbar={{
-          image: {
-            uploadCallback: uploadImage,
-            alt: { present: true, mandatory: false },
-          },
-        }}
-        editorStyle={{ height: `${height}px`, border: "1px solid #F1F1F1", padding: "10px" }}
-      />
+      <div className="d-flex justify-content-between mb-3">
+        <Button variant="primary" onClick={() => setViewMode(viewMode === 'editor' ? 'html' : 'editor')} size='sm'>
+          {viewMode === 'editor' ? 'Ver HTML' : 'Ver Editor'}
+        </Button>
+        {viewMode === 'html' && (
+          <Button variant="success" onClick={handleApplyChanges} size='sm'>
+            Aplicar Cambios
+          </Button>
+        )}
+      </div>
+
+      {viewMode === 'editor' ? (
+        <Editor
+          editorState={editorState}
+          toolbarClassName="toolbarClassName"
+          wrapperClassName="wrapperClassName"
+          editorClassName="editorClassName"
+          onEditorStateChange={setEditorState}
+          toolbar={{
+            image: {
+              uploadCallback: uploadImage,
+              alt: { present: true, mandatory: false },
+            },
+          }}
+          editorStyle={{ height: `${height}px`, border: "1px solid #F1F1F1", padding: "10px" }}
+        />
+      ) : (
+        <Form.Control
+          as="textarea"
+          rows={15}
+          value={htmlContent}
+          onChange={(e) => setHtmlContent(e.target.value)}
+        />
+      )}
+
       <Container className="mt-4">
         <h5>Selecciona una plantilla</h5>
         {templates.length > 0 ? (
