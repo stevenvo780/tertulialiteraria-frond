@@ -1,6 +1,7 @@
 import { Events } from '../../utils/types';
 import { add, eachWeekOfInterval, eachMonthOfInterval, eachYearOfInterval, differenceInHours, isAfter, isBefore } from 'date-fns';
 import { EventInput } from '@fullcalendar/core';
+import { Repetition } from '../../utils/types';
 
 const COLORS = ['#FF5733', '#33FF57', '#3357FF', '#F333FF', '#FF33A6'];
 
@@ -40,7 +41,7 @@ export const generateRecurringEvents = (event: Events): EventInput[] => {
   const startDate = new Date(event.startDate);
   const endDate = new Date(event.endDate);
 
-  if (!event.repetition) {
+  if (!event.repetition || event.repetition === Repetition.NONE) {
     return [convertToCalendarEvent(event)];
   }
 
@@ -62,14 +63,17 @@ export const generateRecurringEvents = (event: Events): EventInput[] => {
     });
 
     switch (event.repetition) {
-      case 'weekly':
+      case Repetition.WEEKLY:
         currentDate = add(currentDate, { weeks: 1 });
         break;
-      case 'monthly':
+      case Repetition.MONTHLY:
         currentDate = add(currentDate, { months: 1 });
         break;
-      case 'yearly':
+      case Repetition.YEARLY:
         currentDate = add(currentDate, { years: 1 });
+        break;
+      case Repetition.FIFTEEN_DAYS: // Nueva lógica para repetir cada 15 días
+        currentDate = add(currentDate, { days: 15 });
         break;
       default:
         currentDate = add(currentDate, { years: 1 });
@@ -80,7 +84,6 @@ export const generateRecurringEvents = (event: Events): EventInput[] => {
 
   return events;
 };
-
 export const getNextOccurrence = (event: Events): Date | null => {
   const now = new Date();
   const startDate = new Date(event.startDate);
