@@ -6,12 +6,15 @@ import htmlToDraft from 'html-to-draftjs';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import { storage } from '../utils/firebase';
 import axios from '../utils/axios';
-import { Container, Col, Card, Button, Form } from 'react-bootstrap';
+import { Container, Col, Card, Button } from 'react-bootstrap';
 import Slider from 'react-slick';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import EditorCode from 'react-simple-code-editor';
+import Prism from 'prismjs';
+import 'prismjs/themes/prism.css'; // Puedes cambiar el tema de Prism si lo deseas
 
 interface CustomEditorProps {
   content: string;
@@ -160,11 +163,20 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
           editorStyle={{ height: `${height}px`, border: "1px solid #F1F1F1", padding: "10px" }}
         />
       ) : (
-        <Form.Control
-          as="textarea"
-          rows={15}
+        <EditorCode
           value={htmlContent}
-          onChange={(e) => setHtmlContent(e.target.value)}
+          onValueChange={setHtmlContent}
+          highlight={code => Prism.highlight(code, Prism.languages.html, 'html')}
+          padding={10}
+          style={{
+            fontFamily: '"Fira code", "Fira Mono", monospace',
+            fontSize: 14,
+            border: "1px solid #F1F1F1",
+            borderRadius: "4px",
+            height: `${height}px`,
+            overflow: 'auto',
+            backgroundColor: "#f5f5f5"
+          }}
         />
       )}
 
