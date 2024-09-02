@@ -4,8 +4,7 @@ import { Editor } from 'react-draft-wysiwyg';
 import draftToHtml from 'draftjs-to-html';
 import htmlToDraft from 'html-to-draftjs';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
-import { storage } from '../utils/firebase';
-import axios from '../utils/axios';
+import axios from '../../utils/axios';
 import { Container, Col, Card, Button } from 'react-bootstrap';
 import Slider from 'react-slick';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
@@ -14,7 +13,9 @@ import "slick-carousel/slick/slick-theme.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import EditorCode from 'react-simple-code-editor';
 import Prism from 'prismjs';
-import 'prismjs/themes/prism.css'; // Puedes cambiar el tema de Prism si lo deseas
+import 'prismjs/themes/prism.css';
+import ImageUploadModal from './ImageUploadModal';
+import { Modifier } from 'draft-js';
 
 interface CustomEditorProps {
   content: string;
@@ -57,6 +58,7 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
   const [templates, setTemplates] = useState<any[]>([]);
   const [viewMode, setViewMode] = useState<'editor' | 'html'>('editor');
   const [htmlContent, setHtmlContent] = useState(content);
+  const [showImageModal, setShowImageModal] = useState(false);
 
   useEffect(() => {
     const fetchTemplates = async () => {
@@ -75,18 +77,19 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
     fetchTemplates();
   }, [templateType]);
 
-  const uploadImage = async (file: File): Promise<string> => {
-    try {
-      const storageRef = storage.ref();
-      const fileRef = storageRef.child(`images/${file.name}`);
-
-      const uploadTaskSnapshot = await fileRef.put(file);
-      const fileUrl = await uploadTaskSnapshot.ref.getDownloadURL();
-      return fileUrl;
-    } catch (error) {
-      console.error("Error al subir la imagen:", error);
-      throw new Error("Error al subir la imagen");
-    }
+  const handleImageUpload = (url: string) => {
+    const contentState = editorState.getCurrentContent();
+    const contentStateWithEntity = contentState.createEntity('IMAGE', 'IMMUTABLE', { src: url });
+    const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+    const newContentState = Modifier.insertText(
+      contentStateWithEntity,
+      editorState.getSelection(),
+      ' ',
+      undefined,
+      entityKey
+    );
+    const newEditorState = EditorState.set(editorState, { currentContent: newContentState });
+    setEditorState(EditorState.forceSelection(newEditorState, editorState.getSelection()));
   };
 
   const handleTemplateClick = (templateContent: string) => {
@@ -136,6 +139,12 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
 
   return (
     <>
+      <ImageUploadModal
+        show={showImageModal}
+        handleClose={() => setShowImageModal(false)}
+        insertImage={handleImageUpload}
+      />
+
       <div className="d-flex justify-content-between mb-3">
         <Button variant="primary" onClick={() => setViewMode(viewMode === 'editor' ? 'html' : 'editor')} size='sm'>
           {viewMode === 'editor' ? 'Ver HTML' : 'Ver Editor'}
@@ -155,9 +164,29 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
           editorClassName="editorClassName"
           onEditorStateChange={setEditorState}
           toolbar={{
+            options: ['inline', 'blockType', 'fontSize', 'fontFamily', 'list', 'textAlign', 'link', 'image', 'emoji', 'history'],
+            inline: { inDropdown: true },
+            list: { inDropdown: true },
+            textAlign: { inDropdown: true },
+            link: { inDropdown: true },
             image: {
-              uploadCallback: uploadImage,
+              icon: undefined,
+              className: undefined,
+              component: undefined,
+              popupClassName: undefined,
+              urlEnabled: false,
+              uploadEnabled: false,
+              alignmentEnabled: true,
+              inputAccept: 'image/gif,image/jpeg,image/jpg,image/png,image/svg',
               alt: { present: true, mandatory: false },
+              defaultSize: {
+                height: 'auto',
+                width: 'auto',
+              },
+              onOpenModal: () => {
+                console.log('onOpenModal');
+                setShowImageModal(true);
+              },
             },
           }}
           editorStyle={{ height: `${height}px`, border: "1px solid #F1F1F1", padding: "10px" }}
