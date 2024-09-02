@@ -144,7 +144,7 @@ const LibraryPage: React.FC = () => {
         dispatch(updateLibrary({ ...editingLibrary, ...response.data } as Library));
         setCurrentNote(response.data);
         fetchLikesDataAsync([response.data]);
-        dispatch(addNotification({ message: 'Referencia actualizada correctamente', color: 'success' }));
+        dispatch(addNotification({ message: 'Nota actualizada correctamente', color: 'success' }));
       } else {
         const response = await api.post<Library>('/library', {
           ...libraryData,
@@ -152,13 +152,13 @@ const LibraryPage: React.FC = () => {
         } as CreateLibraryDto);
         dispatch(addLibrary(response.data));
         handleNoteClick(response.data);
-        dispatch(addNotification({ message: 'Referencia creada correctamente', color: 'success' }));
+        dispatch(addNotification({ message: 'Nota creada correctamente', color: 'success' }));
 
         currentNote ? fetchNoteById(currentNote.id) : fetchLibraries();
       }
       setShowModal(false);
     } catch (error) {
-      dispatch(addNotification({ message: 'Error al guardar la referencia', color: 'danger' }));
+      dispatch(addNotification({ message: 'Error al guardar la nota', color: 'danger' }));
     }
   };
 
@@ -169,18 +169,17 @@ const LibraryPage: React.FC = () => {
 
   const handleDelete = async (library: Library) => {
     if (library.children && library.children.length > 0) {
-      dispatch(addNotification({ message: 'No puedes eliminar una referencia que tiene subnotas', color: 'warning' }));
+      dispatch(addNotification({ message: 'No puedes eliminar una nota que tiene subnotas', color: 'warning' }));
       return;
     }
-    if (window.confirm('¿Estás seguro de que deseas eliminar esta referencia?')) {
+    if (window.confirm('¿Estás seguro de que deseas eliminar esta nota?')) {
       try {
         await api.delete(`/library/${library.id}`);
         dispatch(deleteLibrary(library.id));
-        dispatch(addNotification({ message: 'Referencia eliminada correctamente', color: 'success' }));
-
-        currentNote ? fetchNoteById(currentNote.id) : fetchLibraries();
+        dispatch(addNotification({ message: 'Nota eliminada correctamente', color: 'success' }));
+        handleGoBack();
       } catch (error) {
-        dispatch(addNotification({ message: 'Error al eliminar la referencia', color: 'danger' }));
+        dispatch(addNotification({ message: 'Error al eliminar la Nota', color: 'danger' }));
       }
     }
   };
