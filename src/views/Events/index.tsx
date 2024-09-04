@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -26,6 +26,10 @@ const EventsCalendar: React.FC = () => {
   const [selectedEvent, setSelectedEvent] = useState<Events | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [calendarEvents, setCalendarEvents] = useState<EventInput[]>([]);
+
+  const isMobile = window.innerWidth < 768;
+  const initialView = isMobile ? 'timeGridWeek' : 'dayGridMonth';
+  const calendarHeight = isMobile ? 'auto' : '700px';
 
   useEffect(() => {
     fetchEvents();
@@ -70,19 +74,20 @@ const EventsCalendar: React.FC = () => {
   const handleEventClick = (info: any) => {
     const eventId = info.event.id.includes('-') ? info.event.id.split('-')[0] : info.event.id;
     navigate(`/events/${eventId}`);
-  };  
+  };
 
   return (
     <Container>
       <h2 className="my-4">Calendario de Eventos</h2>
       <FullCalendar
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, rrulePlugin]}
-        initialView="dayGridMonth"
+        initialView={initialView} // Determina la vista inicial en función del dispositivo
         events={calendarEvents}
         dateClick={handleDateClick}
         eventClick={handleEventClick}
         editable={true}
         locale="es"
+        height={calendarHeight} // Ajusta la altura en función del dispositivo
         headerToolbar={{
           left: 'prev,next',
           center: 'title',

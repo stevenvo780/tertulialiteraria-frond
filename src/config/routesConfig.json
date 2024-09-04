@@ -10,7 +10,7 @@
     { "path": "/register", "element": "Register", "name": "Registrarse", "viewHeader": false, "hidden": false },
     { "path": "/about", "element": "About", "name": "Nosotros", "viewHeader": true, "hidden": false },
     { "path": "/privacy", "element": "PrivacyPoliciesPage", "name": "Políticas de privacidad", "viewHeader": false, "hidden": true },
-    { "path": "/privacy-policies", "element": "PrivacyNoticePage", "name": "Aviso de privacidad", "viewHeader": false, "hidden": true }
+    { "path": "/privacy-policies", "element": "PrivacyNoticePage", "name": "Aviso de privacidad", "viewHeader": false, "hidden": false }
   ],
   "roleRoutes": {
     "user": [],
