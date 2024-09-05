@@ -5,6 +5,7 @@ import { Publication, Like, UserRole, User } from '../../utils/types';
 import { getRoleInSpanish } from '../../utils/roleTranslation';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import ActionButtons from '../../components/ActionButtons';
+import HtmlCssRenderer from '../../components/HtmlCssRenderer';
 
 interface PublicationsListProps {
   publications: Publication[];
@@ -91,10 +92,9 @@ const PublicationsList: React.FC<PublicationsListProps> = ({
                       {`${publication.author.name} - ${getRoleInSpanish(publication.author.role)}`}
                     </div>
                   )}
-                  <div
-                    style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}
-                    dangerouslySetInnerHTML={{ __html: publication.content }}
-                  />
+                  <div style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    <HtmlCssRenderer content={publication.content} />
+                  </div>
                   <div className="text-muted mt-2">
                     {publication.createdAt ? new Date(publication.createdAt).toLocaleDateString() : ''}
                   </div>

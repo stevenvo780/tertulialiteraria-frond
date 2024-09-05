@@ -13,11 +13,12 @@ import {
 } from 'react-share';
 import { FaCopy, FaCheckCircle } from 'react-icons/fa';
 import { Row, Col } from 'react-bootstrap';
+import { HtmlCssContent } from '../utils/types';
 
 interface SocialShareButtonsProps {
   shareUrl: string;
   title: string;
-  summary?: string;
+  summary?: HtmlCssContent;
   size?: number;
 }
 
@@ -49,7 +50,7 @@ const SocialShareButtons: React.FC<SocialShareButtonsProps> = ({ size = 60, shar
         </WhatsappShareButton>
       </Col>
       <Col xs={4} sm={3} md={2} className="mb-2 text-center">
-        <LinkedinShareButton url={shareUrl} title={title} summary={summary || ''} source={window.location.origin}>
+        <LinkedinShareButton url={shareUrl} title={title} summary={summary?.html || ''} source={window.location.origin}>
           <LinkedinIcon size={size} round />
         </LinkedinShareButton>
       </Col>

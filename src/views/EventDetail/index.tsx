@@ -14,6 +14,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
 import { UserRole } from '../../utils/types';
 import SocialShareButtons from '../../components/SocialShareButtons';
+import HtmlCssRenderer from '../../components/HtmlCssRenderer';
 
 const EventDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -106,7 +107,9 @@ const EventDetail: React.FC = () => {
           <Card>
             <Card.Body>
               <Card.Title>{event.title}</Card.Title>
-              <Card.Text dangerouslySetInnerHTML={{ __html: event.description }} />
+              <Card.Text>
+                <HtmlCssRenderer content={event.description} />
+              </Card.Text>
             </Card.Body>
           </Card>
         </Col>

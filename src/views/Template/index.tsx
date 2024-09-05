@@ -6,14 +6,15 @@ import { getTemplates, updateTemplate, addTemplate, deleteTemplate } from '../..
 import { addNotification } from '../../redux/ui';
 import axios from '../../utils/axios';
 import TemplateEditModal from './TemplateEditModal';
-import { TemplateType } from '../../utils/types';
+import { TemplateType, defaultHtmlCssContent } from '../../utils/types';
+import HtmlCssRenderer from '../../components/HtmlCssRenderer';
 
 const TemplatePage: React.FC = () => {
   const [selectedTemplate, setSelectedTemplate] = useState<any>(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showPreviewModal, setShowPreviewModal] = useState(false); // Estado para el modal de previsualización
   const [isEditing, setIsEditing] = useState(false);
-  const [content, setContent] = useState('');
+  const [content, setContent] = useState(defaultHtmlCssContent);
   const [title, setTitle] = useState('');
   const [type, setType] = useState(TemplateType.NOTES);
   const [isLoading, setIsLoading] = useState(false);
@@ -36,7 +37,7 @@ const TemplatePage: React.FC = () => {
   const handleCreateClick = () => {
     setSelectedTemplate(null);
     setTitle('');
-    setContent('');
+    setContent(defaultHtmlCssContent);
     setType(TemplateType.NOTES);
     setIsEditing(false);
     setShowEditModal(true);
@@ -97,7 +98,7 @@ const TemplatePage: React.FC = () => {
 
   const handlePreviewClick = (template: any) => {
     setSelectedTemplate(template);
-    setShowPreviewModal(true); // Muestra el modal de previsualización
+    setShowPreviewModal(true);
   };
 
   return (
@@ -151,7 +152,7 @@ const TemplatePage: React.FC = () => {
         </Modal.Header>
         <Modal.Body>
           {selectedTemplate && (
-            <div dangerouslySetInnerHTML={{ __html: selectedTemplate.content }} />
+            <HtmlCssRenderer content={selectedTemplate.content} />
           )}
         </Modal.Body>
         <Modal.Footer>

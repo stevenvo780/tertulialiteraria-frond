@@ -5,10 +5,11 @@ import { RootState } from '../../redux/store';
 import AboutModal from './AboutModal';
 import api from '../../utils/axios';
 import { addNotification } from '../../redux/ui';
-import { UserRole } from '../../utils/types';
+import { UserRole, HtmlCssContent } from '../../utils/types';
+import HtmlCssRenderer from '../../components/HtmlCssRenderer';
 
 const AboutPage: React.FC = () => {
-  const [projectInfo, setProjectInfo] = useState<string | null>(null);
+  const [projectInfo, setProjectInfo] = useState<HtmlCssContent | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const userRole = useSelector((state: RootState) => state.auth.userData?.role);
   const dispatch = useDispatch();
@@ -38,7 +39,7 @@ const AboutPage: React.FC = () => {
         </div>
       )}
       <br />
-      <div dangerouslySetInnerHTML={{ __html: projectInfo || 'Cargando...' }} />
+      <HtmlCssRenderer content={projectInfo} />
       {showEditModal && projectInfo && (
         <AboutModal
           showModal={showEditModal}

@@ -8,6 +8,7 @@ import { addNotification } from '../redux/ui';
 import { TemplateType } from '../utils/types';
 import moment from 'moment';
 import CustomEditor from '../components/CustomEditor';
+import { HtmlCssContent, defaultHtmlCssContent } from '../utils/types';
 
 interface EventModalProps {
   showModal: boolean;
@@ -26,7 +27,7 @@ const EventModal: React.FC<EventModalProps> = ({
 }) => {
   const dispatch = useDispatch();
   const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [description, setDescription] = useState<HtmlCssContent>(defaultHtmlCssContent);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [repetition, setRepetition] = useState<Repetition>(Repetition.NONE);
@@ -113,7 +114,7 @@ const EventModal: React.FC<EventModalProps> = ({
 
   const handleClose = () => {
     setTitle('');
-    setDescription('');
+    setDescription(defaultHtmlCssContent);
     setStartDate(null);
     setEndDate(null);
     setRepetition(Repetition.NONE);

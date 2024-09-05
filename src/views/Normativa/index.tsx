@@ -5,10 +5,11 @@ import { RootState } from '../../redux/store';
 import NormativaModal from './NormativaModal';
 import api from '../../utils/axios';
 import { addNotification } from '../../redux/ui';
-import { UserRole } from '../../utils/types';
+import { UserRole, HtmlCssContent } from '../../utils/types';
+import HtmlCssRenderer from '../../components/HtmlCssRenderer';
 
 const NormativaPage: React.FC = () => {
-  const [generalNormative, setGeneralNormative] = useState<string | null>(null);
+  const [generalNormative, setGeneralNormative] = useState<HtmlCssContent | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const userRole = useSelector((state: RootState) => state.auth.userData?.role);
   const dispatch = useDispatch();
@@ -37,7 +38,7 @@ const NormativaPage: React.FC = () => {
           />
         </div>
       )}
-      <div dangerouslySetInnerHTML={{ __html: generalNormative || 'Cargando...' }} />
+      <HtmlCssRenderer content={generalNormative} />
 
       {showEditModal && generalNormative && (
         <NormativaModal

@@ -1,13 +1,13 @@
 import React from 'react';
 import { Modal, Button, Spinner } from 'react-bootstrap';
 import CustomEditor from '../../components/CustomEditor';
-import { TemplateType } from '../../utils/types';
+import { TemplateType, HtmlCssContent } from '../../utils/types';
 
 interface TemplateEditModalProps {
   showModal: boolean;
   setShowModal: (show: boolean) => void;
-  content: string;
-  setContent: (content: string) => void;
+  content: HtmlCssContent;
+  setContent: (content: HtmlCssContent) => void;
   handleSubmit: () => void;
   isLoading: boolean;
   isEditing: boolean;

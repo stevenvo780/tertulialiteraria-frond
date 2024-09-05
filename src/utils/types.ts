@@ -1,3 +1,18 @@
+export type HtmlCssContent = {
+  html: string;
+  css: string;
+};
+
+export const defaultHtmlCssContent: HtmlCssContent = {
+  html: '',
+  css: '',
+};
+
+export const exampleHtmlCssContent: HtmlCssContent = {
+  html: '<h1>Cualquier HTML aqui</h1>',
+  css: 'h1 { color: blue; }',
+};
+
 export interface AuthData {
   email: string;
   password: string;
@@ -14,7 +29,7 @@ export interface User extends SharedProp {
   id: string;
   email: string;
   name?: string | undefined | null;
-  role: UserRole; 
+  role: UserRole;
 }
 
 export interface CreateUserDto {
@@ -31,10 +46,11 @@ export enum Repetition {
   MONTHLY = 'monthly',
   YEARLY = 'yearly',
 }
+
 export interface Events extends SharedProp {
   id?: number | null;
   title: string;
-  description: string;
+  description: HtmlCssContent;
   eventDate: Date;
   startDate: Date;
   endDate: Date;
@@ -44,7 +60,7 @@ export interface Events extends SharedProp {
 
 export interface CreateEventDto {
   title: string;
-  description: string;
+  description: HtmlCssContent;
   eventDate: Date;
   startDate: Date;
   endDate: Date;
@@ -74,7 +90,7 @@ export enum LibraryVisibility {
 export interface Library extends SharedProp {
   id: number;
   title: string;
-  description: string;
+  description: HtmlCssContent;
   referenceDate: Date;
   author?: User;
   parent?: Library;
@@ -91,7 +107,7 @@ export enum TemplateType {
 
 export interface CreateLibraryDto {
   title: string;
-  description: string;
+  description: HtmlCssContent;
   referenceDate: Date;
   parentNoteId?: number;
   visibility: LibraryVisibility;
@@ -99,7 +115,7 @@ export interface CreateLibraryDto {
 
 export interface UpdateLibraryDto {
   title?: string;
-  description?: string;
+  description?: HtmlCssContent;
   referenceDate?: Date;
   parentNoteId?: number;
   visibility?: LibraryVisibility;
@@ -108,7 +124,7 @@ export interface UpdateLibraryDto {
 export interface Publication extends SharedProp {
   id: number;
   title: string;
-  content: string;
+  content: HtmlCssContent;
   author?: User;
 }
 
@@ -128,10 +144,10 @@ export interface Like {
 
 export interface CreatePublicationDto {
   title: string;
-  content: string;
+  content: HtmlCssContent;
 }
 
-export interface  SharedProp {
+export interface SharedProp {
   createdAt?: string;
   updatedAt?: string;
 }
@@ -145,5 +161,3 @@ export interface ResponseData {
   userData: User;
   access_token: string;
 }
-
-

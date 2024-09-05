@@ -5,10 +5,11 @@ import StaffNormativeModal from './NormativaStaffModal';
 import api from '../../utils/axios';
 import { addNotification } from '../../redux/ui';
 import { FaEdit } from 'react-icons/fa';
-import { UserRole } from '../../utils/types';
+import { UserRole, HtmlCssContent } from '../../utils/types';
+import HtmlCssRenderer from '../../components/HtmlCssRenderer';
 
 const StaffNormativePage: React.FC = () => {
-  const [staffNormative, setStaffNormative] = useState<string | null>(null);
+  const [staffNormative, setStaffNormative] = useState<HtmlCssContent | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const userRole = useSelector((state: RootState) => state.auth.userData?.role);
   const dispatch = useDispatch();
@@ -36,7 +37,7 @@ const StaffNormativePage: React.FC = () => {
           />
         </div>
       )}
-      <div dangerouslySetInnerHTML={{ __html: staffNormative || 'Cargando...' }} />
+      <HtmlCssRenderer content={staffNormative} />
       {showEditModal && staffNormative && (
         <StaffNormativeModal
           showModal={showEditModal}

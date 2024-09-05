@@ -10,7 +10,7 @@ import PublicationsList from './PublicationsList';
 import Sidebar from './Sidebar';
 import PublicationModal from './PublicationModal';
 import ShareModal from './ShareModal';
-import { Publication, Events, CreatePublicationDto, Like, LikeTarget } from '../../utils/types';
+import { Publication, Events, CreatePublicationDto, Like, LikeTarget, HtmlCssContent, defaultHtmlCssContent } from '../../utils/types';
 import ScrollableEvents from '../../components/ScrollableEvents';
 import './styles.css';
 
@@ -23,7 +23,7 @@ const HomePage: React.FC = () => {
   const [editingPublication, setEditingPublication] = useState<Publication | null>(null);
   const [selectedPublication, setSelectedPublication] = useState<Publication | null>(null);
   const [title, setTitle] = useState<string>('');
-  const [content, setContent] = useState<string>('');
+  const [content, setContent] = useState<HtmlCssContent>(defaultHtmlCssContent);
   const [repetitiveEvents, setRepetitiveEvents] = useState<Events[]>([]);
   const [likesData, setLikesData] = useState<Record<number, { likes: number; dislikes: number; userLike: Like | null }>>({});
   const [offset, setOffset] = useState<number>(0);
@@ -159,7 +159,7 @@ const HomePage: React.FC = () => {
   const handleEdit = (publication: Publication | null) => {
     if (!publication) {
       setTitle('');
-      setContent('');
+      setContent(defaultHtmlCssContent);
       setShowModal(true);
       setEditingPublication(null);
       return;

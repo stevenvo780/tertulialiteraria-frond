@@ -15,6 +15,7 @@ import Pagination from 'react-bootstrap/Pagination';
 import LibraryHeader from './LibraryHeader';
 import { UserRole } from '../../utils/types';
 import { getRoleInSpanish } from '../../utils/roleTranslation';
+import HtmlCssRenderer from '../../components/HtmlCssRenderer';
 
 const LibraryPage: React.FC = () => {
   const { noteId } = useParams<{ noteId: string | undefined }>();
@@ -238,7 +239,7 @@ const LibraryPage: React.FC = () => {
                 {currentNote.author && (
                   <p className="text-muted m-0">{`${currentNote.author.name} - ${getRoleInSpanish(currentNote.author.role)}`}</p>
                 )}
-                <div dangerouslySetInnerHTML={{ __html: currentNote.description }} />
+                <HtmlCssRenderer content={currentNote.description} />
               </Col>
               <Col xs={12} md={12} className="text-left" style={{ display: 'flex', justifyContent: 'flex-init' }}>
                 <ActionButtons

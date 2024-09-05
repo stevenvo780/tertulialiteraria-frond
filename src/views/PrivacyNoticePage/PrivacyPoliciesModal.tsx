@@ -4,12 +4,13 @@ import api from '../../utils/axios';
 import { useDispatch } from 'react-redux';
 import { addNotification } from '../../redux/ui';
 import CustomEditor from '../../components/CustomEditor';
+import { defaultHtmlCssContent, HtmlCssContent } from '../../utils/types';
 
 interface PrivacyNoticeModalProps {
   showModal: boolean;
   setShowModal: (show: boolean) => void;
-  currentNotice: string;
-  setPrivacyNotice: (notice: string) => void;
+  currentNotice: HtmlCssContent;
+  setPrivacyNotice: (notice: HtmlCssContent) => void;
 }
 
 const PrivacyNoticeModal: React.FC<PrivacyNoticeModalProps> = ({
@@ -40,7 +41,7 @@ const PrivacyNoticeModal: React.FC<PrivacyNoticeModalProps> = ({
 
   useEffect(() => {
     if (!showModal && editorRef.current) {
-      editorRef.current.setContent('');
+      editorRef.current.setContent(defaultHtmlCssContent);
     }
   }, [showModal]);
 

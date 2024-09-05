@@ -5,10 +5,11 @@ import { RootState } from '../../redux/store';
 import PrivacyNoticeModal from './PrivacyPoliciesModal';
 import api from '../../utils/axios';
 import { addNotification } from '../../redux/ui';
-import { UserRole } from '../../utils/types';
+import { UserRole, HtmlCssContent } from '../../utils/types';
+import HtmlCssRenderer from '../../components/HtmlCssRenderer';
 
 const PrivacyNoticePage: React.FC = () => {
-  const [privacyNotice, setPrivacyNotice] = useState<string | null>(null);
+  const [privacyNotice, setPrivacyNotice] = useState<HtmlCssContent | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const userRole = useSelector((state: RootState) => state.auth.userData?.role);
   const dispatch = useDispatch();
@@ -37,8 +38,7 @@ const PrivacyNoticePage: React.FC = () => {
           />
         </div>
       )}
-      <div dangerouslySetInnerHTML={{ __html: privacyNotice || 'Cargando...' }} />
-
+      <HtmlCssRenderer content={privacyNotice} />
       {showEditModal && privacyNotice && (
         <PrivacyNoticeModal
           showModal={showEditModal}

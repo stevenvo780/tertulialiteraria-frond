@@ -11,7 +11,7 @@ import { addNotification } from '../../redux/ui';
 import { RootState } from '../../redux/store';
 import { getEvents } from '../../redux/events';
 import api from '../../utils/axios';
-import { Events, UserRole, Repetition } from '../../utils/types';
+import { Events, UserRole, Repetition, defaultHtmlCssContent } from '../../utils/types';
 import EventModal from '../../components/EventModal';
 import { generateRecurringEvents } from './EventUtils';
 import "./styles.css";
@@ -58,7 +58,7 @@ const EventsCalendar: React.FC = () => {
       setSelectedEvent({
         id: null,
         title: '',
-        description: '',
+        description: defaultHtmlCssContent,
         startDate: info.date,
         endDate: info.date,
         eventDate: info.date,

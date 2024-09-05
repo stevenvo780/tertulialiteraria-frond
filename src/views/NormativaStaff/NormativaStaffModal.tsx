@@ -4,12 +4,13 @@ import api from '../../utils/axios';
 import { useDispatch } from 'react-redux';
 import { addNotification } from '../../redux/ui';
 import CustomEditor from '../../components/CustomEditor';
+import { HtmlCssContent } from '../../utils/types';
 
 interface StaffNormativeModalProps {
   showModal: boolean;
   setShowModal: (show: boolean) => void;
-  currentNormative: string;
-  setStaffNormative: (normative: string) => void;
+  currentNormative: HtmlCssContent;
+  setStaffNormative: (normative: HtmlCssContent) => void;
 }
 
 const StaffNormativeModal: React.FC<StaffNormativeModalProps> = ({

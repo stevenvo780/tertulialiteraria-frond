@@ -4,12 +4,13 @@ import api from '../../utils/axios';
 import { useDispatch } from 'react-redux';
 import { addNotification } from '../../redux/ui';
 import CustomEditor from '../../components/CustomEditor';
+import { HtmlCssContent } from '../../utils/types';
 
 interface AboutModalProps {
   showModal: boolean;
   setShowModal: (show: boolean) => void;
-  currentInfo: string;
-  setProjectInfo: (info: string) => void;
+  currentInfo: HtmlCssContent;
+  setProjectInfo: (info: HtmlCssContent) => void;
 }
 
 const AboutModal: React.FC<AboutModalProps> = ({

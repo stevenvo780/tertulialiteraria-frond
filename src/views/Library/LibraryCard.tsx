@@ -2,6 +2,7 @@ import React from 'react';
 import { Card } from 'react-bootstrap';
 import ActionButtons from '../../components/ActionButtons';
 import { Library, Like } from '../../utils/types';
+import HtmlCssRenderer from '../../components/HtmlCssRenderer';
 
 interface LibraryCardProps {
   library: Library;
@@ -39,7 +40,7 @@ const LibraryCard: React.FC<LibraryCardProps> = ({
             flex: 1
           }}
         >
-          <div dangerouslySetInnerHTML={{ __html: library.description }} />
+          <HtmlCssRenderer content={library.description} />
         </div>
       </Card.Body>
       <Card.Footer>

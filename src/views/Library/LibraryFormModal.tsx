@@ -5,7 +5,7 @@ import { Library, CreateLibraryDto, UpdateLibraryDto, LibraryVisibility } from '
 import CustomEditor from '../../components/CustomEditor';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
-import { UserRole } from '../../utils/types';
+import { UserRole, HtmlCssContent, defaultHtmlCssContent } from '../../utils/types';
 
 interface LibraryFormModalProps {
   show: boolean;
@@ -23,7 +23,7 @@ const LibraryFormModal: React.FC<LibraryFormModalProps> = ({
   showModal,
 }) => {
   const [title, setTitle] = useState<string>('');
-  const [description, setDescription] = useState<string>('');
+  const [description, setDescription] = useState<HtmlCssContent>(defaultHtmlCssContent);
   const [parentNoteId, setParentNoteId] = useState<number | undefined>(undefined);
   const [visibility, setVisibility] = useState<LibraryVisibility>(LibraryVisibility.GENERAL);
   const userRole = useSelector((state: RootState) => state.auth.userData?.role);
@@ -36,7 +36,7 @@ const LibraryFormModal: React.FC<LibraryFormModalProps> = ({
       setVisibility(editingLibrary.visibility || LibraryVisibility.GENERAL);
     } else {
       setTitle('');
-      setDescription('');
+      setDescription(defaultHtmlCssContent);
       setParentNoteId(undefined);
       setVisibility(LibraryVisibility.GENERAL);
     }
@@ -61,7 +61,7 @@ const LibraryFormModal: React.FC<LibraryFormModalProps> = ({
 
   const handleClose = () => {
     setTitle('');
-    setDescription('');
+    setDescription(defaultHtmlCssContent);
     onHide();
     if (editorRef.current) {
       editorRef.current.remove();

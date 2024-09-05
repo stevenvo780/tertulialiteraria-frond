@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Modal, Form, Button } from 'react-bootstrap';
 import CustomEditor from '../../components/CustomEditor';
-import { TemplateType } from '../../utils/types';
+import { TemplateType, HtmlCssContent, defaultHtmlCssContent } from '../../utils/types';
 
 interface PublicationModalProps {
   showModal: boolean;
@@ -9,8 +9,8 @@ interface PublicationModalProps {
   handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
   title: string;
   setTitle: (title: string) => void;
-  content: string;
-  setContent: (content: string) => void;
+  content: HtmlCssContent;
+  setContent: (content: HtmlCssContent) => void;
   editingPublication: any;
 }
 
@@ -31,7 +31,7 @@ const PublicationModal: React.FC<PublicationModalProps> = ({
 
   useEffect(() => {
     if (!showModal) {
-      setContent('');
+      setContent(defaultHtmlCssContent);
     }
   }, [showModal, setContent]);
 

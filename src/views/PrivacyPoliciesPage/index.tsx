@@ -6,9 +6,11 @@ import PrivacyPoliciesModal from './PrivacyPoliciesModal';
 import api from '../../utils/axios';
 import { addNotification } from '../../redux/ui';
 import { UserRole } from '../../utils/types';
+import { HtmlCssContent } from '../../utils/types';
+import HtmlCssRenderer from '../../components/HtmlCssRenderer';
 
 const PrivacyPoliciesPage: React.FC = () => {
-  const [privacyPolicies, setPrivacyPolicies] = useState<string | null>(null);
+  const [privacyPolicies, setPrivacyPolicies] = useState<HtmlCssContent | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const userRole = useSelector((state: RootState) => state.auth.userData?.role);
   const dispatch = useDispatch();
@@ -37,8 +39,7 @@ const PrivacyPoliciesPage: React.FC = () => {
           />
         </div>
       )}
-      <div dangerouslySetInnerHTML={{ __html: privacyPolicies || 'Cargando...' }} />
-
+      <HtmlCssRenderer content={privacyPolicies} />
       {showEditModal && privacyPolicies && (
         <PrivacyPoliciesModal
           showModal={showEditModal}

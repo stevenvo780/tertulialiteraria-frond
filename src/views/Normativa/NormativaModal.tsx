@@ -4,12 +4,13 @@ import api from '../../utils/axios';
 import { useDispatch } from 'react-redux';
 import { addNotification } from '../../redux/ui';
 import CustomEditor from '../../components/CustomEditor';
+import { HtmlCssContent } from '../../utils/types';
 
 interface NormativaModalProps {
   showModal: boolean;
   setShowModal: (show: boolean) => void;
-  currentNormative: string;
-  setGeneralNormative: (normative: string) => void;
+  currentNormative: HtmlCssContent;
+  setGeneralNormative: (normative: HtmlCssContent) => void;
 }
 
 const NormativaModal: React.FC<NormativaModalProps> = ({
