@@ -25,10 +25,18 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
   height = 500,
 }) => {
   const [editorState, setEditorState] = useState(() =>
-    EditorState.createEmpty()
+    content ? EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft(content).contentBlocks)) : EditorState.createEmpty()
   );
   const [viewMode, setViewMode] = useState<'editor' | 'html'>('editor');
   const [htmlContent, setHtmlContent] = useState(content);
+
+  useEffect(() => {
+    if (content) {
+      const contentBlock = htmlToDraft(content);
+      const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks, contentBlock.entityMap);
+      setEditorState(EditorState.createWithContent(contentState));
+    }
+  }, [content]);
 
   useEffect(() => {
     const rawContentState = convertToRaw(editorState.getCurrentContent());
@@ -45,8 +53,6 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
 
   return (
     <>
-
-
       {viewMode === 'editor' ? (
         <Editor
           editorState={editorState}
