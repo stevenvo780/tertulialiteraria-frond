@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { EditorState, convertToRaw, ContentState } from 'draft-js';
 import { Editor } from 'react-draft-wysiwyg';
 import draftToHtml from 'draftjs-to-html';
@@ -25,16 +25,29 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
   height = 500,
 }) => {
   const [editorState, setEditorState] = useState(() =>
-    content ? EditorState.createWithContent(ContentState.createFromBlockArray(htmlToDraft(content).contentBlocks)) : EditorState.createEmpty()
+    content
+      ? EditorState.createWithContent(
+          ContentState.createFromBlockArray(htmlToDraft(content).contentBlocks)
+        )
+      : EditorState.createEmpty()
   );
   const [viewMode, setViewMode] = useState<'editor' | 'html'>('editor');
   const [htmlContent, setHtmlContent] = useState(content);
 
+  const isInternalUpdate = useRef(false);
+
   useEffect(() => {
+    if (isInternalUpdate.current) {
+      isInternalUpdate.current = false;
+      return;
+    }
+
     if (content) {
       const contentBlock = htmlToDraft(content);
       const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks, contentBlock.entityMap);
       setEditorState(EditorState.createWithContent(contentState));
+    } else {
+      setEditorState(EditorState.createEmpty());
     }
   }, [content]);
 
@@ -42,6 +55,7 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
     const rawContentState = convertToRaw(editorState.getCurrentContent());
     const htmlContent = draftToHtml(rawContentState);
     setHtmlContent(htmlContent);
+    isInternalUpdate.current = true;
     setContent(htmlContent);
   }, [editorState, setContent]);
 
@@ -60,7 +74,9 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
           wrapperClassName="wrapperClassName"
           editorClassName="editorClassName"
           onEditorStateChange={setEditorState}
-          toolbarCustomButtons={[<CustomImageUpload editorState={editorState} onEditorStateChange={setEditorState} />]}
+          toolbarCustomButtons={[
+            <CustomImageUpload editorState={editorState} onEditorStateChange={setEditorState} />,
+          ]}
           toolbar={{
             options: [
               'inline',
@@ -76,32 +92,36 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
             ],
             inline: { inDropdown: true },
           }}
-          editorStyle={{ height: `${height}px`, border: "1px solid #F1F1F1", padding: "10px" }}
+          editorStyle={{ height: `${height}px`, border: '1px solid #F1F1F1', padding: '10px' }}
         />
       ) : (
         <EditorCode
           value={htmlContent}
           onValueChange={setHtmlContent}
-          highlight={code => Prism.highlight(code, Prism.languages.html, 'html')}
+          highlight={(code) => Prism.highlight(code, Prism.languages.html, 'html')}
           padding={10}
           style={{
             fontFamily: '"Fira code", "Fira Mono", monospace',
             fontSize: 14,
-            border: "1px solid #F1F1F1",
-            borderRadius: "4px",
+            border: '1px solid #F1F1F1',
+            borderRadius: '4px',
             height: `${height}px`,
             overflow: 'auto',
-            backgroundColor: "#f5f5f5"
+            backgroundColor: '#f5f5f5',
           }}
         />
       )}
       <br />
       <div className="d-flex justify-content-between mb-3">
-        <Button variant="primary" onClick={() => setViewMode(viewMode === 'editor' ? 'html' : 'editor')} size='sm'>
+        <Button
+          variant="primary"
+          onClick={() => setViewMode(viewMode === 'editor' ? 'html' : 'editor')}
+          size="sm"
+        >
           {viewMode === 'editor' ? 'Ver HTML' : 'Ver Editor'}
         </Button>
         {viewMode === 'html' && (
-          <Button variant="success" onClick={handleApplyChanges} size='sm'>
+          <Button variant="success" onClick={handleApplyChanges} size="sm">
             Aplicar Cambios
           </Button>
         )}
