@@ -27,7 +27,7 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
   const [editorState, setEditorState] = useState(() =>
     content
       ? EditorState.createWithContent(
-          ContentState.createFromBlockArray(htmlToDraft(content).contentBlocks)
+          ContentState.createFromBlockArray(htmlToDraft(content).contentBlocks, htmlToDraft(content).entityMap)
         )
       : EditorState.createEmpty()
   );
@@ -65,6 +65,62 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
     setEditorState(EditorState.createWithContent(contentState));
   };
 
+  const getCSSVariable = (variable: string): string => {
+    return getComputedStyle(document.documentElement).getPropertyValue(variable).trim();
+  };
+
+  const colorPalette = [
+    getCSSVariable('--primary-color'),
+    getCSSVariable('--primary-hover'),
+    getCSSVariable('--primary-border'),
+    getCSSVariable('--primary-text'),
+  
+    getCSSVariable('--secondary-color'),
+    getCSSVariable('--secondary-hover'),
+    getCSSVariable('--secondary-border'),
+    getCSSVariable('--secondary-text'),
+  
+    getCSSVariable('--info-color'),
+    getCSSVariable('--info-hover'),
+    getCSSVariable('--info-border'),
+    getCSSVariable('--info-text'),
+  
+    getCSSVariable('--success-color'),
+    getCSSVariable('--success-hover'),
+    getCSSVariable('--success-border'),
+    getCSSVariable('--success-text'),
+  
+    getCSSVariable('--warning-color'),
+    getCSSVariable('--warning-hover'),
+    getCSSVariable('--warning-border'),
+    getCSSVariable('--warning-text'),
+  
+    getCSSVariable('--danger-color'),
+    getCSSVariable('--danger-hover'),
+    getCSSVariable('--danger-border'),
+    getCSSVariable('--danger-text'),
+  
+    getCSSVariable('--link-color'),
+    getCSSVariable('--link-hover'),
+    getCSSVariable('--link-border'),
+    getCSSVariable('--link-text'),
+  
+    getCSSVariable('--discord-color'),
+    getCSSVariable('--discord-text'),
+  
+    getCSSVariable('--online-color'),
+  
+    getCSSVariable('--white-color'),
+    getCSSVariable('--font-color'),
+    getCSSVariable('--bg-color'),
+    getCSSVariable('--border-color'),
+    getCSSVariable('--card-color'),
+    getCSSVariable('--card-hover'),
+    getCSSVariable('--card-border'),
+    getCSSVariable('--card-text'),
+  ];
+  
+
   return (
     <>
       {viewMode === 'editor' ? (
@@ -87,12 +143,25 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
               'textAlign',
               'colorPicker',
               'link',
+              'embedded',
               'emoji',
+              'image',
+              'remove',
               'history',
             ],
             inline: { inDropdown: true },
+            colorPicker: {
+              popupClassName: 'color-picker-popup',
+              colors: colorPalette,
+            },
           }}
-          editorStyle={{ height: `${height}px`, border: '1px solid #F1F1F1', padding: '10px' }}
+          editorStyle={{
+            height: `${height}px`,
+            border: `1px solid ${getCSSVariable('--border-color')}`,
+            padding: '10px',
+            color: getCSSVariable('--font-color'),
+            backgroundColor: getCSSVariable('--white-color'),
+          }}
         />
       ) : (
         <EditorCode
@@ -103,11 +172,12 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
           style={{
             fontFamily: '"Fira code", "Fira Mono", monospace',
             fontSize: 14,
-            border: '1px solid #F1F1F1',
+            border: `1px solid ${getCSSVariable('--border-color')}`,
             borderRadius: '4px',
             height: `${height}px`,
             overflow: 'auto',
-            backgroundColor: '#f5f5f5',
+            backgroundColor: getCSSVariable('--white-color'),
+            color: getCSSVariable('--font-color'),
           }}
         />
       )}
@@ -117,11 +187,27 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
           variant="primary"
           onClick={() => setViewMode(viewMode === 'editor' ? 'html' : 'editor')}
           size="sm"
+          onMouseOver={(e) => {
+            e.currentTarget.style.backgroundColor = getCSSVariable('--primary-hover');
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.backgroundColor = getCSSVariable('--primary-color');
+          }}
         >
           {viewMode === 'editor' ? 'Ver HTML' : 'Ver Editor'}
         </Button>
         {viewMode === 'html' && (
-          <Button variant="success" onClick={handleApplyChanges} size="sm">
+          <Button
+            variant="success"
+            onClick={handleApplyChanges}
+            size="sm"
+            onMouseOver={(e) => {
+              e.currentTarget.style.backgroundColor = getCSSVariable('--success-hover');
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.backgroundColor = getCSSVariable('--success-color');
+            }}
+          >
             Aplicar Cambios
           </Button>
         )}
