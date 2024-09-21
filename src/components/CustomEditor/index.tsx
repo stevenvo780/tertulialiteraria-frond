@@ -1,15 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { EditorState, convertToRaw, ContentState } from 'draft-js';
-import { Editor } from 'react-draft-wysiwyg';
-import draftToHtml from 'draftjs-to-html';
-import htmlToDraft from 'html-to-draftjs';
-import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
+import { Editor as TinyMCEEditor } from '@tinymce/tinymce-react';
 import EditorCode from 'react-simple-code-editor';
 import Prism from 'prismjs';
 import 'prismjs/themes/prism.css';
 import TemplateSlider from './TemplateSlider';
 import { Button } from 'react-bootstrap';
-import CustomImageUpload from './CustomImageUpload';
 
 interface CustomEditorProps {
   content: string;
@@ -18,51 +13,36 @@ interface CustomEditorProps {
   height?: number;
 }
 
+interface BlobInfo {
+  filename(): string;
+  blob(): Blob;
+  base64(): string;
+  id(): string;
+  uri(): string;
+}
+
 const CustomEditor: React.FC<CustomEditorProps> = ({
   content,
   setContent,
-  templateType = null,
+  templateType = '',
   height = 500,
 }) => {
-  const [editorState, setEditorState] = useState(() =>
-    content
-      ? EditorState.createWithContent(
-          ContentState.createFromBlockArray(htmlToDraft(content).contentBlocks, htmlToDraft(content).entityMap)
-        )
-      : EditorState.createEmpty()
-  );
+  const [editorContent, setEditorContent] = useState(content);
   const [viewMode, setViewMode] = useState<'editor' | 'html'>('editor');
-  const [htmlContent, setHtmlContent] = useState(content);
 
-  const isInternalUpdate = useRef(false);
+  const editorRef = useRef<any>(null);
 
   useEffect(() => {
-    if (isInternalUpdate.current) {
-      isInternalUpdate.current = false;
-      return;
-    }
-
-    if (content) {
-      const contentBlock = htmlToDraft(content);
-      const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks, contentBlock.entityMap);
-      setEditorState(EditorState.createWithContent(contentState));
-    } else {
-      setEditorState(EditorState.createEmpty());
-    }
+    setEditorContent(content);
   }, [content]);
 
-  useEffect(() => {
-    const rawContentState = convertToRaw(editorState.getCurrentContent());
-    const htmlContent = draftToHtml(rawContentState);
-    setHtmlContent(htmlContent);
-    isInternalUpdate.current = true;
-    setContent(htmlContent);
-  }, [editorState, setContent]);
+  const handleEditorChange = (content: string) => {
+    setEditorContent(content);
+    setContent(content);
+  };
 
   const handleApplyChanges = () => {
-    const contentBlock = htmlToDraft(htmlContent);
-    const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks, contentBlock.entityMap);
-    setEditorState(EditorState.createWithContent(contentState));
+    setContent(editorContent);
   };
 
   const getCSSVariable = (variable: string): string => {
@@ -74,42 +54,33 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
     getCSSVariable('--primary-hover'),
     getCSSVariable('--primary-border'),
     getCSSVariable('--primary-text'),
-  
     getCSSVariable('--secondary-color'),
     getCSSVariable('--secondary-hover'),
     getCSSVariable('--secondary-border'),
     getCSSVariable('--secondary-text'),
-  
     getCSSVariable('--info-color'),
     getCSSVariable('--info-hover'),
     getCSSVariable('--info-border'),
     getCSSVariable('--info-text'),
-  
     getCSSVariable('--success-color'),
     getCSSVariable('--success-hover'),
     getCSSVariable('--success-border'),
     getCSSVariable('--success-text'),
-  
     getCSSVariable('--warning-color'),
     getCSSVariable('--warning-hover'),
     getCSSVariable('--warning-border'),
     getCSSVariable('--warning-text'),
-  
     getCSSVariable('--danger-color'),
     getCSSVariable('--danger-hover'),
     getCSSVariable('--danger-border'),
     getCSSVariable('--danger-text'),
-  
     getCSSVariable('--link-color'),
     getCSSVariable('--link-hover'),
     getCSSVariable('--link-border'),
     getCSSVariable('--link-text'),
-  
     getCSSVariable('--discord-color'),
     getCSSVariable('--discord-text'),
-  
     getCSSVariable('--online-color'),
-  
     getCSSVariable('--white-color'),
     getCSSVariable('--font-color'),
     getCSSVariable('--bg-color'),
@@ -119,54 +90,58 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
     getCSSVariable('--card-border'),
     getCSSVariable('--card-text'),
   ];
-  
+
+  const tinyMCEInit: Record<string, any> = {
+    height: height,
+    menubar: false,
+    plugins: [
+      'advlist autolink lists link image charmap print preview anchor',
+      'searchreplace visualblocks code fullscreen',
+      'insertdatetime media table paste code help wordcount',
+    ],
+    toolbar:
+      'undo redo | formatselect | bold italic forecolor backcolor | ' +
+      'alignleft aligncenter alignright alignjustify | ' +
+      'bullist numlist outdent indent | removeformat | image | code',
+    content_style: `body { 
+      font-family:Helvetica,Arial,sans-serif; 
+      font-size:14px; 
+      color: ${getCSSVariable('--font-color')}; 
+      background-color: ${getCSSVariable('--white-color')}; 
+    }`,
+    color_map: colorPalette.flatMap((color) => [color, color]),
+    images_upload_handler: (
+      blobInfo: BlobInfo,
+      success: (url: string) => void,
+      failure: (err: string) => void,
+      progress?: (percent: number) => void
+    ) => {
+      success('data:' + blobInfo.blob().type + ';base64,' + blobInfo.base64());
+    },
+    setup: (editor: any) => {
+      editor.ui.registry.addButton('customImageButton', {
+        text: 'Insert Image',
+        onAction: () => {
+          editor.execCommand('mceImage');
+        },
+      });
+    },
+  };
 
   return (
     <>
       {viewMode === 'editor' ? (
-        <Editor
-          editorState={editorState}
-          toolbarClassName="toolbarClassName"
-          wrapperClassName="wrapperClassName"
-          editorClassName="editorClassName"
-          onEditorStateChange={setEditorState}
-          toolbarCustomButtons={[
-            <CustomImageUpload editorState={editorState} onEditorStateChange={setEditorState} />,
-          ]}
-          toolbar={{
-            options: [
-              'inline',
-              'blockType',
-              'fontSize',
-              'fontFamily',
-              'list',
-              'textAlign',
-              'colorPicker',
-              'link',
-              'embedded',
-              'emoji',
-              'image',
-              'remove',
-              'history',
-            ],
-            inline: { inDropdown: true },
-            colorPicker: {
-              popupClassName: 'color-picker-popup',
-              colors: colorPalette,
-            },
-          }}
-          editorStyle={{
-            height: `${height}px`,
-            border: `1px solid ${getCSSVariable('--border-color')}`,
-            padding: '10px',
-            color: getCSSVariable('--font-color'),
-            backgroundColor: getCSSVariable('--white-color'),
-          }}
+        <TinyMCEEditor
+          apiKey='ide9bzali9973f0fmbzusywuxlpp3mxmigqoa07eddfltlrj'
+          onInit={(evt, editor) => (editorRef.current = editor)}
+          value={editorContent}
+          onEditorChange={handleEditorChange}
+          init={tinyMCEInit}
         />
       ) : (
         <EditorCode
-          value={htmlContent}
-          onValueChange={setHtmlContent}
+          value={editorContent}
+          onValueChange={(code) => setEditorContent(code)}
           highlight={(code) => Prism.highlight(code, Prism.languages.html, 'html')}
           padding={10}
           style={{
@@ -215,9 +190,8 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
       <TemplateSlider
         templateType={templateType || ''}
         onTemplateClick={(templateContent: string) => {
-          const contentBlock = htmlToDraft(templateContent);
-          const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks, contentBlock.entityMap);
-          setEditorState(EditorState.createWithContent(contentState));
+          setEditorContent(templateContent);
+          setContent(templateContent);
         }}
       />
     </>
