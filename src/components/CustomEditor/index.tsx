@@ -7,7 +7,7 @@ import TemplateSlider from './TemplateSlider';
 import { Button } from 'react-bootstrap';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { getCSSVariable, colorPalette, CustomEditorProps, BlobInfo } from './types';
-
+import { FaUpload } from 'react-icons/fa';
 
 const CustomEditor: React.FC<CustomEditorProps> = ({
   content,
@@ -32,25 +32,18 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
     setContent(editorContent);
   };
 
-
   const tinyMCEInit: Record<string, any> = {
     height: height,
     menubar: false,
-    plugins: [
-      'advlist autolink lists link charmap print preview anchor',
-      'searchreplace visualblocks code fullscreen',
-      'insertdatetime media table paste code help wordcount',
-      'textcolor emoticons codesample hr fullscreen table save charmap'
-    ],
+    plugins: ['link', 'fullscreen', 'help ', 'save'],
     toolbar:
       'undo redo | formatselect | bold italic forecolor backcolor | ' +
       'alignleft aligncenter alignright alignjustify | ' +
-      'bullist numlist outdent indent | removeformat | link charmap | ' +
-      'codesample emoticons hr table | fullscreen save | code | customUploadImageButton',
+      'bullist numlist outdent indent | removeformat | link | ' +
+      'hr | fullscreen | customUploadImageButton',
     setup: (editor: any) => {
-      // Botón personalizado para subir imágenes
       editor.ui.registry.addButton('customUploadImageButton', {
-        text: 'Subir Imagen',
+        icon: 'upload',
         onAction: () => {
           const fileInput = document.createElement('input');
           fileInput.type = 'file';
@@ -60,12 +53,9 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
             if (file) {
               const storage = getStorage();
               const storageRef = ref(storage, `images/${file.name}`);
-
               try {
-                // Subir archivo a Firebase
                 const snapshot = await uploadBytes(storageRef, file);
                 const downloadURL = await getDownloadURL(snapshot.ref);
-
                 editor.insertContent(`<img src="${downloadURL}" alt="${file.name}" />`);
               } catch (error) {
                 console.error('Error al subir la imagen:', error);
