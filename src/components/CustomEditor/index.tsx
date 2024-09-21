@@ -5,21 +5,9 @@ import Prism from 'prismjs';
 import 'prismjs/themes/prism.css';
 import TemplateSlider from './TemplateSlider';
 import { Button } from 'react-bootstrap';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { getCSSVariable, colorPalette, CustomEditorProps, BlobInfo } from './types';
 
-interface CustomEditorProps {
-  content: string;
-  setContent: (content: string) => void;
-  templateType?: string;
-  height?: number;
-}
-
-interface BlobInfo {
-  filename(): string;
-  blob(): Blob;
-  base64(): string;
-  id(): string;
-  uri(): string;
-}
 
 const CustomEditor: React.FC<CustomEditorProps> = ({
   content,
@@ -29,7 +17,6 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
 }) => {
   const [editorContent, setEditorContent] = useState(content);
   const [viewMode, setViewMode] = useState<'editor' | 'html'>('editor');
-
   const editorRef = useRef<any>(null);
 
   useEffect(() => {
@@ -45,64 +32,50 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
     setContent(editorContent);
   };
 
-  const getCSSVariable = (variable: string): string => {
-    return getComputedStyle(document.documentElement).getPropertyValue(variable).trim();
-  };
-
-  const colorPalette = [
-    getCSSVariable('--primary-color'),
-    getCSSVariable('--primary-hover'),
-    getCSSVariable('--primary-border'),
-    getCSSVariable('--primary-text'),
-    getCSSVariable('--secondary-color'),
-    getCSSVariable('--secondary-hover'),
-    getCSSVariable('--secondary-border'),
-    getCSSVariable('--secondary-text'),
-    getCSSVariable('--info-color'),
-    getCSSVariable('--info-hover'),
-    getCSSVariable('--info-border'),
-    getCSSVariable('--info-text'),
-    getCSSVariable('--success-color'),
-    getCSSVariable('--success-hover'),
-    getCSSVariable('--success-border'),
-    getCSSVariable('--success-text'),
-    getCSSVariable('--warning-color'),
-    getCSSVariable('--warning-hover'),
-    getCSSVariable('--warning-border'),
-    getCSSVariable('--warning-text'),
-    getCSSVariable('--danger-color'),
-    getCSSVariable('--danger-hover'),
-    getCSSVariable('--danger-border'),
-    getCSSVariable('--danger-text'),
-    getCSSVariable('--link-color'),
-    getCSSVariable('--link-hover'),
-    getCSSVariable('--link-border'),
-    getCSSVariable('--link-text'),
-    getCSSVariable('--discord-color'),
-    getCSSVariable('--discord-text'),
-    getCSSVariable('--online-color'),
-    getCSSVariable('--white-color'),
-    getCSSVariable('--font-color'),
-    getCSSVariable('--bg-color'),
-    getCSSVariable('--border-color'),
-    getCSSVariable('--card-color'),
-    getCSSVariable('--card-hover'),
-    getCSSVariable('--card-border'),
-    getCSSVariable('--card-text'),
-  ];
 
   const tinyMCEInit: Record<string, any> = {
     height: height,
     menubar: false,
     plugins: [
-      'advlist autolink lists link image charmap print preview anchor',
+      'advlist autolink lists link charmap print preview anchor',
       'searchreplace visualblocks code fullscreen',
       'insertdatetime media table paste code help wordcount',
+      'textcolor emoticons codesample hr fullscreen table save charmap'
     ],
     toolbar:
       'undo redo | formatselect | bold italic forecolor backcolor | ' +
       'alignleft aligncenter alignright alignjustify | ' +
-      'bullist numlist outdent indent | removeformat | image | code',
+      'bullist numlist outdent indent | removeformat | link charmap | ' +
+      'codesample emoticons hr table | fullscreen save | code | customUploadImageButton',
+    setup: (editor: any) => {
+      // Botón personalizado para subir imágenes
+      editor.ui.registry.addButton('customUploadImageButton', {
+        text: 'Subir Imagen',
+        onAction: () => {
+          const fileInput = document.createElement('input');
+          fileInput.type = 'file';
+          fileInput.accept = 'image/*';
+          fileInput.onchange = async (event: any) => {
+            const file = event.target.files[0];
+            if (file) {
+              const storage = getStorage();
+              const storageRef = ref(storage, `images/${file.name}`);
+
+              try {
+                // Subir archivo a Firebase
+                const snapshot = await uploadBytes(storageRef, file);
+                const downloadURL = await getDownloadURL(snapshot.ref);
+
+                editor.insertContent(`<img src="${downloadURL}" alt="${file.name}" />`);
+              } catch (error) {
+                console.error('Error al subir la imagen:', error);
+              }
+            }
+          };
+          fileInput.click();
+        },
+      });
+    },
     content_style: `body { 
       font-family:Helvetica,Arial,sans-serif; 
       font-size:14px; 
@@ -117,14 +90,6 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
       progress?: (percent: number) => void
     ) => {
       success('data:' + blobInfo.blob().type + ';base64,' + blobInfo.base64());
-    },
-    setup: (editor: any) => {
-      editor.ui.registry.addButton('customImageButton', {
-        text: 'Insert Image',
-        onAction: () => {
-          editor.execCommand('mceImage');
-        },
-      });
     },
   };
 
