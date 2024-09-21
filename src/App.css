@@ -59,3 +59,75 @@
   border-left: 5px solid transparent;
   border-right: 5px solid transparent;
 }
+
+.fc .fc-button {
+  background-color: var(--primary-color);
+  border-color: var(--primary-border);
+  color: var(--primary-text);
+}
+
+.fc .fc-button.fc-button-active {
+  background-color: var(--primary-color); /* Usa el color principal */
+  border-color: var(--primary-border);
+  color: var(--primary-text); /* Usa el color del texto principal */
+}
+
+.fc .fc-button:hover {
+  background-color: var(--primary-hover);
+  border-color: var(--primary-border);
+}
+
+.fc .fc-button-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-border);
+}
+
+.fc .fc-button-primary:hover {
+  background-color: var(--primary-hover);
+  border-color: var(--primary-border);
+}
+
+.fc .fc-toolbar-title {
+  color: var(--font-color);
+}
+
+.fc .fc-daygrid-day {
+  background-color: var(--bg-color);
+  border-color: var(--border-color);
+}
+
+.fc .fc-daygrid-event {
+  background-color: var(--primary-color);
+  color: var(--primary-text);
+  border-color: var(--primary-border);
+}
+
+.fc .fc-daygrid-event .fc-event-title {
+  color: var(--primary-text);
+}
+
+.fc .fc-daygrid-event:hover {
+  background-color: var(--primary-hover);
+}
+
+.fc .fc-daygrid-event:hover .fc-event-title {
+  color: var(--primary-text);
+}
+
+.fc .fc-day-today {
+  background-color: var(--secondary-color);
+  color: var(--secondary-text);
+}
+
+.fc .fc-timegrid-slot-label {
+  color: var(--font-color);
+}
+
+.fc .fc-event {
+  border-color: var(--primary-border);
+  color: var(--primary-text);
+}
+
+.fc .fc-daygrid-event-dot {
+  background-color: var(--primary-text);
+}

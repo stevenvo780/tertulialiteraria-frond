@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Form, Button, Container, Row, Col, Card, InputGroup, Spinner } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { addNotification } from '../../redux/ui';
 import { auth } from '../../utils/firebase';
 import firebase from 'firebase/compat/app';
@@ -13,8 +13,9 @@ const RegisterPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [name, setName] = useState('');
+  const [acceptPolicies, setAcceptPolicies] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState({ email: '', password: '', confirmPassword: '', name: '' });
+  const [errors, setErrors] = useState({ email: '', password: '', confirmPassword: '', name: '', acceptPolicies: '' });
 
   const validateEmail = (email: string) => {
     const re = /\S+@\S+\.\S+/;
@@ -24,7 +25,7 @@ const RegisterPage: React.FC = () => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setIsLoading(true);
-    let formErrors = { email: '', password: '', confirmPassword: '', name: '' };
+    let formErrors = { email: '', password: '', confirmPassword: '', name: '', acceptPolicies: '' };
 
     if (!validateEmail(email)) {
       formErrors.email = 'Formato de correo electrónico inválido';
@@ -42,7 +43,11 @@ const RegisterPage: React.FC = () => {
       formErrors.name = 'El nombre es obligatorio';
     }
 
-    if (formErrors.email || formErrors.password || formErrors.confirmPassword || formErrors.name) {
+    if (!acceptPolicies) {
+      formErrors.acceptPolicies = 'Debes aceptar las políticas de privacidad';
+    }
+
+    if (formErrors.email || formErrors.password || formErrors.confirmPassword || formErrors.name || formErrors.acceptPolicies) {
       setErrors(formErrors);
       setIsLoading(false);
       return;
@@ -151,6 +156,25 @@ const RegisterPage: React.FC = () => {
                       {errors.confirmPassword}
                     </Form.Control.Feedback>
                   </InputGroup>
+                </Form.Group>
+                <br />
+                <Form.Group controlId="formBasicAcceptPolicies">
+                  <Form.Check
+                    type="checkbox"
+                    label={
+                      <>
+                        Acepto las{' '}
+                        <Link to="/privacy-policies" target="_blank">
+                          Políticas de Privacidad
+                        </Link>
+                      </>
+                    }
+                    checked={acceptPolicies}
+                    onChange={(e) => setAcceptPolicies(e.target.checked)}
+                    isInvalid={!!errors.acceptPolicies}
+                    feedback={errors.acceptPolicies}
+                    required
+                  />
                 </Form.Group>
                 <br />
                 <Button variant="primary" type="submit" className="w-100" disabled={isLoading}>

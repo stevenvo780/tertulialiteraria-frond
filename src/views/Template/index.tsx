@@ -6,12 +6,12 @@ import { getTemplates, updateTemplate, addTemplate, deleteTemplate } from '../..
 import { addNotification } from '../../redux/ui';
 import axios from '../../utils/axios';
 import TemplateEditModal from './TemplateEditModal';
-import { TemplateType } from '../../utils/types';
+import { TemplateType, Template } from '../../utils/types';
 
 const TemplatePage: React.FC = () => {
-  const [selectedTemplate, setSelectedTemplate] = useState<any>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [showPreviewModal, setShowPreviewModal] = useState(false); // Estado para el modal de previsualización
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [content, setContent] = useState('');
   const [title, setTitle] = useState('');
@@ -42,7 +42,7 @@ const TemplatePage: React.FC = () => {
     setShowEditModal(true);
   };
 
-  const handleEditClick = (template: any) => {
+  const handleEditClick = (template: Template) => {
     setSelectedTemplate(template);
     setTitle(template.name);
     setContent(template.content);
@@ -53,29 +53,36 @@ const TemplatePage: React.FC = () => {
 
   const handleSubmit = async () => {
     setIsLoading(true);
-    try {
-      if (isEditing) {
-        const response = await axios.patch(`/template/${selectedTemplate.id}`, { name: title, content, type });
-        if (response.status === 200) {
-          dispatch(updateTemplate({ ...selectedTemplate, name: title, content, type }));
-          dispatch(addNotification({ message: 'Plantilla actualizada correctamente', color: 'success' }));
-        } else {
-          dispatch(addNotification({ message: 'Error al actualizar la plantilla', color: 'danger' }));
-        }
-      } else {
-        const response = await axios.post('/template', { name: title, content, type });
-        if (response.status === 201) {
-          dispatch(addTemplate(response.data));
-          dispatch(addNotification({ message: 'Plantilla creada correctamente', color: 'success' }));
-        } else {
-          dispatch(addNotification({ message: 'Error al crear la plantilla', color: 'danger' }));
-        }
-      }
-    } catch (error) {
-      dispatch(addNotification({ message: 'Error al procesar la solicitud', color: 'danger' }));
-    } finally {
+    if (!title || !content) {
+      dispatch(addNotification({ message: 'El título y el contenido son obligatorios', color: 'danger' }));
       setIsLoading(false);
-      setShowEditModal(false);
+      return;
+    }
+    if (selectedTemplate) {
+      try {
+        if (isEditing) {
+          const response = await axios.patch(`/template/${selectedTemplate.id}`, { name: title, content, type });
+          if (response.status === 200) {
+            dispatch(updateTemplate({ ...selectedTemplate, name: title, content, type }));
+            dispatch(addNotification({ message: 'Plantilla actualizada correctamente', color: 'success' }));
+          } else {
+            dispatch(addNotification({ message: 'Error al actualizar la plantilla', color: 'danger' }));
+          }
+        } else {
+          const response = await axios.post('/template', { name: title, content, type });
+          if (response.status === 201) {
+            dispatch(addTemplate(response.data));
+            dispatch(addNotification({ message: 'Plantilla creada correctamente', color: 'success' }));
+          } else {
+            dispatch(addNotification({ message: 'Error al crear la plantilla', color: 'danger' }));
+          }
+        }
+      } catch (error) {
+        dispatch(addNotification({ message: 'Error al procesar la solicitud', color: 'danger' }));
+      } finally {
+        setIsLoading(false);
+        setShowEditModal(false);
+      }
     }
   };
 
@@ -97,7 +104,7 @@ const TemplatePage: React.FC = () => {
 
   const handlePreviewClick = (template: any) => {
     setSelectedTemplate(template);
-    setShowPreviewModal(true); // Muestra el modal de previsualización
+    setShowPreviewModal(true);
   };
 
   return (

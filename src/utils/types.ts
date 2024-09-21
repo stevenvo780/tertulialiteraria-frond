@@ -89,6 +89,13 @@ export enum TemplateType {
   OTHERS = 'Others',
 }
 
+export interface Template extends SharedProp {
+  id: number;
+  name: string;
+  type: TemplateType;
+  content: string;
+}
+
 export interface CreateLibraryDto {
   title: string;
   description: string;

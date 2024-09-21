@@ -39,7 +39,7 @@ const Header: React.FC = () => {
   return (
     <>
       <Navbar expand="lg" className="navbar-light" style={{
-        paddingBottom: '0px',
+        padding: '0px',
         backgroundColor: "var(--white-color)",
         borderBottom: "1px solid var(--border-color)"
       }}>
