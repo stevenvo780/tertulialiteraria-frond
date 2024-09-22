@@ -45,8 +45,8 @@ export interface Events extends SharedProp {
 export interface CreateEventDto {
   title: string;
   description: string;
-  eventDate: Date;
-  startDate: Date;
+  eventDate: string;
+  startDate: string;
   endDate: Date;
   repetition?: Repetition;
 }

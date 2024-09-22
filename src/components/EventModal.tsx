@@ -46,7 +46,7 @@ const EventModal: React.FC<EventModalProps> = ({
 
   useEffect(() => {
     if (startDate) {
-      setEndDate(new Date(startDate.getTime() + 3 * 60 * 60 * 1000)); // 3 hours after startDate
+      setEndDate(new Date(startDate.getTime() + 3 * 60 * 60 * 1000));
     }
   }, [startDate]);
 
@@ -55,7 +55,7 @@ const EventModal: React.FC<EventModalProps> = ({
     
     const currentDate = new Date();
 
-    if (startDate && startDate < currentDate) {
+    if ( (selectedEvent && selectedEvent.repetition === Repetition.NONE) && (startDate && startDate < currentDate)) {
       dispatch(addNotification({ message: 'La fecha de inicio no puede ser anterior a la fecha actual', color: 'danger' }));
       return;
     }
@@ -66,27 +66,22 @@ const EventModal: React.FC<EventModalProps> = ({
     }
 
     try {
+      const eventData = {
+        ...selectedEvent,
+        title,
+        description,
+        startDate: moment(startDate!).utc().format(),
+        endDate: moment(endDate!).utc().format(),
+        repetition,
+      } as unknown as Events;
       if (isEditing && selectedEvent && selectedEvent.id !== null) {
-        const updatedEvent = {
-          ...selectedEvent,
-          title,
-          description,
-          startDate: startDate!,
-          endDate: endDate!,
-          repetition,
-        };
-        await api.patch(`/events/${selectedEvent.id}`, updatedEvent);
-        dispatch(updateEvent(updatedEvent));
+
+        await api.patch(`/events/${selectedEvent.id}`, eventData);
+        dispatch(updateEvent(eventData));
         dispatch(addNotification({ message: 'Evento actualizado correctamente', color: 'success' }));
       } else {
-        const newEvent = {
-          title,
-          description,
-          startDate: startDate!,
-          endDate: endDate!,
-          repetition,
-        };
-        const response = await api.post('/events', newEvent);
+
+        const response = await api.post('/events', eventData);
         dispatch(addEvent(response.data));
         dispatch(addNotification({ message: 'Evento creado correctamente', color: 'success' }));
       }
