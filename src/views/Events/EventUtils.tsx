@@ -1,5 +1,5 @@
 import { Events } from '../../utils/types';
-import { add, eachWeekOfInterval, eachMonthOfInterval, eachYearOfInterval, differenceInHours, isAfter, isBefore } from 'date-fns';
+import { add, eachWeekOfInterval, eachMonthOfInterval, eachYearOfInterval, differenceInHours, isAfter, isBefore, set } from 'date-fns';
 import { EventInput } from '@fullcalendar/core';
 import { Repetition } from '../../utils/types';
 
@@ -72,7 +72,7 @@ export const generateRecurringEvents = (event: Events): EventInput[] => {
       case Repetition.YEARLY:
         currentDate = add(currentDate, { years: 1 });
         break;
-      case Repetition.FIFTEEN_DAYS: // Nueva lógica para repetir cada 15 días
+      case Repetition.FIFTEEN_DAYS:
         currentDate = add(currentDate, { days: 15 });
         break;
       default:
@@ -84,6 +84,7 @@ export const generateRecurringEvents = (event: Events): EventInput[] => {
 
   return events;
 };
+
 export const getNextOccurrence = (event: Events): Date | null => {
   const now = new Date();
   const startDate = new Date(event.startDate);
@@ -92,19 +93,33 @@ export const getNextOccurrence = (event: Events): Date | null => {
     return startDate;
   }
 
-  let nextDate = null;
+  let nextDate: Date | undefined = undefined;
+
+  const eventTime = {
+    hours: startDate.getHours(),
+    minutes: startDate.getMinutes(),
+    seconds: startDate.getSeconds(),
+    milliseconds: startDate.getMilliseconds(),
+  };
 
   switch (event.repetition) {
-    case 'weekly':
+    case Repetition.WEEKLY:
       nextDate = eachWeekOfInterval({ start: startDate, end: add(now, { months: 1 }) })
+        .map(date => set(date, eventTime))
         .find(date => isAfter(date, now));
       break;
-    case 'monthly':
+    case Repetition.MONTHLY:
       nextDate = eachMonthOfInterval({ start: startDate, end: add(now, { years: 1 }) })
+        .map(date => set(date, eventTime))
         .find(date => isAfter(date, now));
       break;
-    case 'yearly':
+    case Repetition.YEARLY:
       nextDate = eachYearOfInterval({ start: startDate, end: add(now, { years: 5 }) })
+        .map(date => set(date, eventTime))
+        .find(date => isAfter(date, now));
+      break;
+    case Repetition.FIFTEEN_DAYS:
+      nextDate = generateOccurrencesEveryNDays(startDate, 15, now, eventTime)
         .find(date => isAfter(date, now));
       break;
     default:
@@ -114,3 +129,21 @@ export const getNextOccurrence = (event: Events): Date | null => {
 
   return nextDate || startDate;
 };
+
+function generateOccurrencesEveryNDays(
+  startDate: Date,
+  n: number,
+  now: Date,
+  eventTime: { hours: number; minutes: number; seconds: number; milliseconds: number }
+): Date[] {
+  const dates: Date[] = [];
+  let currentDate = startDate;
+
+  while (isBefore(currentDate, add(now, { years: 1 }))) {
+    const dateWithTime = set(currentDate, eventTime);
+    dates.push(dateWithTime);
+    currentDate = add(currentDate, { days: n });
+  }
+
+  return dates;
+}

@@ -14,6 +14,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
 import { UserRole } from '../../utils/types';
 import SocialShareButtons from '../../components/SocialShareButtons';
+import moment from 'moment';
 
 const EventDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -29,12 +30,14 @@ const EventDetail: React.FC = () => {
     const fetchEventDetails = async () => {
       try {
         const response = await api.get(`/events/${id}`);
-        setEvent(response.data);
+        const eventData = response.data;
+        eventData.startDate = moment.utc(eventData.startDate).local().toDate();
+        eventData.endDate = moment.utc(eventData.endDate).local().toDate();
+        setEvent(eventData);
       } catch (error) {
         console.error('Error fetching event details:', error);
       }
     };
-
     const fetchUpcomingEvents = async () => {
       try {
         const response = await api.get(`/events/home/upcoming?limit=31`);
