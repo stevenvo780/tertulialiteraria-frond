@@ -7,7 +7,6 @@ import TemplateSlider from './TemplateSlider';
 import { Button } from 'react-bootstrap';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { getCSSVariable, colorPalette, CustomEditorProps, BlobInfo } from './types';
-import { FaUpload } from 'react-icons/fa';
 
 const CustomEditor: React.FC<CustomEditorProps> = ({
   content,
@@ -35,12 +34,12 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
   const tinyMCEInit: Record<string, any> = {
     height: height,
     menubar: false,
-    plugins: ['link', 'fullscreen', 'help ', 'save'],
+    plugins: ['link', 'fullscreen', 'help', 'save', 'emoticons'],
     toolbar:
       'undo redo | formatselect | bold italic forecolor backcolor | ' +
       'alignleft aligncenter alignright alignjustify | ' +
       'bullist numlist outdent indent | removeformat | link | ' +
-      'hr | fullscreen | customUploadImageButton',
+      'hr | emoticons | fullscreen | customUploadImageButton',
     setup: (editor: any) => {
       editor.ui.registry.addButton('customUploadImageButton', {
         icon: 'upload',
@@ -82,6 +81,7 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
       success('data:' + blobInfo.blob().type + ';base64,' + blobInfo.base64());
     },
   };
+
 
   return (
     <>
@@ -142,6 +142,7 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
           </Button>
         )}
       </div>
+
       <TemplateSlider
         templateType={templateType || ''}
         onTemplateClick={(templateContent: string) => {
