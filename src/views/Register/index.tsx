@@ -164,7 +164,7 @@ const RegisterPage: React.FC = () => {
                     label={
                       <>
                         Acepto las{' '}
-                        <Link to="/privacy-policies" target="_blank">
+                        <Link to="/privacy" target="_blank">
                           Políticas de Privacidad
                         </Link>
                       </>
