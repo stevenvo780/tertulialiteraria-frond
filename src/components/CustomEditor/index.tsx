@@ -35,6 +35,9 @@ const CustomEditor: React.FC<CustomEditorProps> = ({
     height: height,
     menubar: false,
     plugins: ['link', 'fullscreen', 'help', 'save', 'emoticons'],
+    content_css: [
+      'bootstrap/dist/css/bootstrap.min.css',
+    ],
     toolbar:
       'undo redo | formatselect | bold italic forecolor backcolor | ' +
       'alignleft aligncenter alignright alignjustify | ' +
